@@ -118,3 +118,68 @@
 
 </body>
 </html>
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Botão Personalizado</title>
+    
+    <style>
+        /* Estilização do botão */
+        .meu-botao {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            border: none;
+            margin: 20px;
+        }
+
+        /* Efeito hover */
+        .meu-botao:hover {
+            background-color: #0056b3;
+        }
+
+        /* Efeito ao clicar */
+        .meu-botao:active {
+            transform: scale(0.98);
+        }
+
+        /* Opcional: Centralizar na página */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Botão usando div -->
+    <div class="meu-botao" 
+         onclick="window.location.href='./lawyers.html'"
+         role="button"
+         tabindex="0"
+         onkeypress="if(event.key === 'Enter') window.location.href='./lawyers.html'">
+        Ver Advogados
+    </div>
+
+    <script>
+        // Script opcional para melhorar a acessibilidade
+        document.querySelector('.meu-botao').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                window.location.href = './lawyers.html';
+            }
+        });
+    </script>
+</body>
+</html>
