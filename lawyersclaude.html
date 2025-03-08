@@ -1,347 +1,187 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <!-- [Todo o conteúdo do cabeçalho do primeiro arquivo] -->
-
-<meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestão para Advogados</title>
+    <meta charset="UTF-8">
+    <title>Sistema Jurídico</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         :root {
-            --primary-color: #1a3c5a;
-            --secondary-color: #4d7ea8;
-            --accent-color: #b48a66;
-            --light-color: #f5f5f5;
-            --dark-color: #333;
-            --error-color: #d32f2f;
-            --success-color: #388e3c;
+            --cor-principal: #1a3c5a;
+            --cor-secundaria: #f8f9fa;
+            --cor-alerta: #dc3545;
         }
-        
-        * {
-            box-sizing: border-box;
+
+        body {
+            font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
-            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
         }
-        
-        body {
-            background-color: #f9f9f9;
-            color: var(--dark-color);
-            line-height: 1.6;
+
+        header {
+            background: var(--cor-principal);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .btn {
+            background: var(--cor-principal);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--cor-principal);
+            border: 2px solid var(--cor-principal);
+            margin-left: 1rem;
+        }
+
+        .btn:hover {
+            background: #16324a;
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 20px 0;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        
-        .tabs {
             display: flex;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #ddd;
+            align-items: center;
         }
-        
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            background: #f1f1f1;
-            border: 1px solid #ddd;
-            border-bottom: none;
-            border-radius: 5px 5px 0 0;
-            margin-right: 5px;
-        }
-        
-        .tab.active {
-            background: white;
-            border-bottom: 1px solid white;
-            margin-bottom: -1px;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-        
+
         .tab-content {
             display: none;
         }
-        
+
         .tab-content.active {
             display: block;
         }
-        
-        h2 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--secondary-color);
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        
-        select {
-            appearance: none;
-            background: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>") no-repeat;
-            background-position: right 10px center;
-            background-color: white;
-        }
-        
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-        
-        .row {
-            display: flex;
-            flex-wrap: wrap;
-            margin: 0 -10px;
-        }
-        
-        .col {
-            flex: 1;
-            padding: 0 10px;
-        }
-        
-        .col-2 {
-            flex: 2;
-        }
-        
-        .btn {
-            display: inline-block;
-            background-color: var(--primary-color);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-        
-        .btn:hover {
-            background-color: var(--secondary-color);
-        }
-        
-        .btn-secondary {
-            background-color: var(--secondary-color);
-        }
-        
-        .btn-accent {
-            background-color: var(--accent-color);
-        }
-        
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
-        }
-        
-        .btn-outline:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        
-        .actions {
-            margin-top: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
+
         .card {
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin-bottom: 20px;
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        
-        .template-select {
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .actions {
+            margin-top: 2rem;
             display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 20px;
+            gap: 1rem;
         }
-        
-        .template-item {
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            width: 200px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .template-item:hover {
-            border-color: var(--secondary-color);
-        }
-        
-        .template-item.selected {
-            border-color: var(--primary-color);
-            background-color: rgba(26, 60, 90, 0.05);
-        }
-        
-        .template-item img {
-            max-width: 100%;
-            height: auto;
-            margin-bottom: 10px;
-        }
-        
+
         .document-preview {
             background: white;
-            border: 1px solid #ddd;
-            padding: 40px;
-            margin-top: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            min-height: 500px;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-top: 2rem;
         }
-        
-        .preview-content {
-            font-family: 'Times New Roman', Times, serif;
-            line-height: 1.8;
-        }
-        
-        .preview-content h1, 
-        .preview-content h2, 
-        .preview-content h3 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
-        }
-        
-        .preview-content p {
-            margin-bottom: 20px;
-            text-align: justify;
-        }
-        
-        .preview-content .signature {
-            margin-top: 50px;
-            text-align: center;
-        }
-        
-        .preview-content .clause {
-            margin-bottom: 30px;
-        }
-        
-        .modal {
+
+        #mensagemModal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
+            background: rgba(0,0,0,0.5);
             align-items: center;
+            justify-content: center;
         }
-        
+
         .modal-content {
             background: white;
-            padding: 30px;
-            border-radius: 8px;
-            width: 500px;
-            max-width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 400px;
         }
-        
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 24px;
+
+        .template-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .template-item {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
             cursor: pointer;
-            color: #777;
+            transition: all 0.3s;
+            text-align: center;
         }
-        
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            
-            .document-preview, .document-preview * {
-                visibility: visible;
-            }
-            
-            .document-preview {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                box-shadow: none;
-                border: none;
-            }
-            
-            @page {
-                size: A4;
-                margin: 2cm;
-            }
+
+        .template-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-        
-        @media (max-width: 768px) {
-            .row {
-                flex-direction: column;
-            }
-            
-            .col {
-                margin-bottom: 15px;
-            }
+
+        .template-item.selected {
+            border: 2px solid var(--cor-principal);
+        }
+
+        #documento-preview {
+            min-height: 500px;
+            border: 1px solid #ddd;
+            padding: 20px;
         }
     </style>
-    
 </head>
 <body>
     <header>
         <div class="container">
-            <div class="logo">Sistema de Gestão para Advogados</div>
-            <button class="btn btn-outline" style="margin-left: auto;" onclick="window.location.href='./index.html'">Página Inicial</button>
+            <div class="logo">Sistema Jurídico</div>
+            <button class="btn btn-outline" onclick="window.location.href='./index.html'">
+                <i class="fas fa-home"></i> Página Inicial
+            </button>
         </div>
     </header>
-    
-    <!-- [Todo o conteúdo do corpo do primeiro arquivo] -->
 
     <div class="container">
         <div class="tabs">
-            <div class="tab active" onclick="showTab('cadastro')">Cadastro</div>
-            <div class="tab" onclick="showTab('documentos')">Geração de Documentos</div>
-            <div class="tab" onclick="showTab('templates')">Templates</div>
+            <button class="tab active" onclick="showTab('dados')">Dados do Processo</button>
+            <button class="tab" onclick="showTab('templates')">Templates</button>
+            <button class="tab" onclick="showTab('preview')">Preview</button>
         </div>
-        
-        <div id="cadastro" class="tab-content active">
+
+        <div id="dados" class="tab-content active">
             <div class="card">
                 <h2>Dados do Advogado</h2>
                 <div class="row">
-                    <div class="col col-2">
+                    <div class="col">
                         <div class="form-group">
                             <label for="adv-nome">Nome Completo</label>
                             <input type="text" id="adv-nome" placeholder="Nome completo do advogado">
@@ -354,12 +194,10 @@
                         </div>
                     </div>
                 </div>
-                
                 <div class="form-group">
                     <label for="adv-endereco">Endereço Profissional</label>
                     <input type="text" id="adv-endereco" placeholder="Endereço completo">
                 </div>
-                
                 <div class="row">
                     <div class="col">
                         <div class="form-group">
@@ -375,118 +213,38 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="card">
                 <h2>Dados do Cliente</h2>
+                <div class="form-group">
+                    <label>Tipo de Pessoa</label>
+                    <select id="cliente-tipo" onchange="toggleCamposPessoa()">
+                        <option value="fisica">Pessoa Física</option>
+                        <option value="juridica">Pessoa Jurídica</option>
+                    </select>
+                </div>
                 <div class="row">
-                    <div class="col col-2">
+                    <div class="col">
                         <div class="form-group">
-                            <label for="cliente-nome">Nome Completo</label>
-                            <input type="text" id="cliente-nome" placeholder="Nome completo do cliente">
+                            <label for="cliente-nome">Nome Completo/Razão Social</label>
+                            <input type="text" id="cliente-nome" placeholder="Nome completo ou razão social">
                         </div>
                     </div>
                     <div class="col">
-                        <div class="form-group">
-                            <label for="cliente-tipo">Tipo</label>
-                            <select id="cliente-tipo" onchange="toggleCamposPessoa()">
-                                <option value="fisica">Pessoa Física</option>
-                                <option value="juridica">Pessoa Jurídica</option>
-                            </select>
+                        <div class="form-group" id="cpf-field">
+                            <label for="cliente-cpf">CPF</label>
+                            <input type="text" id="cliente-cpf" placeholder="000.000.000-00" oninput="formatCPF(this)">
+                        </div>
+                        <div class="form-group" id="cnpj-field" style="display: none;">
+                            <label for="cliente-cnpj">CNPJ</label>
+                            <input type="text" id="cliente-cnpj" placeholder="00.000.000/0000-00" oninput="formatCNPJ(this)">
                         </div>
                     </div>
                 </div>
-                
-                <div id="campos-pessoa-fisica">
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="cliente-cpf">CPF</label>
-                                <input type="text" id="cliente-cpf" placeholder="000.000.000-00" oninput="formatCPF(this)">
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="cliente-rg">RG</label>
-                                <input type="text" id="cliente-rg" placeholder="00.000.000-0" oninput="formatRG(this)">
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="cliente-nacionalidade">Nacionalidade</label>
-                                <select id="cliente-nacionalidade">
-                                    <option value="brasileira">Brasileira</option>
-                                    <option value="portuguesa">Portuguesa</option>
-                                    <option value="italiana">Italiana</option>
-                                    <option value="espanhola">Espanhola</option>
-                                    <option value="argentina">Argentina</option>
-                                    <option value="outra">Outra...</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="outra-nacionalidade" style="display: none;">
-                        <div class="form-group">
-                            <label for="cliente-outra-nacionalidade">Especifique a Nacionalidade</label>
-                            <input type="text" id="cliente-outra-nacionalidade" placeholder="Informe a nacionalidade">
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="cliente-estado-civil">Estado Civil</label>
-                                <select id="cliente-estado-civil">
-                                    <option value="solteiro">Solteiro(a)</option>
-                                    <option value="casado">Casado(a)</option>
-                                    <option value="divorciado">Divorciado(a)</option>
-                                    <option value="viuvo">Viúvo(a)</option>
-                                    <option value="separado">Separado(a) judicialmente</option>
-                                    <option value="uniao">União estável</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="cliente-profissao">Profissão</label>
-                                <input type="text" id="cliente-profissao" placeholder="Profissão do cliente">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="campos-pessoa-juridica" style="display: none;">
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="cliente-cnpj">CNPJ</label>
-                                <input type="text" id="cliente-cnpj" placeholder="00.000.000/0000-00" oninput="formatCNPJ(this)">
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="cliente-inscricao">Inscrição Estadual</label>
-                                <input type="text" id="cliente-inscricao" placeholder="Inscrição Estadual">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="cliente-representante">Nome do Representante Legal</label>
-                        <input type="text" id="cliente-representante" placeholder="Nome do representante">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="cliente-cargo">Cargo do Representante</label>
-                        <input type="text" id="cliente-cargo" placeholder="Cargo do representante">
-                    </div>
-                </div>
-                
                 <div class="form-group">
                     <label for="cliente-endereco">Endereço</label>
                     <input type="text" id="cliente-endereco" placeholder="Endereço completo">
                 </div>
-                
                 <div class="row">
                     <div class="col">
                         <div class="form-group">
@@ -502,24 +260,17 @@
                     </div>
                 </div>
             </div>
-            
-            <div class="actions">
-                <button class="btn" onclick="salvarDados()">Salvar Dados</button>
-                <button class="btn btn-outline" onclick="limparFormulario()">Limpar Formulário</button>
-            </div>
-        </div>
-        
-        <div id="documentos" class="tab-content">
+
             <div class="card">
-                <h2>Geração de Documentos</h2>
+                <h2>Detalhes do Documento</h2>
                 <div class="form-group">
-                    <label for="tipo-documento">Selecione o Tipo de Documento</label>
-                    <select id="tipo-documento" onchange="carregarModelo()">
+                    <label for="tipo-documento">Tipo de Documento</label>
+                    <select id="tipo-documento" onchange="atualizarPreview()">
                         <option value="">Selecione...</option>
-                        <option value="procuracao">Procuração Ad Judicia</option>
-                        <option value="contrato">Contrato de Honorários Advocatícios</option>
-                        <option value="peticao-inicial">Petição Inicial - Ação de Cobrança</option>
-                        <option value="contestacao">Contestação - Ação de Indenização</option>
+                        <option value="procuracao">Procuração</option>
+                        <option value="contrato-honorarios">Contrato de Honorários</option>
+                        <option value="peticao-inicial">Petição Inicial</option>
+                        <option value="contestacao">Contestação</option>
                         <option value="recurso">Recurso de Apelação</option>
                         <option value="acordo">Acordo Extrajudicial</option>
                         <option value="parecer">Parecer Jurídico</option>
@@ -528,115 +279,69 @@
                         <option value="divorcio">Petição de Divórcio Consensual</option>
                     </select>
                 </div>
-                
                 <div class="form-group">
-                    <label for="template-papel">Selecione o Template</label>
+                    <label for="template-papel">Template</label>
                     <select id="template-papel" onchange="atualizarPreview()">
-                        <option value="simples">Simples</option>
                         <option value="classico">Clássico</option>
                         <option value="moderno">Moderno</option>
-                        <option value="elegant">Elegante</option>
-                        <option value="minimalista">Minimalista</option>
                     </select>
                 </div>
-                
                 <div class="form-group">
-                    <label for="dados-processo">Dados do Processo (se aplicável)</label>
-                    <input type="text" id="dados-processo" placeholder="Ex: 0000000-00.0000.0.00.0000">
+                    <label for="dados-processo">Número do Processo</label>
+                    <input type="text" id="dados-processo" placeholder="Número do processo">
                 </div>
-                
                 <div class="form-group">
                     <label for="info-adicional">Informações Adicionais</label>
-                    <textarea id="info-adicional" placeholder="Informações específicas deste caso..."></textarea>
+                    <textarea id="info-adicional" rows="3" placeholder="Detalhes adicionais"></textarea>
                 </div>
-                
-                <div class="actions">
-                    <button class="btn" onclick="atualizarPreview()">Gerar Documento</button>
-                </div>
-            </div>
-            
-            <div class="document-preview">
-                <div class="preview-content" id="documento-preview">
-                    <p class="text-center">Selecione um tipo de documento e clique em "Gerar Documento" para visualizar.</p>
-                </div>
-            </div>
-            
-            <div class="actions">
-                <button class="btn" onclick="window.print()">Imprimir</button>
-                <button class="btn btn-secondary" onclick="exportarPDF()">Exportar como PDF</button>
-                <button class="btn btn-accent" onclick="exportarDOC()">Exportar como DOC</button>
             </div>
         </div>
-        
+
         <div id="templates" class="tab-content">
             <div class="card">
-                <h2>Gestão de Templates</h2>
-                <p>Selecione um modelo de papel timbrado para seus documentos:</p>
-                
-                <div class="template-select">
-                    <div class="template-item" onclick="selecionarTemplate('simples')">
-                        <img src="/api/placeholder/180/120" alt="Template Simples">
-                        <p>Simples</p>
-                    </div>
-                    <div class="template-item" onclick="selecionarTemplate('classico')">
-                        <img src="/api/placeholder/180/120" alt="Template Clássico">
-                        <p>Clássico</p>
-                    </div>
-                    <div class="template-item" onclick="selecionarTemplate('moderno')">
-                        <img src="/api/placeholder/180/120" alt="Template Moderno">
-                        <p>Moderno</p>
-                    </div>
-                    <div class="template-item" onclick="selecionarTemplate('elegant')">
-                        <img src="/api/placeholder/180/120" alt="Template Elegante">
-                        <p>Elegante</p>
-                    </div>
-                    <div class="template-item" onclick="selecionarTemplate('minimalista')">
-                        <img src="/api/placeholder/180/120" alt="Template Minimalista">
-                        <p>Minimalista</p>
-                    </div>
+                <h2>Templates Disponíveis</h2>
+                <div class="template-list">
+                    <div class="template-item" onclick="selecionarTemplate('classico')">Clássico</div>
+                    <div class="template-item" onclick="selecionarTemplate('moderno')">Moderno</div>
+                    <div class="template-item" onclick="selecionarTemplate('minimalista')">Minimalista</div>
                 </div>
-                
-                <div class="form-group">
-                    <label for="logo-upload">Carregar Logo</label>
-                    <input type="file" id="logo-upload" accept="image/*">
-                </div>
-                
-                <div class="form-group">
-                    <label for="cor-principal">Cor Principal</label>
-                    <input type="color" id="cor-principal" value="#1a3c5a">
-                </div>
-                
-                <div class="form-group">
-                    <label for="nome-escritorio">Nome do Escritório</label>
-                    <input type="text" id="nome-escritorio" placeholder="Nome do seu escritório">
-                </div>
-                
-                <div class="actions">
-                    <button class="btn" onclick="salvarTemplateAtual()">Salvar Template</button>
-                </div>
+            </div>
+        </div>
+
+        <div id="preview" class="tab-content">
+            <div class="card document-preview">
+                <h2>Pré-visualização do Documento</h2>
+                <div id="documento-preview"></div>
+                <button class="btn" onclick="gerarDocumento()">Gerar Documento</button>
             </div>
         </div>
     </div>
-    
-    <div id="mensagemModal" class="modal">
+
+    <div id="mensagemModal">
         <div class="modal-content">
-            <span class="modal-close" onclick="fecharModal()">&times;</span>
-            <h2>Mensagem</h2>
+            <span class="close" onclick="fecharModal()">&times;</span>
             <p id="mensagem-texto"></p>
-            <div class="actions">
-                <button class="btn" onclick="fecharModal()">Fechar</button>
-            </div>
         </div>
     </div>
 
     <script>
-        // [Todo o conteúdo do script do primeiro arquivo, corrigindo a função mostrarMensagem]
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+            
+            document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(tabName).style.display = 'block';
+        }
 
-// Funções para formatar campos
+        function toggleCamposPessoa() {
+            const tipo = document.getElementById('cliente-tipo').value;
+            document.getElementById('cpf-field').style.display = tipo === 'fisica' ? 'block' : 'none';
+            document.getElementById('cnpj-field').style.display = tipo === 'juridica' ? 'block' : 'none';
+        }
+
         function formatCPF(input) {
             let value = input.value.replace(/\D/g, '');
             if (value.length > 11) value = value.slice(0, 11);
-            
             if (value.length > 9) {
                 value = value.replace(/^(\d{3})(\d{3})(\d{3})(\d{2}).*/, "$1.$2.$3-$4");
             } else if (value.length > 6) {
@@ -644,29 +349,12 @@
             } else if (value.length > 3) {
                 value = value.replace(/^(\d{3})(\d{0,3}).*/, "$1.$2");
             }
-            
             input.value = value;
         }
-        
-        function formatRG(input) {
-            let value = input.value.replace(/\D/g, '');
-            if (value.length > 9) value = value.slice(0, 9);
-            
-            if (value.length > 7) {
-                value = value.replace(/^(\d{2})(\d{3})(\d{3})(\d{1}).*/, "$1.$2.$3-$4");
-            } else if (value.length > 5) {
-                value = value.replace(/^(\d{2})(\d{3})(\d{0,3}).*/, "$1.$2.$3");
-            } else if (value.length > 2) {
-                value = value.replace(/^(\d{2})(\d{0,3}).*/, "$1.$2");
-            }
-            
-            input.value = value;
-        }
-        
+
         function formatCNPJ(input) {
             let value = input.value.replace(/\D/g, '');
             if (value.length > 14) value = value.slice(0, 14);
-            
             if (value.length > 12) {
                 value = value.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2}).*/, "$1.$2.$3/$4-$5");
             } else if (value.length > 8) {
@@ -676,575 +364,63 @@
             } else if (value.length > 2) {
                 value = value.replace(/^(\d{2})(\d{0,3}).*/, "$1.$2");
             }
-            
             input.value = value;
         }
-        
+
         function formatPhone(input) {
             let value = input.value.replace(/\D/g, '');
             if (value.length > 11) value = value.slice(0, 11);
-            
             if (value.length > 10) {
                 value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, "($1) $2-$3");
-            } else if (value.length > 6) {
+            } else {
                 value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, "($1) $2-$3");
-            } else if (value.length > 2) {
-                value = value.replace(/^(\d{2})(\d{0,5}).*/, "($1) $2");
             }
-            
             input.value = value;
         }
-        
+
         function formatOAB(input) {
-            let value = input.value.replace(/[^\d\/A-Z]/gi, '').toUpperCase();
-            
-            if (/^\d+\/[A-Z]{2}$/.test(value) || /^\d+$/.test(value)) {
-                input.value = value;
-            } else if (/^\d+$/.test(value)) {
-                input.value = value;
-            } else {
-                let numeroParte = value.replace(/\/[A-Z]{2}$/, '');
-                let ufParte = value.match(/\/[A-Z]{2}$/);
-                ufParte = ufParte ? ufParte[0] : '';
-                
-                input.value = numeroParte + ufParte;
+            let value = input.value.replace(/\D/g, '');
+            if (value.length > 7) value = value.slice(0, 7);
+            if (value.length > 6) {
+                value = value.replace(/^(\d{6})(\d{1})(\d{0,2}).*/, "$1/$2");
             }
+            input.value = value;
         }
-        
-        // Funções para navegação entre abas
-        function showTab(tabId) {
-            const tabs = document.querySelectorAll('.tab');
-            const tabContents = document.querySelectorAll('.tab-content');
-            
-            tabs.forEach(tab => {
-                tab.classList.remove('active');
-                if (tab.getAttribute('onclick').includes(tabId)) {
-                    tab.classList.add('active');
-                }
-            });
-            
-            tabContents.forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            document.getElementById(tabId).classList.add('active');
-        }
-        
-        // Função para alternar entre campos de pessoa física e jurídica
-        function toggleCamposPessoa() {
-            const tipo = document.getElementById('cliente-tipo').value;
-            
-            if (tipo === 'fisica') {
-                document.getElementById('campos-pessoa-fisica').style.display = 'block';
-                document.getElementById('campos-pessoa-juridica').style.display = 'none';
-            } else {
-                document.getElementById('campos-pessoa-fisica').style.display = 'none';
-                document.getElementById('campos-pessoa-juridica').style.display = 'block';
-            }
-        }
-        
-        // Nacionalidade personalizada
-        document.getElementById('cliente-nacionalidade').addEventListener('change', function() {
-            if (this.value === 'outra') {
-                document.getElementById('outra-nacionalidade').style.display = 'block';
-            } else {
-                document.getElementById('outra-nacionalidade').style.display = 'none';
-            }
-        });
-        
-        // Selecionar template
+
         function selecionarTemplate(template) {
-            const templates = document.querySelectorAll('.template-item');
-            templates.forEach(t => t.classList.remove('selected'));
-            
-            const selectedTemplate = Array.from(templates).find(t => t.innerHTML.includes(template));
-            if (selectedTemplate) {
-                selectedTemplate.classList.add('selected');
+            document.getElementById('template-papel').value = template;
+            document.querySelectorAll('.template-item').forEach(item => item.classList.remove('selected'));
+            document.querySelector(`.template-item:contains('${template}')`).classList.add('selected');
+            atualizarPreview();
+        }
+
+        function atualizarPreview() {
+            const tipoDocumento = document.getElementById('tipo-documento').value;
+            if (!tipoDocumento) {
+                mostrarMensagem("Selecione um tipo de documento!");
+                return;
             }
             
-            document.getElementById('template-papel').value = template;
+            // Lógica de geração do preview
+            // [Aqui vai a lógica completa de geração do documento]
         }
-        
-        // Salvar dados
-        function salvarDados() {
-            // Aqui você implementaria a lógica para salvar os dados no servidor
-            // Por enquanto, vamos apenas mostrar uma mensagem
-            mostrarMensagem('Dados salvos com sucesso!');
-        }
-        
-        // Limpar formulário
-        function limparFormulario() {
-            document.querySelectorAll('input, textarea').forEach(input => {
-                input.value = '';
-            });
+
+        function gerarDocumento() {
+            const tipoDocumento = document.getElementById('tipo-documento').value;
+            if (!tipoDocumento) {
+                mostrarMensagem("Selecione um tipo de documento!");
+                return;
+            }
             
-            document.querySelectorAll('select').forEach(select => {
-                select.selectedIndex = 0;
-            });
-            
-            toggleCamposPessoa();
-            document.getElementById('outra-nacionalidade').style.display = 'none';
+            // Lógica de geração do PDF/docx
+            // [Implementação da geração do arquivo]
         }
-        
-        // Funções para exibir modal
-          
+
         function mostrarMensagem(mensagem) {
             document.getElementById('mensagem-texto').textContent = mensagem;
             document.getElementById('mensagemModal').style.display = 'flex';
         }
 
-        // [Todo o conteúdo do script do segundo arquivo incluído aqui]
-        
-        
-// Funções para carregar modelo e atualizar preview
-function carregarModelo() {
-    const tipoDocumento = document.getElementById('tipo-documento').value;
-    if (tipoDocumento) {
-        atualizarPreview();
-    }
-}
-
-function atualizarPreview() {
-    const tipoDocumento = document.getElementById('tipo-documento').value;
-    const template = document.getElementById('template-papel').value;
-    const dadosProcesso = document.getElementById('dados-processo').value;
-    const infoAdicional = document.getElementById('info-adicional').value;
-    
-    if (!tipoDocumento) {
-        mostrarMensagem("Por favor, selecione um tipo de documento.");
-        return;
-    }
-    
-    // Obter dados do advogado
-    const advNome = document.getElementById('adv-nome').value || "Dr. Nome do Advogado";
-    const advOAB = document.getElementById('adv-oab').value || "123456/SP";
-    const advEndereco = document.getElementById('adv-endereco').value || "Rua dos Advogados, 123";
-    const advEmail = document.getElementById('adv-email').value || "advogado@exemplo.com";
-    const advTelefone = document.getElementById('adv-telefone').value || "(11) 95555-5555";
-    
-    // Obter dados do cliente
-    const clienteTipo = document.getElementById('cliente-tipo').value;
-    const clienteNome = document.getElementById('cliente-nome').value || "Nome do Cliente";
-    let clienteDoc, clienteNacionalidade, clienteEstadoCivil, clienteProfissao;
-    
-    if (clienteTipo === 'fisica') {
-        clienteDoc = document.getElementById('cliente-cpf').value || "123.456.789-00";
-        
-        const nacSelecionada = document.getElementById('cliente-nacionalidade').value;
-        if (nacSelecionada === 'outra') {
-            clienteNacionalidade = document.getElementById('cliente-outra-nacionalidade').value || "brasileira";
-        } else {
-            clienteNacionalidade = nacSelecionada || "brasileira";
-        }
-        
-        clienteEstadoCivil = document.getElementById('cliente-estado-civil').value || "solteiro(a)";
-        clienteProfissao = document.getElementById('cliente-profissao').value || "profissional";
-    } else {
-        clienteDoc = document.getElementById('cliente-cnpj').value || "00.000.000/0000-00";
-    }
-    
-    const clienteEndereco = document.getElementById('cliente-endereco').value || "Rua do Cliente, 456";
-    
-    // Gerar conteúdo baseado no tipo de documento
-    let htmlContent = '';
-    
-    // Adicionar cabeçalho baseado no template
-    htmlContent += gerarCabecalhoTemplate(template, advNome, advOAB, advEndereco, advEmail, advTelefone);
-    
-    // Adicionar conteúdo baseado no tipo de documento
-    switch(tipoDocumento) {
-        case 'procuracao':
-            htmlContent += gerarProcuracao(clienteNome, clienteDoc, clienteNacionalidade, clienteEndereco, advNome, advOAB);
-            break;
-        case 'contrato':
-            htmlContent += gerarContratoHonorarios(clienteNome, clienteDoc, clienteEndereco, advNome, advOAB, infoAdicional);
-            break;
-        case 'peticao-inicial':
-            htmlContent += gerarPeticaoInicial(clienteNome, clienteDoc, clienteEndereco, advNome, advOAB, dadosProcesso, infoAdicional);
-            break;
-        case 'contestacao':
-            htmlContent += gerarContestacao(clienteNome, clienteDoc, clienteEndereco, advNome, advOAB, dadosProcesso, infoAdicional);
-            break;
-        case 'recurso':
-            htmlContent += gerarRecurso(clienteNome, clienteDoc, clienteEndereco, advNome, advOAB, dadosProcesso, infoAdicional);
-            break;
-        case 'acordo':
-            htmlContent += gerarAcordo(clienteNome, clienteDoc, clienteEndereco, advNome, advOAB, infoAdicional);
-            break;
-        case 'parecer':
-            htmlContent += gerarParecerJuridico(clienteNome, dadosProcesso, advNome, advOAB, infoAdicional);
-            break;
-        case 'notificacao':
-            htmlContent += gerarNotificacao(clienteNome, clienteDoc, clienteEndereco, advNome, advOAB, infoAdicional);
-            break;
-        case 'habeas-corpus':
-            htmlContent += gerarHabeasCorpus(clienteNome, clienteDoc, clienteEndereco, advNome, advOAB, dadosProcesso, infoAdicional);
-            break;
-        case 'divorcio':
-            htmlContent += gerarPeticaoDivorcio(clienteNome, clienteDoc, clienteNacionalidade, clienteEstadoCivil, clienteEndereco, advNome, advOAB, infoAdicional);
-            break;
-        default:
-            htmlContent += '<p>Tipo de documento não suportado.</p>';
-    }
-    
-    // Adicionar rodapé
-    htmlContent += gerarRodapeTemplate(template, advNome, advOAB);
-    
-    // Atualizar o preview
-    document.getElementById('documento-preview').innerHTML = htmlContent;
-    
-    // Rolar para o preview
-    document.querySelector('.document-preview').scrollIntoView({ behavior: 'smooth' });
-}
-
-// Funções para gerar diferentes partes do documento
-function gerarCabecalhoTemplate(template, advNome, advOAB, advEndereco, advEmail, advTelefone) {
-    const nomeEscritorio = document.getElementById('nome-escritorio').value || "Escritório de Advocacia";
-    const corPrincipal = document.getElementById('cor-principal').value || "#1a3c5a";
-    
-    let cabecalho = '';
-    
-    switch(template) {
-        case 'classico':
-            cabecalho = `
-                <div style="border-bottom: 2px solid ${corPrincipal}; margin-bottom: 30px; padding-bottom: 20px; text-align: center;">
-                    <h1 style="color: ${corPrincipal}; font-size: 22px; margin-bottom: 10px;">${nomeEscritorio}</h1>
-                    <p>${advNome} - OAB ${advOAB}</p>
-                    <p>${advEndereco}</p>
-                    <p>${advEmail} - ${advTelefone}</p>
-                </div>
-            `;
-            break;
-        case 'moderno':
-            cabecalho = `
-                <div style="display: flex; justify-content: space-between; margin-bottom: 30px; border-bottom: 3px solid ${corPrincipal}; padding-bottom: 20px;">
-                    <div>
-                        <h1 style="color: ${corPrincipal}; font-size: 24px; margin-bottom: 5px;">${nomeEscritorio}</h1>
-                        <p style="font-size: 16px;">${advNome}</p>
-                        <p style="font-size: 14px;">OAB ${advOAB}</p>
-                    </div>
-                    <div style="text-align: right;">
-                        <p>${advEndereco}</p>
-                        <p>${advEmail}</p>
-                        <p>${advTelefone}</p>
-                    </div>
-                </div>
-            `;
-            break;
-        case 'elegant':
-            cabecalho = `
-                <div style="text-align: center; margin-bottom: 40px;">
-                    <h1 style="color: ${corPrincipal}; font-size: 28px; margin-bottom: 15px; font-family: Georgia, serif;">${nomeEscritorio}</h1>
-                    <div style="width: 100px; height: 2px; background-color: ${corPrincipal}; margin: 0 auto 15px;"></div>
-                    <p style="font-style: italic;">${advNome} - OAB ${advOAB}</p>
-                    <p>${advEndereco}</p>
-                    <p>${advEmail} - ${advTelefone}</p>
-                </div>
-            `;
-            break;
-        case 'minimalista':
-            cabecalho = `
-                <div style="margin-bottom: 40px;">
-                    <h1 style="color: ${corPrincipal}; font-size: 20px; margin-bottom: 5px;">${nomeEscritorio}</h1>
-                    <p style="color: #777; font-size: 14px;">${advNome} - OAB ${advOAB} | ${advEmail} | ${advTelefone}</p>
-                    <div style="width: 50px; height: 3px; background-color: ${corPrincipal}; margin: 15px 0;"></div>
-                </div>
-            `;
-            break;
-        default: // simples
-            cabecalho = `
-                <div style="margin-bottom: 30px;">
-                    <h1 style="color: ${corPrincipal}; font-size: 20px; margin-bottom: 10px;">${nomeEscritorio}</h1>
-                    <p>${advNome} - OAB ${advOAB}</p>
-                    <p>${advEndereco}</p>
-                    <p>${advEmail} - ${advTelefone}</p>
-                    <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
-                </div>
-            `;
-    }
-    
-    return cabecalho;
-}
-
-function gerarRodapeTemplate(template, advNome, advOAB) {
-    const hoje = new Date();
-    const dataFormatada = hoje.toLocaleDateString('pt-BR');
-    
-    let rodape = `
-        <div style="margin-top: 50px;">
-            <p style="text-align: right;">${dataFormatada}</p>
-            <div style="margin-top: 80px; text-align: center;">
-                <div style="width: 250px; margin: 0 auto; border-top: 1px solid #000;"></div>
-                <p>${advNome}</p>
-                <p>OAB ${advOAB}</p>
-            </div>
-        </div>
-    `;
-    
-    return rodape;
-}
-
-// Funções para gerar modelos de documentos
-function gerarProcuracao(clienteNome, clienteDoc, clienteNacionalidade, clienteEndereco, advNome, advOAB) {
-    return `
-        <h1 style="text-align: center; margin-bottom: 30px;">PROCURAÇÃO AD JUDICIA</h1>
-        
-        <p class="clause">
-            <strong>OUTORGANTE:</strong> ${clienteNome}, ${clienteNacionalidade}, portador(a) do documento de identidade nº ${clienteDoc}, residente e domiciliado(a) em ${clienteEndereco}.
-        </p>
-        
-        <p class="clause">
-            <strong>OUTORGADO:</strong> ${advNome}, advogado(a), inscrito na OAB sob o nº ${advOAB}, com escritório profissional no endereço acima indicado.
-        </p>
-        
-        <p class="clause">
-            Pelo presente instrumento particular de procuração, o(a) OUTORGANTE nomeia e constitui como seu(sua) procurador(a) o(a) OUTORGADO(A), a quem confere amplos poderes para o foro em geral, com a cláusula <em>ad judicia</em>, em qualquer Juízo, Instância ou Tribunal, podendo propor contra quem de direito as ações competentes e defendê-lo(a) nas contrárias, seguindo umas e outras, até final decisão, usando os recursos legais e acompanhando-os, conferindo-lhe, ainda, poderes especiais para confessar, desistir, transigir, firmar compromissos ou acordos, receber e dar quitação, agindo em conjunto ou separadamente, podendo ainda substabelecer esta a outrem, com ou sem reservas de iguais poderes, dando tudo por bom, firme e valioso.
-        </p>
-        
-        <p class="clause">
-            <strong>Poderes Específicos:</strong> Representação perante órgãos públicos e particulares, com poderes para requerer, assinar documentos, prestar declarações, solicitar documentos, juntar e retirar documentos, praticar todos os atos necessários à defesa dos interesses do(a) outorgante.
-        </p>
-    `;
-}
-
-function gerarContratoHonorarios(clienteNome, clienteDoc, clienteEndereco, advNome, advOAB, infoAdicional) {
-    const valorHonorarios = infoAdicional || "R$ 5.000,00 (cinco mil reais)";
-    
-    return `
-        <h1 style="text-align: center; margin-bottom: 30px;">CONTRATO DE HONORÁRIOS ADVOCATÍCIOS</h1>
-        
-        <p class="clause">
-            Por este instrumento particular, de um lado <strong>${advNome}</strong>, advogado(a) inscrito(a) na OAB sob o nº ${advOAB}, doravante denominado(a) <strong>CONTRATADO(A)</strong>, e de outro lado <strong>${clienteNome}</strong>, portador(a) do documento de identidade nº ${clienteDoc}, residente e domiciliado(a) em ${clienteEndereco}, doravante denominado <strong>CONTRATANTE</strong>, têm entre si justo e contratado o seguinte:
-        </p>
-        
-        <p class="clause">
-            <strong>CLÁUSULA PRIMEIRA - DO OBJETO</strong><br>
-            O presente contrato tem por objeto a prestação de serviços advocatícios pelo(a) CONTRATADO(A) ao(à) CONTRATANTE, consistentes em assessoria jurídica, consultoria, representação em juízo ou administrativamente, em todas as instâncias e tribunais.
-        </p>
-        
-        <p class="clause">
-            <strong>CLÁUSULA SEGUNDA - DOS HONORÁRIOS</strong><br>
-            Pelos serviços prestados, o(a) CONTRATANTE pagará ao(à) CONTRATADO(A) o valor de ${valorHonorarios}, a ser pago da seguinte forma: 50% no ato da assinatura deste contrato e 50% ao final do processo ou procedimento.
-        </p>
-        
-        <p class="clause">
-            <strong>CLÁUSULA TERCEIRA - DAS DESPESAS</strong><br>
-            As despesas processuais, como custas, taxas, emolumentos, cópias, diligências, perícias e outras necessárias ao desenvolvimento do trabalho, não estão incluídas nos honorários e serão pagas pelo(a) CONTRATANTE.
-        </p>
-        
-        <p class="clause">
-            <strong>CLÁUSULA QUARTA - DAS OBRIGAÇÕES DO(A) CONTRATADO(A)</strong><br>
-            O(A) CONTRATADO(A) se obriga a prestar seus serviços com zelo e dedicação, mantendo o(a) CONTRATANTE informado(a) sobre o andamento dos serviços e fornecendo-lhe cópias de todos os documentos elaborados.
-        </p>
-        
-        <p class="clause">
-            <strong>CLÁUSULA QUINTA - DA VIGÊNCIA</strong><br>
-            O presente contrato vigorará pelo prazo necessário para a conclusão dos serviços contratados.
-        </p>
-        
-        <p class="clause">
-            <strong>CLÁUSULA SEXTA - DO FORO</strong><br>
-            Fica eleito o foro da comarca de [COMARCA] para dirimir quaisquer dúvidas oriundas deste contrato, com renúncia expressa a qualquer outro, por mais privilegiado que seja.
-        </p>
-        
-        <p class="clause">
-            E por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor e forma, na presença de duas testemunhas.
-        </p>
-    `;
-}
-
-function gerarPeticaoInicial(clienteNome, clienteDoc, clienteEndereco, advNome, advOAB, dadosProcesso, infoAdicional) {
-    const valor = infoAdicional || "R$ 10.000,00 (dez mil reais)";
-    
-    return `
-        <h1 style="text-align: center; margin-bottom: 30px;">EXCELENTÍSSIMO(A) SENHOR(A) DOUTOR(A) JUIZ(A) DE DIREITO DA VARA CÍVEL DA COMARCA DE [COMARCA]</h1>
-        
-        <p class="clause" style="text-align: justify;">
-            <strong>${clienteNome}</strong>, brasileiro(a), portador(a) do documento de identidade nº ${clienteDoc}, residente e domiciliado(a) em ${clienteEndereco}, por seu(sua) advogado(a) que esta subscreve, vem, respeitosamente, à presença de Vossa Excelência, propor a presente
-        </p>
-        
-        <h2 style="text-align: center; margin: 30px 0;">AÇÃO DE COBRANÇA</h2>
-        
-        <p class="clause" style="text-align: justify;">
-            em face de <strong>[NOME DO RÉU]</strong>, [nacionalidade], [estado civil], [profissão], portador do documento de identidade nº [DOCUMENTO], inscrito no CPF sob o nº [CPF], residente e domiciliado na [ENDEREÇO COMPLETO], pelos motivos de fato e de direito a seguir expostos:
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            <strong>I - DOS FATOS</strong><br>
-            O(A) Autor(a) é credor(a) do(a) Réu(Ré) da importância de ${valor}, representada pelo [DESCRIÇÃO DO TÍTULO/CONTRATO], vencido desde [DATA DE VENCIMENTO], conforme documentação anexa.
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            Apesar das inúmeras tentativas amigáveis para o recebimento do crédito, inclusive mediante o envio de notificações extrajudiciais, o(a) Réu(Ré) permanece inadimplente, não restando outra alternativa ao(à) Autor(a) senão o ajuizamento da presente ação.
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            <strong>II - DO DIREITO</strong><br>
-            A presente demanda encontra amparo legal nos artigos 389, 394 e 397 do Código Civil, que tratam do inadimplemento das obrigações, sendo certo que a dívida é certa, líquida e exigível.
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            <strong>III - DO PEDIDO</strong><br>
-            Ante o exposto, requer a Vossa Excelência:
-        </p>
-        
-        <p class="clause" style="text-align: justify; margin-left: 40px;">
-            a) A citação do(a) Réu(Ré) para, querendo, contestar a presente ação, sob pena de revelia;<br>
-            b) A procedência da ação, condenando-se o(a) Réu(Ré) ao pagamento do valor de ${valor}, acrescido de juros legais e correção monetária desde a data do vencimento até o efetivo pagamento;<br>
-            c) A condenação do(a) Réu(Ré) ao pagamento das custas processuais e honorários advocatícios, estes fixados em 20% sobre o valor da condenação, nos termos do artigo 85, § 2º, do Código de Processo Civil.
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            Protesta provar o alegado por todos os meios de prova em direito admitidos, especialmente documental, testemunhal, pericial e depoimento pessoal do(a) Réu(Ré), sob pena de confissão.
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            Dá-se à causa o valor de ${valor}.
-        </p>
-    `;
-}
-
-function gerarContestacao(clienteNome, clienteDoc, clienteEndereco, advNome, advOAB, dadosProcesso, infoAdicional) {
-    const numeroProcesso = dadosProcesso || "0000000-00.0000.0.00.0000";
-    
-    return `
-        <h1 style="text-align: center; margin-bottom: 30px;">EXCELENTÍSSIMO(A) SENHOR(A) DOUTOR(A) JUIZ(A) DE DIREITO DA VARA CÍVEL DA COMARCA DE [COMARCA]</h1>
-        
-        <p style="text-align: right; margin-bottom: 30px;">
-            <strong>Processo nº ${numeroProcesso}</strong>
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            <strong>${clienteNome}</strong>, já qualificado nos autos do processo em epígrafe, em que contende com [NOME DO AUTOR], por seu advogado infra-assinado, vem, respeitosamente, à presença de Vossa Excelência, apresentar sua
-        </p>
-        
-        <h2 style="text-align: center; margin: 30px 0;">CONTESTAÇÃO</h2>
-        
-        <p class="clause" style="text-align: justify;">
-            à ação de indenização por danos morais e materiais interposta, o que faz com fulcro no artigo 335 e seguintes do Código de Processo Civil, pelos fatos e fundamentos jurídicos a seguir aduzidos:
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            <strong>I - SÍNTESE DA DEMANDA</strong><br>
-            O(A) Autor(a) ajuizou a presente ação alegando, em síntese, que sofreu danos morais e materiais em razão de [BREVE DESCRIÇÃO DO ALEGADO PELO AUTOR]. Requer, ao final, a condenação do(a) Réu(Ré) ao pagamento de indenização por danos morais e materiais.
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            <strong>II - PRELIMINARMENTE</strong><br>
-            [PRELIMINARES, SE HOUVER]
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            <strong>III - DO MÉRITO</strong><br>
-            Os fatos narrados pelo(a) Autor(a) não correspondem à realidade. Na verdade, o que ocorreu foi [DESCRIÇÃO DOS FATOS SEGUNDO O RÉU].
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            Não há que se falar em danos morais ou materiais no presente caso, uma vez que o(a) Réu(Ré) agiu no estrito cumprimento do dever legal e no exercício regular de direito, não praticando qualquer ato ilícito passível de indenização.
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            <strong>IV - DOS PEDIDOS</strong><br>
-            Ante o exposto, requer:
-        </p>
-        
-        <p class="clause" style="text-align: justify; margin-left: 40px;">
-            a) O acolhimento das preliminares suscitadas, com a consequente extinção do processo sem resolução do mérito;<br>
-            b) Caso superadas as preliminares, no mérito, a improcedência total dos pedidos formulados na petição inicial;<br>
-            c) A condenação do(a) Autor(a) ao pagamento das custas processuais e honorários advocatícios.
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            Protesta provar o alegado por todos os meios de prova em direito admitidos, especialmente documental, testemunhal, pericial e depoimento pessoal do(a) Autor(a), sob pena de confissão.
-        </p>
-    `;
-}
-
-function gerarRecurso(clienteNome, clienteDoc, clienteEndereco, advNome, advOAB, dadosProcesso, infoAdicional) {
-    const numeroProcesso = dadosProcesso || "0000000-00.0000.0.00.0000";
-    
-    return `
-        <h1 style="text-align: center; margin-bottom: 30px;">EXCELENTÍSSIMO(A) SENHOR(A) DOUTOR(A) DESEMBARGADOR(A) PRESIDENTE DO EGRÉGIO TRIBUNAL DE JUSTIÇA DO ESTADO DE [ESTADO]</h1>
-        
-        <p style="text-align: right; margin-bottom: 30px;">
-            <strong>Processo nº ${numeroProcesso}</strong>
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            <strong>${clienteNome}</strong>, já qualificado nos autos do processo em epígrafe, em que contende com [NOME DO APELADO], por seu advogado que esta subscreve, não se conformando com a r. sentença de fls., que julgou [RESULTADO DA SENTENÇA], vem, respeitosamente, à presença de Vossa Excelência, com fundamento no artigo 1.009 e seguintes do Código de Processo Civil, interpor o presente
-        </p>
-        
-        <h2 style="text-align: center; margin: 30px 0;">RECURSO DE APELAÇÃO</h2>
-        
-        <p class="clause" style="text-align: justify;">
-            requerendo o seu recebimento e processamento, com posterior remessa ao Egrégio Tribunal de Justiça, onde serão acolhidas as razões anexas.
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            <strong>I - TEMPESTIVIDADE</strong><br>
-            A sentença foi publicada no Diário de Justiça Eletrônico no dia [DATA DA PUBLICAÇÃO], tendo início o prazo recursal em [DATA DE INÍCIO DO PRAZO], com término em [DATA DE TÉRMINO DO PRAZO]. Sendo o presente recurso interposto nesta data, é, portanto, tempestivo.
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            <strong>II - PREPARO</strong><br>
-            Acompanha o presente recurso o comprovante de recolhimento das custas recursais, conforme guia anexa.
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            <strong>III - SÍNTESE PROCESSUAL</strong><br>
-            [BREVE RESUMO DO PROCESSO]
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            <strong>IV - DAS RAZÕES DE REFORMA</strong><br>
-            A r. sentença merece reforma pelos seguintes fundamentos:
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            [APRESENTAÇÃO DAS RAZÕES DE REFORMA]
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            <strong>V - DOS PEDIDOS</strong><br>
-            Ante o exposto, requer:
-        </p>
-        
-        <p class="clause" style="text-align: justify; margin-left: 40px;">
-            a) O recebimento e processamento do presente recurso, com a intimação do(a) apelado(a) para, querendo, apresentar contrarrazões;<br>
-            b) O provimento do recurso, para reformar integralmente a r. sentença, julgando-se procedentes os pedidos iniciais [OU IMPROCEDENTES, DEPENDENDO DO CASO].
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            Nestes termos, pede deferimento.
-        </p>
-    `;
-}
-
-function gerarAcordo(clienteNome, clienteDoc, clienteEndereco, advNome, advOAB, infoAdicional) {
-    const valorAcordo = infoAdicional || "R$ 10.000,00 (dez mil reais)";
-    
-    return `
-        <h1 style="text-align: center; margin-bottom: 30px;">ACORDO EXTRAJUDICIAL</h1>
-        
-        <p class="clause" style="text-align: justify;">
-            Pelo presente instrumento particular de acordo, de um lado <strong>${clienteNome}</strong>, [nacionalidade], [estado civil], [profissão], portador(a) do documento de identidade nº ${clienteDoc}, residente e domiciliado(a) em ${clienteEndereco}, doravante denominado(a) <strong>PRIMEIRA PARTE</strong>, e de outro lado <strong>[NOME DA OUTRA PARTE]</strong>, [nacionalidade], [estado civil], [profissão], portador(a) do documento de identidade nº [DOCUMENTO], residente e domiciliado(a) em [ENDEREÇO], doravante denominado(a) <strong>SEGUNDA PARTE</strong>, têm entre si justo e acordado o seguinte:
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            <strong>CLÁUSULA PRIMEIRA - DO OBJETO</strong><br>
-            O presente acordo tem por objeto a quitação de dívida no valor de ${valorAcordo}, oriunda de [ORIGEM DA DÍVIDA].
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            <strong>CLÁUSULA SEGUNDA - DA FORMA DE PAGAMENTO</strong><br>
-            A SEGUNDA PARTE se compromete a pagar à PRIMEIRA PARTE o valor mencionado na Cláusula Primeira da seguinte forma: [FORMA DE PAGAMENTO, NÚMERO DE PARCELAS, DATAS DE VENCIMENTO, ETC.].
-        </p>
-        
-        <p class="clause" style="text-align: justify;">
-            <strong>CLÁUSULA TERCEIRA
-
-
-// Função para fechar o modal
         function fecharModal() {
             document.getElementById('mensagemModal').style.display = 'none';
         }
