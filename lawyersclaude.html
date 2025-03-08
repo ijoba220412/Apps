@@ -51,6 +51,13 @@
             <div class="col-md-3">
                 <input type="text" class="form-control" value="Brasileira" id="clienteNacionalidade">
             </div>
+            <!-- Inclua estas entradas dentro da seção de dados do cliente -->
+<div class="col-md-4">
+    <input type="text" class="form-control" placeholder="Endereço do Cliente" id="enderecoCliente">
+</div>
+<div class="col-md-4">
+    <input type="text" class="form-control" placeholder="Nome do Cônjuge" id="nomeConjuge">
+</div>
         </div>
     </div>
 
@@ -92,14 +99,190 @@
 </div>
 
 <!-- Scripts -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-    function gerarDocumento() {
-        // Atualizar timbre
-        document.getElementById('timbreNomeAdvogado').textContent = document.getElementById('advogadoNome').value;
-        document.getElementById('timbreOAB').textContent = `OAB: ${document.getElementById('advogadoOAB').value}`;
-        document.getElementById('timbreEndereco').textContent = document.getElementById('advogadoEndereco').value;
+// Máscaras para os campos
+$(document).ready(function(){
+    $('#clienteCPF').mask('000.000.000-00');
+    $('#advogadoOAB').mask('AAA/AA 000.000');
+    $('#clienteRG').mask('00.000.000-AA');
+});
+
+// Objeto com todos os modelos
+const modelos = {
+    1: /* Ação de Alimentos */ `
+        <div class="clausula">
+            <h4 class="mb-3">EXMO. SR. DR. JUIZ DE DIREITO DA ${"${tribunal}"}</h4>
+            <p>${"${NOME_CLIENTE}"}, brasileiro(a), ${"${nacionalidade}"}, portador(a) do CPF ${"${CPF_CLIENTE}"} e RG ${"${RG_CLIENTE}"}, 
+            residente em ${"${endereco_cliente}"}, requer alimentos contra ${"${nome_requerido}"}.</p>
+
+            <p class="mt-3">CLÁUSULA PRIMEIRA - DO OBJETO: Fixação de alimentos provisionais ou definitivos 
+            na proporção de ${"${percentual}"}% dos rendimentos do requerido.</p>
+
+            <p class="mt-3">CLÁUSULA SEGUNDA - DA COMPETÊNCIA: Competência deste juízo pelo domicílio do 
+            alimentante em ${"${endereco_requerido}"}.</p>
+        </div>
+    `,
+    
+    2: /* Divórcio Consensual */ `
+        <div class="clausula">
+            <h4>ESCRITURA PÚBLICA DE DIVÓRCIO CONSENSUAL</h4>
+            <p>Entre ${"${NOME_CLIENTE}"} e ${"${nome_conjuge}"}, casados em ${"${data_casamento}"}, 
+            dissolve-se o vínculo matrimonial.</p>
+
+            <p class="mt-3">CLÁUSULA ÚNICA - DO DIVÓRCIO: Dissolução do casamento civil com partilha 
+            amigável dos bens: ${"${descricao_bens}"}.</p>
+        </div>
+    `,
+
+    3: /* Inventário Extrajudicial */ `
+        <div class="clausula">
+            <h4>AUTO DE INVENTÁRIO EXTRAJUDICIAL</h4>
+            <p>Inventariante: ${"${NOME_CLIENTE}"}, na qualidade de herdeiro(a) de ${"${nome_falecido}"}, 
+            falecido em ${"${data_obito}"}.</p>
+
+            <p class="mt-3">CLÁUSULA PRIMEIRA - DOS BENS: Relação dos bens: ${"${lista_bens}"}.</p>
+
+            <p class="mt-3">CLÁUSULA SEGUNDA - DA PARTILHA: Partilha conforme acordo entre os herdeiros 
+            (${"${nomes_herdeiros}"}).</p>
+        </div>
+    `,
+
+    4: /* Revisional de Pensão */ `
+        <div class="clausula">
+            <h4>PETIÇÃO INICIAL - REVISIONAL DE ALIMENTOS</h4>
+            <p>${"${NOME_CLIENTE}"} requer revisão do valor fixado em ${"${data_decisao}"} (Processo nº 
+            ${"${num_processo}"}), face mudança nas condições financeiras.</p>
+
+            <p class="mt-3">CLÁUSULA ÚNICA - DO PEDIDO: Majoração/redução para R$ ${"${novo_valor}"} 
+            mensais, com fundamento no artigo 1.699 do CC/2002.</p>
+        </div>
+    `,
+
+    5: /* Acidente de Trânsito */ `
+        <div class="clausula">
+            <h4>AÇÃO INDENIZATÓRIA - ACIDENTE VEICULAR</h4>
+            <p>Em ${"${data_acidente}"}, na ${"${local_acidente}"}, veículo placa ${"${placa_veiculo}"} 
+            colhido por ${"${nome_responsavel}"} (CPF ${"${cpf_responsavel}"}).</p>
+
+            <p class="mt-3">CLÁUSULA PRIMEIRA - PEDIDO: Indenização de R$ ${"${valor_conserto}"} (danos 
+            materiais) e R$ ${"${valor_moral}"} (danos morais).</p>
+        </div>
+    `,
+
+    6: /* Reclamação Trabalhista */ `
+        <div class="clausula">
+            <h4>RECLAMAÇÃO TRABALHISTA - ${"${empresa_re}"}</h4>
+            <p>${"${NOME_CLIENTE}"}, RG ${"${RG_CLIENTE}"}, empregado(a) de ${"${data_admissao}"} a 
+            ${"${data_demissao}"}, com salário de R$ ${"${ultimo_salario}"}, pleiteia:</p>
+
+            <p class="mt-3">CLÁUSULA PRIMEIRA - VERBAS: Pagamento de ${"${verbas_devidas}"} em atraso.</p>
+            
+            <p class="mt-3">CLÁUSULA SEGUNDA - FUNDAMENTO: Violação dos artigos 7º da CF e 468 da CLT.</p>
+        </div>
+    `,
+
+    7: /* Usucapião */ `
+        <div class="clausula">
+            <h4>AÇÃO DE USUCAPIÃO - ${"${endereco_imovel}"}</h4>
+            <p>${"${NOME_CLIENTE}"} requer aquisição do imóvel localizado em ${"${endereco_imovel}"}, 
+            possuído continuamente desde ${"${data_posse}"}.</p>
+
+            <p class="mt-3">CLÁUSULA PRIMEIRA - POSSE: Exercida de forma mansa, pública e ininterrupta 
+            por ${"${tempo_posse}"} anos.</p>
+
+            <p class="mt-3">CLÁUSULA SEGUNDA - MELHORIAS: Investimentos realizados no valor de 
+            R$ ${"${valor_melhorias}"}.</p>
+        </div>
+    `,
+
+    8: /* Recuperação de Crédito */ `
+        <div class="clausula">
+            <h4>EXECUÇÃO DE TÍTULO EXTRAJUDICIAL</h4>
+            <p>Devedor: ${"${nome_devedor}"}, CPF ${"${cpf_devedor}"}, com dívida de R$ ${"${valor_divida}"} 
+            vencida em ${"${data_vencimento}"}.</p>
+
+            <p class="mt-3">CLÁUSULA PRIMEIRA - EXECUÇÃO: Cobrança através do Título Executivo nº 
+            ${"${num_titulo}"} com juros de ${"${percentual_juros}"}% ao mês.</p>
+        </div>
+    `,
+
+    9: /* Contrato de Locação */ `
+        <div class="clausula">
+            <h4>CONTRATO DE LOCAÇÃO RESIDENCIAL</h4>
+            <p>LOCADOR: ${"${NOME_CLIENTE}"}, CPF ${"${CPF_CLIENTE}"}. LOCATÁRIO: ${"${nome_locatario}"}, 
+            CPF ${"${cpf_locatario}"}.</p>
+
+            <p class="mt-3">CLÁUSULA PRIMEIRA - OBJETO: Imóvel situado em ${"${endereco_imovel}"} por 
+            R$ ${"${valor_aluguel}"} mensais.</p>
+
+            <p class="mt-3">CLÁUSULA SEGUNDA - PRAZO: Vigência de ${"${prazo_contrato}"} meses com 
+            depósito caução de R$ ${"${valor_caucao}"}.</p>
+        </div>
+    `,
+
+    10: /* Testamento Público */ `
+        <div class="clausula">
+            <h4>TESTAMENTO PÚBLICO - ${"${NOME_CLIENTE}"}</h4>
+            <p>Testador(a) declara expressamente: ${"${disposicoes_testamento}"}.</p>
+
+            <p class="mt-3">CLÁUSULA PRIMEIRA - HERDEIROS: Designação de ${"${nomes_herdeiros}"} como 
+            beneficiários dos bens: ${"${lista_bens}"}.</p>
+
+            <p class="mt-3">CLÁUSULA SEGUNDA - DISPOSIÇÕES FINAIS: Revogação de testamentos anteriores 
+            e nomeação de ${"${nome_executor}"} como executor.</p>
+        </div>
+    `
+};
+
+function gerarDocumento() {
+    // Coletar dados
+    const advogado = {
+        nome: document.getElementById('advogadoNome').value,
+        oab: document.getElementById('advogadoOAB').value,
+        endereco: document.getElementById('advogadoEndereco').value
+    };
+
+    const cliente = {
+        nome: document.getElementById('clienteNome').value,
+        cpf: document.getElementById('clienteCPF').value,
+        rg: document.getElementById('clienteRG').value,
+        nacionalidade: document.getElementById('clienteNacionalidade').value
+    };
+
+    // Selecionar modelo
+    const tipoProcesso = document.getElementById('tipoProcesso').value;
+    let conteudo = modelos[tipoProcesso];
+
+    // Substituir placeholders genéricos
+    conteudo = conteudo
+        .replace(/\${NOME_CLIENTE}/g, cliente.nome)
+        .replace(/\${CPF_CLIENTE}/g, cliente.cpf)
+        .replace(/\${RG_CLIENTE}/g, cliente.rg)
+        .replace(/\${nacionalidade}/g, cliente.nacionalidade)
+        .replace(/\${tribunal}/g, "Vara Cível da Comarca de Brasília/DF");
+
+    // Atualizar exibição
+    document.getElementById('conteudoDocumento').innerHTML = conteudo;
+    
+    // Atualizar timbre
+    document.getElementById('timbreNomeAdvogado').textContent = advogado.nome;
+    document.getElementById('timbreOAB').textContent = `OAB: ${advogado.oab}`;
+    document.getElementById('timbreEndereco').textContent = advogado.endereco;
+}
+
+function exportPDF() {
+    const doc = new jspdf.jsPDF();
+    doc.html(document.getElementById('documentOutput'), {
+        margin: [15, 15, 15, 15],
+        callback: () => doc.save('documento-juridico.pdf')
+    });
+}
+</script>
 
         // Lógica para diferentes documentos (exemplo básico)
         const conteudo = `<h3>${document.getElementById('tipoProcesso').selectedOptions[0].text}</h3>
