@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Documentos Jurídicos</title>
+    
+    <!-- Bibliotecas externas para exportação -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js"></script>
+    
+    <style>
+        /* Estilos profissionais e clean */
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 2rem;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        input, select, textarea {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .document-output {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+        }
+
+        .clausula {
+            margin: 2rem 0;
+        }
+
+        .export-buttons {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        button {
+            padding: 1rem 2rem;
+            margin: 0 1rem;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #34495e;
+        }
+
+        .timbrado {
+            border-top: 4px solid #2c3e50;
+            padding-top: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .logo-escritorio {
+            max-width: 200px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Seção do Timbrado -->
+        <div class="timbrado">
+            <h2>Escritório Jurídico</h2>
+            <input type="file" id="logoInput" accept="image/*">
+            <img id="logoPreview" class="logo-escritorio" alt="Logo do Escritório">
+        </div>
+
+        <!-- Formulário de Dados -->
+        <div class="form-section">
+            <h2>Dados do Advogado</h2>
+            <div class="input-group">
+                <label>Nome Completo:</label>
+                <input type="text" id="advogadoNome" required>
+            </div>
+            <div class="input-group">
+                <label>Número OAB:</label>
+                <input type="text" id="advogadoOAB" pattern="\d{7}\/[\w]{2}" placeholder="1234567/SP" required>
+            </div>
+            <!-- ... outros campos do advogado ... -->
+        </div>
+
+        <!-- Documento Gerado -->
+        <div class="document-output" id="output">
+            <h2 class="doc-title">PETIÇÃO INICIAL</h2>
+            <div class="clausula">
+                <p>À <strong>Excelentíssima Senhora Doutora Juíza de Direito da __ Vara Cível da Comarca de ______</strong></p>
+            </div>
+            <!-- Conteúdo dinâmico será inserido via JavaScript -->
+        </div>
+
+        <!-- Botões de Exportação -->
+        <div class="export-buttons">
+            <button onclick="exportPDF()">Exportar PDF</button>
+            <button onclick="exportWord()">Exportar Word</button>
+            <button onclick="window.print()">Imprimir</button>
+        </div>
+    </div>
+
+    <script>
+        // Lista de Processos Jurídicos
+        const processos = [
+            "Ação de Cobrança",
+            "Execução de Título Extrajudicial",
+            "Ação de Divórcio Consensual",
+            "Ação de Investigação de Paternidade",
+            "Ação de Alimentos",
+            "Ação Possessória",
+            "Ação de Usucapião",
+            "Ação de Indenização por Danos Materiais",
+            "Ação de Guarda e Regulamentação de Visitas",
+            "Ação de Revisão de Pensão Alimentícia"
+        ];
+
+        // Funções de Exportação
+        function exportPDF() {
+            const doc = new jspdf.jsPDF();
+            doc.html(document.getElementById('output'), {
+                callback: function(doc) {
+                    doc.save('documento-juridico.pdf');
+                },
+                margin: [20, 20, 20, 20],
+                autoPaging: 'text',
+                x: 10,
+                y: 10
+            });
+        }
+
+        function exportWord() {
+            TableToExcel.convert(document.getElementById('output'), {
+                name: 'documento-juridico.docx',
+                exportOptions: {
+                    format: {
+                        Body: {
+                            format: 'Text'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Preview do Logo
+        document.getElementById('logoInput').addEventListener('change', function(e) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                document.getElementById('logoPreview').src = reader.result;
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        });
+
+        // Máscaras de Formatação
+        document.getElementById('advogadoOAB').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g,'');
+            if (value.length > 7) {
+                value = value.slice(0,7) + '/' + value.slice(7,9);
+            }
+            e.target.value = value;
+        });
+    </script>
+</body>
+</html>
