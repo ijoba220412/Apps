@@ -61,17 +61,17 @@
             <h4>Processo Jurídico</h4>
             <div class="form-group">
                 <label>Tipo de Processo:</label>
-                <select class="form-control" id="tipoProcesso">
-                    <option>Ação Trabalhista</option>
-                    <option>Ação de Divórcio</option>
-                    <option>Ação de Alimentos</option>
-                    <option>Inventário e Partilha</option>
-                    <option>Pedido de Habeas Corpus</option>
-                    <option>Processo Criminal</option>
-                    <option>Ação de Despejo</option>
-                    <option>Ação de Cobrança</option>
-                    <option>Ação Revisional de Contrato</option>
-                    <option>Ação de Indenização</option>
+                <select class="form-control" id="tipoProcesso" onchange="inserirTextoPadrao()">
+                    <option value="acaoTrabalhista">Ação Trabalhista</option>
+                    <option value="divorcio">Ação de Divórcio</option>
+                    <option value="alimentos">Ação de Alimentos</option>
+                    <option value="inventario">Inventário e Partilha</option>
+                    <option value="habeasCorpus">Pedido de Habeas Corpus</option>
+                    <option value="criminal">Processo Criminal</option>
+                    <option value="despejo">Ação de Despejo</option>
+                    <option value="cobranca">Ação de Cobrança</option>
+                    <option value="revisional">Ação Revisional de Contrato</option>
+                    <option value="indenizacao">Ação de Indenização</option>
                 </select>
             </div>
             <div class="form-group">
@@ -93,50 +93,46 @@
     </div>
 
     <script>
-        function gerarDocumento() {
-            const nomeAdv = document.getElementById("advNome").value;
-            const oabAdv = document.getElementById("advOAB").value;
-            const enderecoAdv = document.getElementById("advEndereco").value;
-            const nomeCli = document.getElementById("cliNome").value;
-            const cpfCli = document.getElementById("cliCPF").value;
-            const rgCli = document.getElementById("cliRG").value;
-            const nacionalidadeCli = document.getElementById("cliNacionalidade").value;
+        const textosPadrao = {
+            acaoTrabalhista: "O cliente busca a reparação de direitos trabalhistas não cumpridos, incluindo verbas rescisórias e danos morais.",
+            divorcio: "O cliente deseja ingressar com pedido de divórcio, definindo a partilha de bens e questões relativas à guarda de filhos.",
+            alimentos: "O cliente solicita o pagamento de pensão alimentícia para garantir o sustento de filhos ou dependentes.",
+            inventario: "O cliente requer a abertura de inventário para partilha dos bens deixados por um ente falecido.",
+            habeasCorpus: "Pedido de habeas corpus para garantir a liberdade do cliente, considerando possível constrangimento ilegal.",
+            criminal: "O cliente está sendo acusado de um crime e busca defesa no processo penal.",
+            despejo: "O cliente deseja ajuizar ação de despejo contra inquilino inadimplente ou que esteja violando o contrato de locação.",
+            cobranca: "O cliente busca a recuperação de valores não pagos, exigindo a quitação da dívida pelo devedor.",
+            revisional: "Ação proposta para revisão de cláusulas contratuais abusivas, buscando equilíbrio nos termos do contrato firmado.",
+            indenizacao: "O cliente solicita indenização por danos morais ou materiais sofridos em decorrência de um evento específico."
+        };
+
+        function inserirTextoPadrao() {
             const tipoProcesso = document.getElementById("tipoProcesso").value;
-            const descricao = document.getElementById("descProcesso").value;
+            document.getElementById("descProcesso").value = textosPadrao[tipoProcesso];
+        }
 
-            const documentoTexto = `ESCRITÓRIO DE ADVOCACIA
+        function gerarDocumento() {
+            const documentoTexto = `
+ESCRITÓRIO DE ADVOCACIA
 
-Advogado: ${nomeAdv}
-OAB: ${oabAdv}
-Endereço: ${enderecoAdv}
+Advogado: ${document.getElementById("advNome").value}
+OAB: ${document.getElementById("advOAB").value}
+Endereço: ${document.getElementById("advEndereco").value}
 
-PROCESSO: ${tipoProcesso}
+PROCESSO: ${document.getElementById("tipoProcesso").selectedOptions[0].text}
 
-Cliente: ${nomeCli}
-CPF: ${cpfCli}
-RG: ${rgCli}
-Nacionalidade: ${nacionalidadeCli}
+Cliente: ${document.getElementById("cliNome").value}
+CPF: ${document.getElementById("cliCPF").value}
+RG: ${document.getElementById("cliRG").value}
+Nacionalidade: ${document.getElementById("cliNacionalidade").value}
 
 Descrição do Processo:
-${descricao}
+${document.getElementById("descProcesso").value}
 
 Assinatura do Advogado: _______________________
 Assinatura do Cliente: ________________________`;
 
             document.getElementById("documentOutput").innerText = documentoTexto;
-        }
-
-        function exportarPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.text(document.getElementById("documentOutput").innerText, 10, 10);
-            doc.save("documento_juridico.pdf");
-        }
-
-        function exportarDoc() {
-            const documentoTexto = document.getElementById("documentOutput").innerText;
-            const blob = new Blob([documentoTexto], { type: "application/msword" });
-            saveAs(blob, "documento_juridico.doc");
         }
     </script>
 </body>
