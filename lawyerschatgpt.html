@@ -6,15 +6,24 @@
     <title>Gerador de Documentos Jurídicos</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.0/docx.min.js"></script>
     <style>
         body { background-color: #f8f9fa; padding: 20px; }
         .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0px 0px 10px #ddd; }
-        .form-group { margin-bottom: 15px; }
-        .document-output { white-space: pre-line; padding: 20px; background: #fff; border-radius: 5px; min-height: 200px; border: 1px solid #ddd; }
+        .document-output { white-space: pre-line; padding: 20px; background: #fff; border-radius: 5px; min-height: 200px; border: 1px solid #ddd; font-family: Arial, sans-serif; }
         .btn-group { margin-top: 20px; }
         textarea { width: 100%; height: 150px; }
+        .watermark {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.1;
+            font-size: 80px;
+            font-weight: bold;
+            color: gray;
+            z-index: -1;
+        }
     </style>
 </head>
 <body>
@@ -28,7 +37,7 @@
             </div>
             <div class="form-group">
                 <label>Número da OAB:</label>
-                <input type="text" class="form-control" id="advOAB" required pattern="\\d{6}">
+                <input type="text" class="form-control" id="advOAB" required>
             </div>
             <div class="form-group">
                 <label>Endereço:</label>
@@ -42,7 +51,7 @@
             </div>
             <div class="form-group">
                 <label>CPF:</label>
-                <input type="text" class="form-control" id="cliCPF" required pattern="\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}">
+                <input type="text" class="form-control" id="cliCPF" required>
             </div>
             <div class="form-group">
                 <label>RG:</label>
@@ -67,11 +76,6 @@
                     <option value="alimentos">Ação de Alimentos</option>
                     <option value="inventario">Inventário e Partilha</option>
                     <option value="habeasCorpus">Pedido de Habeas Corpus</option>
-                    <option value="criminal">Processo Criminal</option>
-                    <option value="despejo">Ação de Despejo</option>
-                    <option value="cobranca">Ação de Cobrança</option>
-                    <option value="revisional">Ação Revisional de Contrato</option>
-                    <option value="indenizacao">Ação de Indenização</option>
                 </select>
             </div>
             <div class="form-group">
@@ -87,34 +91,27 @@
 
         <div class="btn-group">
             <button class="btn btn-success" onclick="exportarPDF()">Exportar como PDF</button>
-            <button class="btn btn-warning" onclick="exportarDoc()">Exportar como .doc</button>
+            <button class="btn btn-warning" onclick="exportarDoc()">Exportar como .docx</button>
             <button class="btn btn-secondary" onclick="window.print()">Imprimir</button>
         </div>
     </div>
 
     <script>
-        const textosPadrao = {
-            acaoTrabalhista: "O cliente busca a reparação de direitos trabalhistas não cumpridos, incluindo verbas rescisórias e danos morais.",
-            divorcio: "O cliente deseja ingressar com pedido de divórcio, definindo a partilha de bens e questões relativas à guarda de filhos.",
-            alimentos: "O cliente solicita o pagamento de pensão alimentícia para garantir o sustento de filhos ou dependentes.",
-            inventario: "O cliente requer a abertura de inventário para partilha dos bens deixados por um ente falecido.",
-            habeasCorpus: "Pedido de habeas corpus para garantir a liberdade do cliente, considerando possível constrangimento ilegal.",
-            criminal: "O cliente está sendo acusado de um crime e busca defesa no processo penal.",
-            despejo: "O cliente deseja ajuizar ação de despejo contra inquilino inadimplente ou que esteja violando o contrato de locação.",
-            cobranca: "O cliente busca a recuperação de valores não pagos, exigindo a quitação da dívida pelo devedor.",
-            revisional: "Ação proposta para revisão de cláusulas contratuais abusivas, buscando equilíbrio nos termos do contrato firmado.",
-            indenizacao: "O cliente solicita indenização por danos morais ou materiais sofridos em decorrência de um evento específico."
-        };
-
         function inserirTextoPadrao() {
+            const textosPadrao = {
+                acaoTrabalhista: "O cliente busca reparação por direitos trabalhistas não cumpridos, incluindo verbas rescisórias e indenização.",
+                divorcio: "O cliente deseja ajuizar ação de divórcio, com definição de partilha de bens e guarda de filhos.",
+                alimentos: "O cliente solicita pagamento de pensão alimentícia para dependentes.",
+                inventario: "O cliente requer abertura de inventário para partilha dos bens deixados por um ente falecido.",
+                habeasCorpus: "O cliente solicita habeas corpus devido a possível constrangimento ilegal."
+            };
             const tipoProcesso = document.getElementById("tipoProcesso").value;
             document.getElementById("descProcesso").value = textosPadrao[tipoProcesso];
         }
 
         function gerarDocumento() {
-            const documentoTexto = `
-ESCRITÓRIO DE ADVOCACIA
-
+            const documentoTexto = `\n
+ESCRITÓRIO DE ADVOCACIA\n
 Advogado: ${document.getElementById("advNome").value}
 OAB: ${document.getElementById("advOAB").value}
 Endereço: ${document.getElementById("advEndereco").value}
@@ -127,12 +124,29 @@ RG: ${document.getElementById("cliRG").value}
 Nacionalidade: ${document.getElementById("cliNacionalidade").value}
 
 Descrição do Processo:
-${document.getElementById("descProcesso").value}
-
-Assinatura do Advogado: _______________________
-Assinatura do Cliente: ________________________`;
-
+${document.getElementById("descProcesso").value}\n
+_________________________________
+Assinatura do Advogado\n
+_________________________________
+Assinatura do Cliente
+`;
             document.getElementById("documentOutput").innerText = documentoTexto;
+        }
+
+        function exportarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text(document.getElementById("documentOutput").innerText, 10, 10);
+            doc.save("documento.pdf");
+        }
+
+        function exportarDoc() {
+            const doc = new window.docx.Document();
+            const texto = document.getElementById("documentOutput").innerText;
+            doc.addSection({ children: [new window.docx.Paragraph(texto)] });
+            window.docx.Packer.toBlob(doc).then(blob => {
+                saveAs(blob, "documento.docx");
+            });
         }
     </script>
 </body>
