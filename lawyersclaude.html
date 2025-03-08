@@ -2,428 +2,118 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Sistema Jurídico</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>Gerador de Documentos Jurídicos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root {
-            --cor-principal: #1a3c5a;
-            --cor-secundaria: #f8f9fa;
-            --cor-alerta: #dc3545;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f2f5;
-        }
-
-        header {
-            background: var(--cor-principal);
-            color: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .logo {
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-
-        .btn {
-            background: var(--cor-principal);
-            color: white;
-            border: none;
-            padding: 0.7rem 1.5rem;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-
-        .btn-outline {
-            background: white;
-            color: var(--cor-principal);
-            border: 2px solid var(--cor-principal);
-            margin-left: 1rem;
-        }
-
-        .btn:hover {
-            background: #16324a;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
-            margin: 1rem 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #555;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ced4da;
-            border-radius: 5px;
-            font-size: 0.9rem;
-        }
-
-        .actions {
-            margin-top: 2rem;
-            display: flex;
-            gap: 1rem;
-        }
-
-        .document-preview {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            margin-top: 2rem;
-        }
-
-        #mensagemModal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            max-width: 400px;
-        }
-
-        .template-list {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-        }
-
-        .template-item {
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-        }
-
-        .template-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .template-item.selected {
-            border: 2px solid var(--cor-principal);
-        }
-
-        #documento-preview {
-            min-height: 500px;
-            border: 1px solid #ddd;
-            padding: 20px;
+        .container { max-width: 1200px; }
+        .section-box { border: 1px solid #ddd; padding: 20px; margin-bottom: 30px; border-radius: 8px; }
+        .clausula { margin-bottom: 25px; line-height: 1.6; }
+        .printable-area { background: white; padding: 40px; min-height: 1122px; }
+        .timbre {
+            border-bottom: 2px solid #000;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="logo">Sistema Jurídico</div>
-            <button class="btn btn-outline" onclick="window.location.href='./index.html'">
-                <i class="fas fa-home"></i> Página Inicial
-            </button>
-        </div>
-    </header>
-
-    <div class="container">
-        <div class="tabs">
-            <button class="tab active" onclick="showTab('dados')">Dados do Processo</button>
-            <button class="tab" onclick="showTab('templates')">Templates</button>
-            <button class="tab" onclick="showTab('preview')">Preview</button>
-        </div>
-
-        <div id="dados" class="tab-content active">
-            <div class="card">
-                <h2>Dados do Advogado</h2>
-                <div class="row">
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="adv-nome">Nome Completo</label>
-                            <input type="text" id="adv-nome" placeholder="Nome completo do advogado">
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="adv-oab">Número OAB</label>
-                            <input type="text" id="adv-oab" placeholder="Ex: 123456/SP" oninput="formatOAB(this)">
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="adv-endereco">Endereço Profissional</label>
-                    <input type="text" id="adv-endereco" placeholder="Endereço completo">
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="adv-email">E-mail</label>
-                            <input type="email" id="adv-email" placeholder="email@exemplo.com">
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="adv-telefone">Telefone</label>
-                            <input type="text" id="adv-telefone" placeholder="(00) 00000-0000" oninput="formatPhone(this)">
-                        </div>
-                    </div>
-                </div>
+<div class="container mt-5">
+    <h1 class="mb-4">Gerador de Documentos Jurídicos</h1>
+    
+    <!-- Formulário de Dados -->
+    <div class="section-box">
+        <h3>Dados do Advogado</h3>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <input type="text" class="form-control" placeholder="Nome Completo" id="advogadoNome">
             </div>
-
-            <div class="card">
-                <h2>Dados do Cliente</h2>
-                <div class="form-group">
-                    <label>Tipo de Pessoa</label>
-                    <select id="cliente-tipo" onchange="toggleCamposPessoa()">
-                        <option value="fisica">Pessoa Física</option>
-                        <option value="juridica">Pessoa Jurídica</option>
-                    </select>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="cliente-nome">Nome Completo/Razão Social</label>
-                            <input type="text" id="cliente-nome" placeholder="Nome completo ou razão social">
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-group" id="cpf-field">
-                            <label for="cliente-cpf">CPF</label>
-                            <input type="text" id="cliente-cpf" placeholder="000.000.000-00" oninput="formatCPF(this)">
-                        </div>
-                        <div class="form-group" id="cnpj-field" style="display: none;">
-                            <label for="cliente-cnpj">CNPJ</label>
-                            <input type="text" id="cliente-cnpj" placeholder="00.000.000/0000-00" oninput="formatCNPJ(this)">
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="cliente-endereco">Endereço</label>
-                    <input type="text" id="cliente-endereco" placeholder="Endereço completo">
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="cliente-email">E-mail</label>
-                            <input type="email" id="cliente-email" placeholder="email@exemplo.com">
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="cliente-telefone">Telefone</label>
-                            <input type="text" id="cliente-telefone" placeholder="(00) 00000-0000" oninput="formatPhone(this)">
-                        </div>
-                    </div>
-                </div>
+            <div class="col-md-3">
+                <input type="text" class="form-control" placeholder="OAB (Ex: OAB/SP 123.456)" id="advogadoOAB">
             </div>
-
-            <div class="card">
-                <h2>Detalhes do Documento</h2>
-                <div class="form-group">
-                    <label for="tipo-documento">Tipo de Documento</label>
-                    <select id="tipo-documento" onchange="atualizarPreview()">
-                        <option value="">Selecione...</option>
-                        <option value="procuracao">Procuração</option>
-                        <option value="contrato-honorarios">Contrato de Honorários</option>
-                        <option value="peticao-inicial">Petição Inicial</option>
-                        <option value="contestacao">Contestação</option>
-                        <option value="recurso">Recurso de Apelação</option>
-                        <option value="acordo">Acordo Extrajudicial</option>
-                        <option value="parecer">Parecer Jurídico</option>
-                        <option value="notificacao">Notificação Extrajudicial</option>
-                        <option value="habeas-corpus">Habeas Corpus</option>
-                        <option value="divorcio">Petição de Divórcio Consensual</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="template-papel">Template</label>
-                    <select id="template-papel" onchange="atualizarPreview()">
-                        <option value="classico">Clássico</option>
-                        <option value="moderno">Moderno</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="dados-processo">Número do Processo</label>
-                    <input type="text" id="dados-processo" placeholder="Número do processo">
-                </div>
-                <div class="form-group">
-                    <label for="info-adicional">Informações Adicionais</label>
-                    <textarea id="info-adicional" rows="3" placeholder="Detalhes adicionais"></textarea>
-                </div>
-            </div>
-        </div>
-
-        <div id="templates" class="tab-content">
-            <div class="card">
-                <h2>Templates Disponíveis</h2>
-                <div class="template-list">
-                    <div class="template-item" onclick="selecionarTemplate('classico')">Clássico</div>
-                    <div class="template-item" onclick="selecionarTemplate('moderno')">Moderno</div>
-                    <div class="template-item" onclick="selecionarTemplate('minimalista')">Minimalista</div>
-                </div>
-            </div>
-        </div>
-
-        <div id="preview" class="tab-content">
-            <div class="card document-preview">
-                <h2>Pré-visualização do Documento</h2>
-                <div id="documento-preview"></div>
-                <button class="btn" onclick="gerarDocumento()">Gerar Documento</button>
+            <div class="col-md-5">
+                <input type="text" class="form-control" placeholder="Endereço Completo" id="advogadoEndereco">
             </div>
         </div>
     </div>
 
-    <div id="mensagemModal">
-        <div class="modal-content">
-            <span class="close" onclick="fecharModal()">&times;</span>
-            <p id="mensagem-texto"></p>
+    <div class="section-box">
+        <h3>Dados do Cliente</h3>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <input type="text" class="form-control" placeholder="Nome Completo" id="clienteNome">
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control" placeholder="CPF" id="clienteCPF">
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control" placeholder="RG" id="clienteRG">
+            </div>
+            <div class="col-md-3">
+                <input type="text" class="form-control" value="Brasileira" id="clienteNacionalidade">
+            </div>
         </div>
     </div>
 
-    <script>
-        function showTab(tabName) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+    <!-- Seção de Modelos -->
+    <div class="section-box">
+        <h3>Tipos de Processos</h3>
+        <select class="form-select mb-3" id="tipoProcesso">
+            <option value="1">Ação de Alimentos</option>
+            <option value="2">Divórcio Consensual</option>
+            <option value="3">Inventário Extrajudicial</option>
+            <option value="4">Revisional de Pensão</option>
+            <option value="5">Acidente de Trânsito</option>
+            <option value="6">Reclamação Trabalhista</option>
+            <option value="7">Usucapião</option>
+            <option value="8">Recuperação de Crédito</option>
+            <option value="9">Contrato de Locação</option>
+            <option value="10">Testamento Público</option>
+        </select>
+        
+        <div class="printable-area" id="documentOutput">
+            <!-- Template do Timbrado -->
+            <div class="timbre">
+                <h4 id="timbreNomeAdvogado">[Nome do Advogado]</h4>
+                <p id="timbreOAB">OAB: [Número OAB]</p>
+                <p id="timbreEndereco">[Endereço Completo]</p>
+            </div>
             
-            document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
-            document.getElementById(tabName).style.display = 'block';
-        }
+            <!-- Documento Gerado -->
+            <div id="conteudoDocumento"></div>
+        </div>
+    </div>
 
-        function toggleCamposPessoa() {
-            const tipo = document.getElementById('cliente-tipo').value;
-            document.getElementById('cpf-field').style.display = tipo === 'fisica' ? 'block' : 'none';
-            document.getElementById('cnpj-field').style.display = tipo === 'juridica' ? 'block' : 'none';
-        }
+    <!-- Botões de Controle -->
+    <div class="text-center my-4">
+        <button class="btn btn-primary" onclick="gerarDocumento()">Gerar Documento</button>
+        <button class="btn btn-success" onclick="exportPDF()">Exportar PDF</button>
+        <button class="btn btn-secondary" onclick="window.print()">Imprimir</button>
+    </div>
+</div>
 
-        function formatCPF(input) {
-            let value = input.value.replace(/\D/g, '');
-            if (value.length > 11) value = value.slice(0, 11);
-            if (value.length > 9) {
-                value = value.replace(/^(\d{3})(\d{3})(\d{3})(\d{2}).*/, "$1.$2.$3-$4");
-            } else if (value.length > 6) {
-                value = value.replace(/^(\d{3})(\d{3})(\d{0,3}).*/, "$1.$2.$3");
-            } else if (value.length > 3) {
-                value = value.replace(/^(\d{3})(\d{0,3}).*/, "$1.$2");
-            }
-            input.value = value;
-        }
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function gerarDocumento() {
+        // Atualizar timbre
+        document.getElementById('timbreNomeAdvogado').textContent = document.getElementById('advogadoNome').value;
+        document.getElementById('timbreOAB').textContent = `OAB: ${document.getElementById('advogadoOAB').value}`;
+        document.getElementById('timbreEndereco').textContent = document.getElementById('advogadoEndereco').value;
 
-        function formatCNPJ(input) {
-            let value = input.value.replace(/\D/g, '');
-            if (value.length > 14) value = value.slice(0, 14);
-            if (value.length > 12) {
-                value = value.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2}).*/, "$1.$2.$3/$4-$5");
-            } else if (value.length > 8) {
-                value = value.replace(/^(\d{2})(\d{3})(\d{3})(\d{0,4}).*/, "$1.$2.$3/$4");
-            } else if (value.length > 5) {
-                value = value.replace(/^(\d{2})(\d{3})(\d{0,3}).*/, "$1.$2.$3");
-            } else if (value.length > 2) {
-                value = value.replace(/^(\d{2})(\d{0,3}).*/, "$1.$2");
-            }
-            input.value = value;
-        }
+        // Lógica para diferentes documentos (exemplo básico)
+        const conteudo = `<h3>${document.getElementById('tipoProcesso').selectedOptions[0].text}</h3>
+                         <p>Cláusula 1 - [Texto dinâmico]...</p>`;
+        
+        document.getElementById('conteudoDocumento').innerHTML = conteudo;
+    }
 
-        function formatPhone(input) {
-            let value = input.value.replace(/\D/g, '');
-            if (value.length > 11) value = value.slice(0, 11);
-            if (value.length > 10) {
-                value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, "($1) $2-$3");
-            } else {
-                value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, "($1) $2-$3");
-            }
-            input.value = value;
-        }
-
-        function formatOAB(input) {
-            let value = input.value.replace(/\D/g, '');
-            if (value.length > 7) value = value.slice(0, 7);
-            if (value.length > 6) {
-                value = value.replace(/^(\d{6})(\d{1})(\d{0,2}).*/, "$1/$2");
-            }
-            input.value = value;
-        }
-
-        function selecionarTemplate(template) {
-            document.getElementById('template-papel').value = template;
-            document.querySelectorAll('.template-item').forEach(item => item.classList.remove('selected'));
-            document.querySelector(`.template-item:contains('${template}')`).classList.add('selected');
-            atualizarPreview();
-        }
-
-        function atualizarPreview() {
-            const tipoDocumento = document.getElementById('tipo-documento').value;
-            if (!tipoDocumento) {
-                mostrarMensagem("Selecione um tipo de documento!");
-                return;
-            }
-            
-            // Lógica de geração do preview
-            // [Aqui vai a lógica completa de geração do documento]
-        }
-
-        function gerarDocumento() {
-            const tipoDocumento = document.getElementById('tipo-documento').value;
-            if (!tipoDocumento) {
-                mostrarMensagem("Selecione um tipo de documento!");
-                return;
-            }
-            
-            // Lógica de geração do PDF/docx
-            // [Implementação da geração do arquivo]
-        }
-
-        function mostrarMensagem(mensagem) {
-            document.getElementById('mensagem-texto').textContent = mensagem;
-            document.getElementById('mensagemModal').style.display = 'flex';
-        }
-
-        function fecharModal() {
-            document.getElementById('mensagemModal').style.display = 'none';
-        }
-    </script>
+    function exportPDF() {
+        const doc = new jspdf.jsPDF();
+        doc.html(document.getElementById('documentOutput'), {
+            callback: () => doc.save('documento-juridico.pdf')
+        });
+    }
+</script>
 </body>
 </html>
