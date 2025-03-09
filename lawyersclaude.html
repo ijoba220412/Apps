@@ -2,301 +2,520 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Documentos Jurídicos</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .container { max-width: 1200px; }
-        .section-box { border: 1px solid #ddd; padding: 20px; margin-bottom: 30px; border-radius: 8px; }
-        .clausula { margin-bottom: 25px; line-height: 1.6; }
-        .printable-area { background: white; padding: 40px; min-height: 1122px; }
-        .timbre {
-            border-bottom: 2px solid #000;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --text-color: #333;
+            --success-color: #27ae60;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--light-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 20px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--secondary-color);
+        }
+
+        .home-button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .home-button:hover {
+            background-color: #2980b9;
+        }
+
+        main {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .sidebar h2 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+
+        .template-list {
+            list-style: none;
+        }
+
+        .template-list li {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .template-list li:hover {
+            background-color: #f5f5f5;
+            color: var(--secondary-color);
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .document-form {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .col {
+            flex: 1;
+        }
+
+        .editor-container {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 400px;
+            margin-bottom: 20px;
+        }
+
+        .editor {
+            height: 400px;
+            padding: 15px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #219653;
+        }
+
+        .btn-danger {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--secondary-color);
+            color: var(--secondary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            padding: 15px 0;
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Estilo para a página de impressão */
+        @media print {
+            header, nav, .sidebar, .button-group, footer {
+                display: none;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+
+            .content {
+                box-shadow: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .document-form {
+                display: none;
+            }
+
+            .editor-container {
+                border: none;
+            }
+
+            .editor {
+                padding: 2cm;
+            }
+
+            body {
+                background-color: white;
+                font-size: 12pt;
+            }
         }
     </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h1 class="mb-4">Gerador de Documentos Jurídicos</h1>
-    
-    <!-- Formulário de Dados -->
-    <div class="section-box">
-        <h3>Dados do Advogado</h3>
-        <div class="row g-3">
-            <div class="col-md-4">
-                <input type="text" class="form-control" placeholder="Nome Completo" id="advogadoNome">
-            </div>
-            <div class="col-md-3">
-                <input type="text" class="form-control" placeholder="OAB (Ex: OAB/SP 123.456)" id="advogadoOAB">
-            </div>
-            <div class="col-md-5">
-                <input type="text" class="form-control" placeholder="Endereço Completo" id="advogadoEndereco">
-            </div>
-        </div>
+    <header>
+        <nav>
+            <div class="logo">Juris Docs</div>
+            <ul class="nav-links">
+                <li><a href="./index.html">Página Inicial</a></li>
+                <li><a href="#" class="active">Gerador</a></li>
+                <li><a href="#">Templates</a></li>
+                <li><a href="#">Configurações</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main>
+            <aside class="sidebar">
+                <h2>Templates</h2>
+                <ul class="template-list">
+                    <li data-template="honorarios">Contrato de Honorários</li>
+                    <li data-template="divorcio-consensual">Divórcio Consensual</li>
+                    <li data-template="divorcio-litigioso">Divórcio Litigioso</li>
+                    <li data-template="partilha">Partilha de Bens</li>
+                    <li data-template="trabalhista">Reclamação Trabalhista</li>
+                    <li data-template="contestacao">Contestação Trabalhista</li>
+                    <li data-template="procuracao">Procuração Ad Judicia</li>
+                    <li data-template="ata">Ata de Audiência</li>
+                    <li data-template="recurso">Recurso Ordinário</li>
+                    <li data-template="contrato">Contrato de Prestação de Serviços</li>
+                </ul>
+            </aside>
+
+            <section class="content">
+                <h1>Gerador de Documentos Jurídicos</h1>
+                <p>Preencha os dados abaixo para gerar seu documento:</p>
+
+                <form class="document-form">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="clientName">Nome do Cliente</label>
+                                <input type="text" id="clientName" class="form-control" placeholder="Nome completo do cliente">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="clientDoc">CPF/CNPJ do Cliente</label>
+                                <input type="text" id="clientDoc" class="form-control" placeholder="CPF ou CNPJ">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="lawyerName">Nome do Advogado</label>
+                                <input type="text" id="lawyerName" class="form-control" placeholder="Nome completo do advogado">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="oabNumber">Número OAB</label>
+                                <input type="text" id="oabNumber" class="form-control" placeholder="Número da OAB com UF">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="documentType">Tipo de Documento</label>
+                        <select id="documentType" class="form-control">
+                            <option value="">Selecione um tipo de documento</option>
+                            <option value="honorarios">Contrato de Honorários</option>
+                            <option value="divorcio-consensual">Divórcio Consensual</option>
+                            <option value="divorcio-litigioso">Divórcio Litigioso</option>
+                            <option value="partilha">Partilha de Bens</option>
+                            <option value="trabalhista">Reclamação Trabalhista</option>
+                            <option value="contestacao">Contestação Trabalhista</option>
+                            <option value="procuracao">Procuração Ad Judicia</option>
+                            <option value="ata">Ata de Audiência</option>
+                            <option value="recurso">Recurso Ordinário</option>
+                            <option value="contrato">Contrato de Prestação de Serviços</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="watermark">Marca d'água (Opcional)</label>
+                        <input type="file" id="watermark" class="form-control">
+                    </div>
+                </form>
+
+                <div class="editor-container">
+                    <div id="editor" class="editor">
+                        <h2 style="text-align: center;">CONTRATO DE HONORÁRIOS ADVOCATÍCIOS</h2>
+                        <p style="text-align: right;">Data: <span id="currentDate">__/__/____</span></p>
+                        <br>
+                        <p><strong>CONTRATANTE:</strong> <span id="clientNamePlaceholder">_____________________</span>, <span id="clientDocPlaceholder">CPF/CNPJ: _________________</span>, doravante denominado simplesmente CONTRATANTE.</p>
+                        <p><strong>CONTRATADO:</strong> <span id="lawyerNamePlaceholder">_____________________</span>, <span id="oabNumberPlaceholder">OAB: _________________</span>, doravante denominado simplesmente CONTRATADO.</p>
+                        <br>
+                        <p>As partes acima identificadas têm, entre si, justo e acertado o presente Contrato de Honorários Advocatícios, que se regerá pelas cláusulas seguintes e pelas condições descritas no presente.</p>
+                        <br>
+                        <p><strong>CLÁUSULA PRIMEIRA - DO OBJETO</strong></p>
+                        <p>O presente contrato tem como objeto a prestação de serviços advocatícios pelo CONTRATADO em favor do CONTRATANTE, especificamente para [DESCRIÇÃO DETALHADA DOS SERVIÇOS].</p>
+                        <br>
+                        <p><strong>CLÁUSULA SEGUNDA - DOS HONORÁRIOS</strong></p>
+                        <p>Pelos serviços prestados, o CONTRATANTE pagará ao CONTRATADO o valor de R$ [VALOR] ([VALOR POR EXTENSO]), a ser pago da seguinte forma: [FORMA DE PAGAMENTO].</p>
+                        <br>
+                        <p><strong>CLÁUSULA TERCEIRA - DAS OBRIGAÇÕES DO CONTRATADO</strong></p>
+                        <p>São obrigações do CONTRATADO:</p>
+                        <p>a) Defender os interesses do CONTRATANTE com zelo e dedicação;</p>
+                        <p>b) Manter o CONTRATANTE informado sobre o andamento do processo;</p>
+                        <p>c) Agir com ética e dentro dos limites da lei.</p>
+                        <br>
+                        <p><strong>CLÁUSULA QUARTA - DAS OBRIGAÇÕES DO CONTRATANTE</strong></p>
+                        <p>São obrigações do CONTRATANTE:</p>
+                        <p>a) Fornecer ao CONTRATADO todos os documentos e informações necessárias para o bom andamento do processo;</p>
+                        <p>b) Efetuar o pagamento dos honorários conforme acordado;</p>
+                        <p>c) Arcar com as custas processuais e demais despesas relacionadas ao processo.</p>
+                        <br>
+                        <p><strong>CLÁUSULA QUINTA - DA VIGÊNCIA</strong></p>
+                        <p>O presente contrato tem vigência a partir da data de sua assinatura e se encerra com a conclusão do processo, seja por sentença transitada em julgado, acordo ou desistência do CONTRATANTE.</p>
+                        <br>
+                        <p><strong>CLÁUSULA SEXTA - DA RESCISÃO</strong></p>
+                        <p>Este contrato poderá ser rescindido por qualquer das partes, mediante comunicação por escrito com antecedência mínima de 30 (trinta) dias.</p>
+                        <br>
+                        <p><strong>CLÁUSULA SÉTIMA - DO FORO</strong></p>
+                        <p>As partes elegem o foro da Comarca de [COMARCA] para dirimir quaisquer dúvidas ou controvérsias oriundas deste contrato, renunciando a qualquer outro, por mais privilegiado que seja.</p>
+                        <br>
+                        <p>E, por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor e forma, na presença das testemunhas abaixo.</p>
+                        <br>
+                        <p style="text-align: center;">[CIDADE], [DATA]</p>
+                        <br><br>
+                        <p style="text-align: center;">____________________________</p>
+                        <p style="text-align: center;">CONTRATANTE</p>
+                        <br><br>
+                        <p style="text-align: center;">____________________________</p>
+                        <p style="text-align: center;">CONTRATADO</p>
+                        <br><br>
+                        <p><strong>Testemunhas:</strong></p>
+                        <br>
+                        <p>1. __________________________ &nbsp;&nbsp;&nbsp;&nbsp; CPF: __________________</p>
+                        <br>
+                        <p>2. __________________________ &nbsp;&nbsp;&nbsp;&nbsp; CPF: __________________</p>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button id="btnPreview" class="btn btn-outline">Visualizar</button>
+                    <button id="btnDocx" class="btn btn-primary">Exportar .DOC</button>
+                    <button id="btnPdf" class="btn btn-primary">Exportar .PDF</button>
+                    <button id="btnPrint" class="btn btn-success">Imprimir</button>
+                </div>
+            </section>
+        </main>
     </div>
 
-    <div class="section-box">
-        <h3>Dados do Cliente</h3>
-        <div class="row g-3">
-            <div class="col-md-4">
-                <input type="text" class="form-control" placeholder="Nome Completo" id="clienteNome">
-            </div>
-            <div class="col-md-2">
-                <input type="text" class="form-control" placeholder="CPF" id="clienteCPF">
-            </div>
-            <div class="col-md-2">
-                <input type="text" class="form-control" placeholder="RG" id="clienteRG">
-            </div>
-            <div class="col-md-3">
-                <input type="text" class="form-control" value="Brasileira" id="clienteNacionalidade">
-            </div>
-            <!-- Inclua estas entradas dentro da seção de dados do cliente -->
-<div class="col-md-4">
-    <input type="text" class="form-control" placeholder="Endereço do Cliente" id="enderecoCliente">
-</div>
-<div class="col-md-4">
-    <input type="text" class="form-control" placeholder="Nome do Cônjuge" id="nomeConjuge">
-</div>
-        </div>
-    </div>
+    <footer>
+        <p>&copy; 2025 Juris Docs - Gerador de Documentos Jurídicos</p>
+    </footer>
 
-    <!-- Seção de Modelos -->
-    <div class="section-box">
-        <h3>Tipos de Processos</h3>
-        <select class="form-select mb-3" id="tipoProcesso">
-            <option value="1">Ação de Alimentos</option>
-            <option value="2">Divórcio Consensual</option>
-            <option value="3">Inventário Extrajudicial</option>
-            <option value="4">Revisional de Pensão</option>
-            <option value="5">Acidente de Trânsito</option>
-            <option value="6">Reclamação Trabalhista</option>
-            <option value="7">Usucapião</option>
-            <option value="8">Recuperação de Crédito</option>
-            <option value="9">Contrato de Locação</option>
-            <option value="10">Testamento Público</option>
-        </select>
-        
-        <div class="printable-area" id="documentOutput">
-            <!-- Template do Timbrado -->
-            <div class="timbre">
-                <h4 id="timbreNomeAdvogado">[Nome do Advogado]</h4>
-                <p id="timbreOAB">OAB: [Número OAB]</p>
-                <p id="timbreEndereco">[Endereço Completo]</p>
-            </div>
+    <script>
+        // Função para atualizar a data atual
+        function updateCurrentDate() {
+            const dateElement = document.getElementById('currentDate');
+            const today = new Date();
+            const formattedDate = today.toLocaleDateString('pt-BR');
+            dateElement.textContent = formattedDate;
+        }
+
+        // Função para preencher os campos do documento com os dados do formulário
+        function updateDocumentFields() {
+            const clientName = document.getElementById('clientName').value || '_____________________';
+            const clientDoc = document.getElementById('clientDoc').value || 'CPF/CNPJ: _________________';
+            const lawyerName = document.getElementById('lawyerName').value || '_____________________';
+            const oabNumber = document.getElementById('oabNumber').value || 'OAB: _________________';
+
+            document.getElementById('clientNamePlaceholder').textContent = clientName;
+            document.getElementById('clientDocPlaceholder').textContent = clientDoc.startsWith('CPF/CNPJ:') ? clientDoc : `CPF/CNPJ: ${clientDoc}`;
+            document.getElementById('lawyerNamePlaceholder').textContent = lawyerName;
+            document.getElementById('oabNumberPlaceholder').textContent = oabNumber.startsWith('OAB:') ? oabNumber : `OAB: ${oabNumber}`;
+        }
+
+        // Carrega os templates
+        function loadTemplate(templateId) {
+            console.log('Carregando template:', templateId);
+            // Aqui você carregaria o template real de um banco de dados ou arquivo
+            // Por enquanto, vamos apenas simular com o template de honorários
             
-            <!-- Documento Gerado -->
-            <div id="conteudoDocumento"></div>
-        </div>
-    </div>
-
-    <!-- Botões de Controle -->
-    <div class="text-center my-4">
-        <button class="btn btn-primary" onclick="gerarDocumento()">Gerar Documento</button>
-        <button class="btn btn-success" onclick="exportPDF()">Exportar PDF</button>
-        <button class="btn btn-secondary" onclick="window.print()">Imprimir</button>
-    </div>
-</div>
-
-<!-- Scripts -->
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<script>
-// Máscaras para os campos
-$(document).ready(function(){
-    $('#clienteCPF').mask('000.000.000-00');
-    $('#advogadoOAB').mask('AAA/AA 000.000');
-    $('#clienteRG').mask('00.000.000-AA');
-});
-
-// Objeto com todos os modelos
-const modelos = {
-    1: /* Ação de Alimentos */ `
-        <div class="clausula">
-            <h4 class="mb-3">EXMO. SR. DR. JUIZ DE DIREITO DA ${"${tribunal}"}</h4>
-            <p>${"${NOME_CLIENTE}"}, brasileiro(a), ${"${nacionalidade}"}, portador(a) do CPF ${"${CPF_CLIENTE}"} e RG ${"${RG_CLIENTE}"}, 
-            residente em ${"${endereco_cliente}"}, requer alimentos contra ${"${nome_requerido}"}.</p>
-
-            <p class="mt-3">CLÁUSULA PRIMEIRA - DO OBJETO: Fixação de alimentos provisionais ou definitivos 
-            na proporção de ${"${percentual}"}% dos rendimentos do requerido.</p>
-
-            <p class="mt-3">CLÁUSULA SEGUNDA - DA COMPETÊNCIA: Competência deste juízo pelo domicílio do 
-            alimentante em ${"${endereco_requerido}"}.</p>
-        </div>
-    `,
-    
-    2: /* Divórcio Consensual */ `
-        <div class="clausula">
-            <h4>ESCRITURA PÚBLICA DE DIVÓRCIO CONSENSUAL</h4>
-            <p>Entre ${"${NOME_CLIENTE}"} e ${"${nome_conjuge}"}, casados em ${"${data_casamento}"}, 
-            dissolve-se o vínculo matrimonial.</p>
-
-            <p class="mt-3">CLÁUSULA ÚNICA - DO DIVÓRCIO: Dissolução do casamento civil com partilha 
-            amigável dos bens: ${"${descricao_bens}"}.</p>
-        </div>
-    `,
-
-    3: /* Inventário Extrajudicial */ `
-        <div class="clausula">
-            <h4>AUTO DE INVENTÁRIO EXTRAJUDICIAL</h4>
-            <p>Inventariante: ${"${NOME_CLIENTE}"}, na qualidade de herdeiro(a) de ${"${nome_falecido}"}, 
-            falecido em ${"${data_obito}"}.</p>
-
-            <p class="mt-3">CLÁUSULA PRIMEIRA - DOS BENS: Relação dos bens: ${"${lista_bens}"}.</p>
-
-            <p class="mt-3">CLÁUSULA SEGUNDA - DA PARTILHA: Partilha conforme acordo entre os herdeiros 
-            (${"${nomes_herdeiros}"}).</p>
-        </div>
-    `,
-
-    4: /* Revisional de Pensão */ `
-        <div class="clausula">
-            <h4>PETIÇÃO INICIAL - REVISIONAL DE ALIMENTOS</h4>
-            <p>${"${NOME_CLIENTE}"} requer revisão do valor fixado em ${"${data_decisao}"} (Processo nº 
-            ${"${num_processo}"}), face mudança nas condições financeiras.</p>
-
-            <p class="mt-3">CLÁUSULA ÚNICA - DO PEDIDO: Majoração/redução para R$ ${"${novo_valor}"} 
-            mensais, com fundamento no artigo 1.699 do CC/2002.</p>
-        </div>
-    `,
-
-    5: /* Acidente de Trânsito */ `
-        <div class="clausula">
-            <h4>AÇÃO INDENIZATÓRIA - ACIDENTE VEICULAR</h4>
-            <p>Em ${"${data_acidente}"}, na ${"${local_acidente}"}, veículo placa ${"${placa_veiculo}"} 
-            colhido por ${"${nome_responsavel}"} (CPF ${"${cpf_responsavel}"}).</p>
-
-            <p class="mt-3">CLÁUSULA PRIMEIRA - PEDIDO: Indenização de R$ ${"${valor_conserto}"} (danos 
-            materiais) e R$ ${"${valor_moral}"} (danos morais).</p>
-        </div>
-    `,
-
-    6: /* Reclamação Trabalhista */ `
-        <div class="clausula">
-            <h4>RECLAMAÇÃO TRABALHISTA - ${"${empresa_re}"}</h4>
-            <p>${"${NOME_CLIENTE}"}, RG ${"${RG_CLIENTE}"}, empregado(a) de ${"${data_admissao}"} a 
-            ${"${data_demissao}"}, com salário de R$ ${"${ultimo_salario}"}, pleiteia:</p>
-
-            <p class="mt-3">CLÁUSULA PRIMEIRA - VERBAS: Pagamento de ${"${verbas_devidas}"} em atraso.</p>
+            // Este é apenas um exemplo. Em uma implementação real, você carregaria
+            // diferentes templates baseados no templateId
+            document.getElementById('documentType').value = templateId;
             
-            <p class="mt-3">CLÁUSULA SEGUNDA - FUNDAMENTO: Violação dos artigos 7º da CF e 468 da CLT.</p>
-        </div>
-    `,
+            // Atualiza o editor com o template correspondente (simulado)
+            if (templateId === 'honorarios') {
+                // O template padrão já está carregado
+            } else {
+                // Aqui você carregaria outros templates
+                alert('Template ' + templateId + ' selecionado. Esta funcionalidade será implementada.');
+            }
+        }
 
-    7: /* Usucapião */ `
-        <div class="clausula">
-            <h4>AÇÃO DE USUCAPIÃO - ${"${endereco_imovel}"}</h4>
-            <p>${"${NOME_CLIENTE}"} requer aquisição do imóvel localizado em ${"${endereco_imovel}"}, 
-            possuído continuamente desde ${"${data_posse}"}.</p>
-
-            <p class="mt-3">CLÁUSULA PRIMEIRA - POSSE: Exercida de forma mansa, pública e ininterrupta 
-            por ${"${tempo_posse}"} anos.</p>
-
-            <p class="mt-3">CLÁUSULA SEGUNDA - MELHORIAS: Investimentos realizados no valor de 
-            R$ ${"${valor_melhorias}"}.</p>
-        </div>
-    `,
-
-    8: /* Recuperação de Crédito */ `
-        <div class="clausula">
-            <h4>EXECUÇÃO DE TÍTULO EXTRAJUDICIAL</h4>
-            <p>Devedor: ${"${nome_devedor}"}, CPF ${"${cpf_devedor}"}, com dívida de R$ ${"${valor_divida}"} 
-            vencida em ${"${data_vencimento}"}.</p>
-
-            <p class="mt-3">CLÁUSULA PRIMEIRA - EXECUÇÃO: Cobrança através do Título Executivo nº 
-            ${"${num_titulo}"} com juros de ${"${percentual_juros}"}% ao mês.</p>
-        </div>
-    `,
-
-    9: /* Contrato de Locação */ `
-        <div class="clausula">
-            <h4>CONTRATO DE LOCAÇÃO RESIDENCIAL</h4>
-            <p>LOCADOR: ${"${NOME_CLIENTE}"}, CPF ${"${CPF_CLIENTE}"}. LOCATÁRIO: ${"${nome_locatario}"}, 
-            CPF ${"${cpf_locatario}"}.</p>
-
-            <p class="mt-3">CLÁUSULA PRIMEIRA - OBJETO: Imóvel situado em ${"${endereco_imovel}"} por 
-            R$ ${"${valor_aluguel}"} mensais.</p>
-
-            <p class="mt-3">CLÁUSULA SEGUNDA - PRAZO: Vigência de ${"${prazo_contrato}"} meses com 
-            depósito caução de R$ ${"${valor_caucao}"}.</p>
-        </div>
-    `,
-
-    10: /* Testamento Público */ `
-        <div class="clausula">
-            <h4>TESTAMENTO PÚBLICO - ${"${NOME_CLIENTE}"}</h4>
-            <p>Testador(a) declara expressamente: ${"${disposicoes_testamento}"}.</p>
-
-            <p class="mt-3">CLÁUSULA PRIMEIRA - HERDEIROS: Designação de ${"${nomes_herdeiros}"} como 
-            beneficiários dos bens: ${"${lista_bens}"}.</p>
-
-            <p class="mt-3">CLÁUSULA SEGUNDA - DISPOSIÇÕES FINAIS: Revogação de testamentos anteriores 
-            e nomeação de ${"${nome_executor}"} como executor.</p>
-        </div>
-    `
-};
-
-function gerarDocumento() {
-    // Coletar dados
-    const advogado = {
-        nome: document.getElementById('advogadoNome').value,
-        oab: document.getElementById('advogadoOAB').value,
-        endereco: document.getElementById('advogadoEndereco').value
-    };
-
-    const cliente = {
-        nome: document.getElementById('clienteNome').value,
-        cpf: document.getElementById('clienteCPF').value,
-        rg: document.getElementById('clienteRG').value,
-        nacionalidade: document.getElementById('clienteNacionalidade').value
-    };
-
-    // Selecionar modelo
-    const tipoProcesso = document.getElementById('tipoProcesso').value;
-    let conteudo = modelos[tipoProcesso];
-
-    // Substituir placeholders genéricos
-    conteudo = conteudo
-        .replace(/\${NOME_CLIENTE}/g, cliente.nome)
-        .replace(/\${CPF_CLIENTE}/g, cliente.cpf)
-        .replace(/\${RG_CLIENTE}/g, cliente.rg)
-        .replace(/\${nacionalidade}/g, cliente.nacionalidade)
-        .replace(/\${tribunal}/g, "Vara Cível da Comarca de Brasília/DF");
-
-    // Atualizar exibição
-    document.getElementById('conteudoDocumento').innerHTML = conteudo;
-    
-    // Atualizar timbre
-    document.getElementById('timbreNomeAdvogado').textContent = advogado.nome;
-    document.getElementById('timbreOAB').textContent = `OAB: ${advogado.oab}`;
-    document.getElementById('timbreEndereco').textContent = advogado.endereco;
-}
-
-function exportPDF() {
-    const doc = new jspdf.jsPDF();
-    doc.html(document.getElementById('documentOutput'), {
-        margin: [15, 15, 15, 15],
-        callback: () => doc.save('documento-juridico.pdf')
-    });
-}
-</script>
-
-        // Lógica para diferentes documentos (exemplo básico)
-        const conteudo = `<h3>${document.getElementById('tipoProcesso').selectedOptions[0].text}</h3>
-                         <p>Cláusula 1 - [Texto dinâmico]...</p>`;
-        
-        document.getElementById('conteudoDocumento').innerHTML = conteudo;
-    }
-
-    function exportPDF() {
-        const doc = new jspdf.jsPDF();
-        doc.html(document.getElementById('documentOutput'), {
-            callback: () => doc.save('documento-juridico.pdf')
+        // Inicializa a página
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentDate();
+            
+            // Event listeners para os inputs do formulário
+            document.getElementById('clientName').addEventListener('input', updateDocumentFields);
+            document.getElementById('clientDoc').addEventListener('input', updateDocumentFields);
+            document.getElementById('lawyerName').addEventListener('input', updateDocumentFields);
+            document.getElementById('oabNumber').addEventListener('input', updateDocumentFields);
+            
+            // Event listener para seleção de template
+            document.getElementById('documentType').addEventListener('change', function() {
+                loadTemplate(this.value);
+            });
+            
+            // Event listeners para os items da lista de templates
+            const templateItems = document.querySelectorAll('.template-list li');
+            templateItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const templateId = this.getAttribute('data-template');
+                    loadTemplate(templateId);
+                });
+            });
+            
+            // Event listener para o botão de imprimir
+            document.getElementById('btnPrint').addEventListener('click', function() {
+                window.print();
+            });
+            
+            // Event listeners para os botões de exportação (simulação)
+            document.getElementById('btnDocx').addEventListener('click', function() {
+                alert('Exportação para .DOC será implementada. Esta funcionalidade requer a biblioteca docx.js.');
+            });
+            
+            document.getElementById('btnPdf').addEventListener('click', function() {
+                alert('Exportação para .PDF será implementada. Esta funcionalidade requer a biblioteca jsPDF.');
+            });
+            
+            document.getElementById('btnPreview').addEventListener('click', function() {
+                alert('Visualização em nova janela será implementada.');
+            });
         });
-    }
-</script>
+    </script>
 </body>
 </html>
