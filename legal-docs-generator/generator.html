@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerador de Documentos Jurídicos</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- CDN = Content Delivery Network (bibliotecas externas) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.7.3/docx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="scripts.js" defer></script>
+</head>
+<body>
+    <header>
+        <a href="../index.html" class="home-button">🏠 Voltar</a>
+        <h1>Gerador de Documentos Jurídicos</h1>
+    </header>
+
+    <div class="container">
+        <!-- Seleção de Template -->
+        <div class="template-selector">
+            <div class="template-card" onclick="selectTemplate('divorce')">
+                <h3>Divórcio Consensual</h3>
+                <p>Modelo para divórcio amigável com partilha de bens</p>
+            </div>
+            <div class="template-card" onclick="selectTemplate('labor')">
+                <h3>Ação Trabalhista</h3>
+                <p>Reclamação trabalhista por direitos violados</p>
+            </div>
+        </div>
+
+        <!-- Formulário de Dados -->
+        <form id="doc-form">
+            <div class="form-section">
+                <h2>Dados do Cliente</h2>
+                <input type="text" id="client-name" placeholder="Nome completo" required>
+                <input type="text" id="client-cpf" placeholder="CPF" required>
+            </div>
+
+            <div class="form-section">
+                <h2>Dados do Advogado</h2>
+                <input type="text" id="lawyer-oab" placeholder="Número da OAB" required>
+                <input type="text" id="lawyer-firm" placeholder="Escritório">
+            </div>
+
+            <button type="button" onclick="generateDocument()">Gerar Documento</button>
+        </form>
+    </div>
+</body>
+</html>
