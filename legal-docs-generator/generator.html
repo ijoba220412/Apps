@@ -45,5 +45,37 @@
             <button type="button" onclick="generateDocument()">Gerar Documento</button>
         </form>
     </div>
+
+<!-- Adicione esta seção do formulário de procuração -->
+<div id="form-power_of_attorney" class="template-form" style="display: none;">
+    <h2>📝 Procuração Pública</h2>
+    
+    <div class="form-group">
+        <label>Nome do Outorgante (Cliente):</label>
+        <input type="text" id="outorgante" required>
+    </div>
+
+    <div class="form-group">
+        <label>CPF:</label>
+        <input type="text" id="cpf_outorgante" class="cpf-mask" required>
+    </div>
+
+    <div class="form-group">
+        <label>Advogado Outorgado:</label>
+        <input type="text" id="outorgado" required>
+    </div>
+
+    <div class="form-group">
+        <label>Poderes Concedidos:</label>
+        <div class="checklist">
+            <label><input type="checkbox" name="poderes" value="Representação em Juízo"> Representação em Juízo</label>
+            <label><input type="checkbox" name="poderes" value="Transações Financeiras"> Transações Financeiras</label>
+            <label><input type="checkbox" name="poderes" value="Atos Administrativos"> Atos Administrativos</label>
+        </div>
+    </div>
+
+    <button onclick="generateDocument('power_of_attorney')">Gerar Documento</button>
+</div>
+    
 </body>
 </html>
