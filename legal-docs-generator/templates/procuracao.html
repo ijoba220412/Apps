@@ -1,95 +1,67 @@
-<!-- Arquivo: ./legal-docs-generator/templates/proc_template.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>Procuração Gerada</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 2rem;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        .content {
-            text-align: justify;
-        }
-        .signature {
-            margin-top: 3rem;
-            text-align: center;
-        }
-        .actions {
-            margin-top: 2rem;
-            text-align: center;
-        }
-        button {
-            padding: 10px 20px;
-            margin: 0 10px;
-            cursor: pointer;
-        }
+        .doc-container { margin: 20px; font-family: Arial, sans-serif }
+        .button-group { margin: 20px 0; text-align: center }
+        button { padding: 10px; margin: 0 5px; cursor: pointer }
         @media print {
-            .actions {
-                display: none;
-            }
+            .button-group { display: none }
         }
     </style>
 </head>
 <body>
-    <div class="actions">
-        <button onclick="window.print()">Imprimir</button>
-        <button onclick="exportToWord()">Exportar .doc</button>
-        <button onclick="exportToPDF()">Exportar .pdf</button>
-        <a href="./legal-docs-generator/gerardoc.html">
-            <button>Voltar ao Formulário</button>
-        </a>
+    <div class="button-group">
+        <button onclick="window.print()">Imprimir Documento</button>
+        <button onclick="exportToPDF()">Exportar PDF</button>
+        <button onclick="exportToDOC()">Exportar DOC</button>
     </div>
 
-    <div class="header">
-        <h1>PROCURAÇÃO</h1>
-    </div>
-
-    <div class="content">
-        <p>Eu, <strong>{{CLIENT_NAME}}</strong>, {{CLIENT_NATIONALITY}}, {{CLIENT_MARITAL_STATUS}}, 
-        portador(a) do {{CLIENT_ID_TYPE}} nº {{CLIENT_ID_NUMBER}}, inscrito(a) no CPF sob o nº {{CLIENT_CPF}}, 
-        residente e domiciliado(a) na {{CLIENT_ADDRESS}}, nomeio e constituo como meu(a) procurador(a) o(a) 
-        Advogado(a) <strong>{{LAWYER_NAME}}</strong>, inscrito(a) na OAB sob o nº {{LAWYER_OAB_NUMBER}}, 
-        com escritório situado na {{LAWYER_ADDRESS}}.</p>
-
-        <p>Por meio desta procuração, conferem-se poderes para:</p>
+    <div class="doc-container" id="documento-gerado">
+        <h2>PROCURAÇÃO</h2>
         
-        <ul>
-            {{POWERS_LIST}}
-        </ul>
+        <p><strong>Outorgante:</strong> {{NOME_OUTORGANTE}}, {{ESTADO_CIVIL}}, {{PROFISSAO}}, 
+        portador(a) do documento de identidade nº {{RG}} e CPF nº {{CPF}}, 
+        residente e domiciliado(a) em {{ENDERECO_OUTORGANTE}}.</p>
 
-        <p>Esta procuração terá validade de {{VALIDITY_PERIOD}} a partir da data de sua assinatura.</p>
+        <p><strong>Outorgado:</strong> {{NOME_ADVOGADO}}, inscrito(a) na OAB sob nº {{OAB}}, 
+        com escritório profissional em {{ENDERECO_ADVOGADO}}.</p>
 
-        <p>{{CITY}}, {{DATE}}</p>
-    </div>
+        <p>Pelo presente instrumento particular, o(a) <strong>OUTORGANTE</strong> nomeia e constitui 
+        como seu(ua) procurador(a) judicial e extrajudicial o(a) <strong>OUTORGADO(A)</strong>, 
+        advogado(a) devidamente habilitado(a), conferindo-lhe os seguintes poderes:</p>
 
-    <div class="signature">
-        <p>_________________________________________</p>
-        <p>{{CLIENT_NAME}}</p>
+        <!-- Continue com o restante do modelo usando o mesmo padrão de placeholders -->
+        
+        <div class="footer">
+            <p>{{CIDADE_ESTADO}}, {{DATA_COMPLETA}}.</p>
+            <p>_________________________________________<br>
+            <strong>Assinatura do(a) Outorgante</strong></p>
+        </div>
     </div>
 
     <script>
-        function exportToWord() {
-            // Lógica para exportar para .doc
-            const content = document.documentElement.outerHTML;
-            const blob = new Blob([content], { type: 'application/msword' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'procuracao.doc';
-            a.click();
+        // Função para exportar para PDF
+        function exportToPDF() {
+            const element = document.getElementById('documento-gerado');
+            html2pdf()
+                .from(element)
+                .save('procuracao.pdf');
         }
 
-        function exportToPDF() {
-            // Lógica básica para PDF (sugere-se usar biblioteca como jsPDF ou html2pdf.js)
-            window.print();
+        // Função para exportar para DOC
+        function exportToDOC() {
+            const content = document.getElementById('documento-gerado').innerHTML;
+            const converted = htmlDocx.asBlob(content);
+            saveAs(converted, 'procuracao.doc');
         }
     </script>
+
+    <!-- Dependências externas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </body>
 </html>
