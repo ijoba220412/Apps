@@ -63,5 +63,40 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+<script>
+    // Preenche os placeholders com os parâmetros da URL
+    function populateTemplate() {
+        const params = new URLSearchParams(window.location.search);
+        
+        // Mapeamento de parâmetros para elementos
+        const mappings = {
+            'NOME_OUTORGANTE': 'NOME_OUTORGANTE',
+            'ESTADO_CIVIL': 'ESTADO_CIVIL',
+            'PROFISSAO': 'PROFISSAO',
+            'RG': 'RG',
+            'CPF': 'CPF',
+            'ENDERECO_OUTORGANTE': 'ENDERECO_OUTORGANTE',
+            'NOME_ADVOGADO': 'NOME_ADVOGADO',
+            'OAB': 'OAB',
+            'ENDERECO_ADVOGADO': 'ENDERECO_ADVOGADO',
+            'CIDADE_ESTADO': 'CIDADE_ESTADO',
+            'DATA_COMPLETA': 'DATA_COMPLETA',
+            'PODERES_ESPECIFICOS': 'PODERES_ESPECIFICOS'
+        };
+
+        for (const [param, placeholder] of Object.entries(mappings)) {
+            const value = params.get(param) || '';
+            document.body.innerHTML = document.body.innerHTML.replace(
+                new RegExp(`{{${placeholder}}}`, 'g'), 
+                value
+            );
+        }
+    }
+
+    // Executa ao carregar a página
+    window.onload = populateTemplate;
+</script>
+
 </body>
 </html>
