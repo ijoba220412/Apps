@@ -1,1 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerador de Procuração</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px }
+        .form-container { background: #f5f5f5; padding: 20px; border-radius: 8px }
+        h1 { color: #333; text-align: center }
+        .form-group { margin-bottom: 15px }
+        label { display: block; margin-bottom: 5px; font-weight: bold }
+        input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer }
+        button:hover { background: #0056b3 }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Gerador de Procuração</h1>
+        
+        <form action="./templates/procuracao.html" method="GET" target="_blank">
+            <!-- Dados do Outorgante -->
+            <div class="grid">
+                <div class="form-group">
+                    <label>Nome Completo do Outorgante:</label>
+                    <input type="text" name="NOME_OUTORGANTE" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Estado Civil:</label>
+                    <input type="text" name="ESTADO_CIVIL" placeholder="Ex: Solteiro, Casado..." required>
+                </div>
+            </div>
 
+            <div class="grid">
+                <div class="form-group">
+                    <label>Profissão:</label>
+                    <input type="text" name="PROFISSAO" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>RG:</label>
+                    <input type="text" name="RG" required>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="form-group">
+                    <label>CPF:</label>
+                    <input type="text" name="CPF" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Endereço Completo:</label>
+                    <input type="text" name="ENDERECO_OUTORGANTE" required>
+                </div>
+            </div>
+
+            <!-- Dados do Advogado -->
+            <div class="grid">
+                <div class="form-group">
+                    <label>Nome do Advogado:</label>
+                    <input type="text" name="NOME_ADVOGADO" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Número da OAB:</label>
+                    <input type="text" name="OAB" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Endereço do Advogado:</label>
+                <input type="text" name="ENDERECO_ADVOGADO" required>
+            </div>
+
+            <!-- Outras Informações -->
+            <div class="grid">
+                <div class="form-group">
+                    <label>Cidade/Estado:</label>
+                    <input type="text" name="CIDADE_ESTADO" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Data:</label>
+                    <input type="date" name="DATA_COMPLETA" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Poderes Específicos (opcional):</label>
+                <textarea name="PODERES_ESPECIFICOS" rows="4"></textarea>
+            </div>
+
+            <button type="submit">Gerar Documento</button>
+        </form>
+    </div>
+</body>
+</html>
