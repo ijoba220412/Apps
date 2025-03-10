@@ -1,1 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procuração</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            margin: 3cm 2cm 2cm 3cm;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2cm;
+        }
+        h1 {
+            font-size: 16pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 1cm;
+        }
+        .content {
+            text-align: justify;
+        }
+        .signature {
+            margin-top: 3cm;
+            text-align: center;
+        }
+        .date {
+            margin-top: 2cm;
+            text-align: right;
+        }
+        .footer {
+            margin-top: 2cm;
+            text-align: center;
+            font-size: 10pt;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>PROCURAÇÃO</h1>
+    </div>
 
+    <div class="content">
+        <p><strong>OUTORGANTE:</strong> {{nome_outorgante}}, {{nacionalidade_outorgante}}, {{estado_civil_outorgante}}, {{profissao_outorgante}}, portador(a) do RG nº {{rg_outorgante}}, inscrito(a) no CPF sob o nº {{cpf_outorgante}}, residente e domiciliado(a) na {{endereco_outorgante}}, {{cidade_outorgante}}/{{estado_outorgante}}, CEP {{cep_outorgante}}.</p>
+
+        <p><strong>OUTORGADO(A):</strong> {{nome_outorgado}}, {{nacionalidade_outorgado}}, {{estado_civil_outorgado}}, advogado(a), inscrito(a) na OAB/{{estado_oab}} sob o nº {{numero_oab}}, portador(a) do RG nº {{rg_outorgado}}, inscrito(a) no CPF sob o nº {{cpf_outorgado}}, com escritório profissional na {{endereco_outorgado}}, {{cidade_outorgado}}/{{estado_outorgado}}, CEP {{cep_outorgado}}.</p>
+
+        <p>Pelo presente instrumento particular de procuração, o(a) OUTORGANTE nomeia e constitui como seu(sua) bastante procurador(a) o(a) OUTORGADO(A), a quem confere amplos poderes para o foro em geral, com a cláusula "ad judicia et extra", para representá-lo(a) em qualquer Juízo, Instância ou Tribunal, podendo propor contra quem de direito as ações competentes e defendê-lo(a) nas contrárias, seguindo umas e outras até final decisão, usando os recursos legais e acompanhando-os, conferindo-lhe ainda, poderes especiais para {{poderes_especiais}}, podendo substabelecer, com ou sem reserva de poderes, dando tudo por bom, firme e valioso.</p>
+
+        <p>O(A) OUTORGANTE declara-se ciente de que, em caso de procedência da ação, se os honorários de sucumbência não forem incluídos na condenação, será de sua responsabilidade o pagamento dos honorários advocatícios contratados, conforme estabelecido em contrato próprio.</p>
+    </div>
+
+    <div class="date">
+        <p>{{cidade_assinatura}}, {{data_assinatura}}</p>
+    </div>
+
+    <div class="signature">
+        <p>____________________________________________</p>
+        <p>{{nome_outorgante}}</p>
+        <p>CPF: {{cpf_outorgante}}</p>
+    </div>
+
+    <div class="footer">
+        <p>Esta procuração tem validade de {{prazo_validade}} a contar da data de sua assinatura.</p>
+    </div>
+</body>
+</html>
