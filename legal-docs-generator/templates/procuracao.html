@@ -98,5 +98,60 @@
     window.onload = populateTemplate;
 </script>
 
+    <!-- Adicione este script de formatação de data -->
+<script>
+    function formatarData(data) {
+        const meses = [
+            'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+            'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
+        ];
+        const [ano, mes, dia] = data.split('-');
+        return `${dia} de ${meses[parseInt(mes)-1]} de ${ano}`;
+    }
+
+    function populateTemplate() {
+        const params = new URLSearchParams(window.location.search);
+        
+        // Formatar data
+        const dataRaw = params.get('DATA_COMPLETA');
+        const dataFormatada = formatarData(dataRaw);
+        
+        // Mapeamento atualizado
+        const mappings = {
+            // ... (mapeamentos anteriores) ...
+            'DATA_COMPLETA': dataFormatada,
+            'CIDADE_ESTADO': params.get('CIDADE_ESTADO')
+        };
+
+        // Substituição dos placeholders
+        for (const [param, value] of Object.entries(mappings)) {
+            document.body.innerHTML = document.body.innerHTML.replace(
+                new RegExp(`{{${param}}}`, 'g'), 
+                value || ''
+            );
+        }
+    }
+    
+    // Melhorar exportação DOC
+    function exportToDOC() {
+        const content = `
+            <html>
+                <head>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 2cm }
+                        p { line-height: 1.5; text-align: justify }
+                    </style>
+                </head>
+                <body>
+                    ${document.getElementById('documento-gerado').innerHTML}
+                </body>
+            </html>
+        `;
+        
+        const converted = htmlDocx.asBlob(content);
+        saveAs(converted, 'procuracao.doc');
+    }
+</script>
+
 </body>
 </html>
