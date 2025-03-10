@@ -4,97 +4,145 @@
     <meta charset="UTF-8">
     <title>Gerador de Procuração</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px }
-        .form-container { background: #f5f5f5; padding: 20px; border-radius: 8px }
-        h1 { color: #333; text-align: center }
-        .form-group { margin-bottom: 15px }
-        label { display: block; margin-bottom: 5px; font-weight: bold }
-        input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px }
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px }
-        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer }
-        button:hover { background: #0056b3 }
+        /* ... (mantenha os estilos anteriores) ... */
+        .error { border: 2px solid red !important }
+        .error-message { color: red; font-size: 0.9em }
     </style>
+    <!-- Adicione estas dependências -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 </head>
 <body>
     <div class="form-container">
         <h1>Gerador de Procuração</h1>
         
-        <form action="./templates/procuracao.html" method="GET" target="_blank">
-            <!-- Dados do Outorgante -->
+        <form id="docForm">
+            <!-- Campos anteriores com máscaras -->
             <div class="grid">
                 <div class="form-group">
-                    <label>Nome Completo do Outorgante:</label>
-                    <input type="text" name="NOME_OUTORGANTE" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Estado Civil:</label>
-                    <input type="text" name="ESTADO_CIVIL" placeholder="Ex: Solteiro, Casado..." required>
-                </div>
-            </div>
-
-            <div class="grid">
-                <div class="form-group">
-                    <label>Profissão:</label>
-                    <input type="text" name="PROFISSAO" required>
+                    <label>CPF:</label>
+                    <input type="text" name="CPF" required 
+                           data-mask="000.000.000-00"
+                           data-cpf-validation>
+                    <div class="error-message" id="cpf-error"></div>
                 </div>
                 
                 <div class="form-group">
                     <label>RG:</label>
-                    <input type="text" name="RG" required>
-                </div>
-            </div>
-
-            <div class="grid">
-                <div class="form-group">
-                    <label>CPF:</label>
-                    <input type="text" name="CPF" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Endereço Completo:</label>
-                    <input type="text" name="ENDERECO_OUTORGANTE" required>
-                </div>
-            </div>
-
-            <!-- Dados do Advogado -->
-            <div class="grid">
-                <div class="form-group">
-                    <label>Nome do Advogado:</label>
-                    <input type="text" name="NOME_ADVOGADO" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Número da OAB:</label>
-                    <input type="text" name="OAB" required>
+                    <input type="text" name="RG" required 
+                           data-mask="00.000.000-AA">
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Endereço do Advogado:</label>
-                <input type="text" name="ENDERECO_ADVOGADO" required>
+                <label>Número da OAB:</label>
+                <input type="text" name="OAB" required 
+                       data-mask="000000/AA"
+                       data-oab-validation>
+                <div class="error-message" id="oab-error"></div>
             </div>
 
-            <!-- Outras Informações -->
-            <div class="grid">
-                <div class="form-group">
-                    <label>Cidade/Estado:</label>
-                    <input type="text" name="CIDADE_ESTADO" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Data:</label>
-                    <input type="date" name="DATA_COMPLETA" required>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Poderes Específicos (opcional):</label>
-                <textarea name="PODERES_ESPECIFICOS" rows="4"></textarea>
-            </div>
+            <!-- ... (mantenha os outros campos) ... -->
 
             <button type="submit">Gerar Documento</button>
         </form>
     </div>
+
+    <script>
+        // Máscaras
+        $(document).ready(function() {
+            $('[data-mask]').each(function() {
+                $(this).mask($(this).data('mask'));
+            });
+        });
+
+        // Validação completa de CPF
+        function validarCPF(cpf) {
+            cpf = cpf.replace(/\D/g, '');
+            
+            if (cpf.length !== 11 || 
+                /^(\d)\1{10}$/.test(cpf)) return false;
+
+            let soma = 0;
+            for (let i = 0; i < 9; i++) {
+                soma += parseInt(cpf.charAt(i)) * (10 - i);
+            }
+            let resto = 11 - (soma % 11);
+            let digito1 = resto > 9 ? 0 : resto;
+
+            soma = 0;
+            for (let i = 0; i < 10; i++) {
+                soma += parseInt(cpf.charAt(i)) * (11 - i);
+            }
+            resto = 11 - (soma % 11);
+            let digito2 = resto > 9 ? 0 : resto;
+
+            return digito1 === parseInt(cpf.charAt(9)) && 
+                   digito2 === parseInt(cpf.charAt(10));
+        }
+
+        // Validação de OAB
+        function validarOAB(oab) {
+            const partes = oab.split('/');
+            return partes.length === 2 && 
+                   partes[0].length === 6 &&
+                   /^\d+$/.test(partes[0]) &&
+                   partes[1].length === 2 &&
+                   /^[A-Za-z]{2}$/.test(partes[1]);
+        }
+
+        // Validação em tempo real
+        document.querySelector('[data-cpf-validation]').addEventListener('blur', function() {
+            const valido = validarCPF(this.value);
+            this.classList.toggle('error', !valido);
+            document.getElementById('cpf-error').textContent = 
+                valido ? '' : 'CPF inválido!';
+        });
+
+        document.querySelector('[data-oab-validation]').addEventListener('blur', function() {
+            const valido = validarOAB(this.value);
+            this.classList.toggle('error', !valido);
+            document.getElementById('oab-error').textContent = 
+                valido ? '' : 'Formato inválido (Ex: 123456/SP)';
+        });
+
+        // Confirmação e envio
+        document.getElementById('docForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (!validarCPF(this.CPF.value) {
+                alert('Por favor, corrija o CPF!');
+                return;
+            }
+
+            if (!validarOAB(this.OAB.value)) {
+                alert('Por favor, corrija a OAB!');
+                return;
+            }
+
+            if (confirm('Confirma os dados para gerar o documento?')) {
+                // Salvar dados localmente
+                const formData = {};
+                Array.from(this.elements).forEach(el => {
+                    if (el.name) formData[el.name] = el.value;
+                });
+                localStorage.setItem('ultimoDocumento', JSON.stringify(formData));
+                
+                // Redirecionar para o template
+                window.open(`./templates/procuracao.html?${new URLSearchParams(formData)}`, '_blank');
+            }
+        });
+
+        // Carregar último rascunho
+        window.onload = () => {
+            const savedData = localStorage.getItem('ultimoDocumento');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                Array.from(document.docForm.elements).forEach(el => {
+                    if (el.name && data[el.name]) el.value = data[el.name];
+                });
+            }
+        };
+    </script>
 </body>
 </html>
