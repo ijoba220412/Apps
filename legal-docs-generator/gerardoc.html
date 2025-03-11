@@ -1,120 +1,83 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Documentos Trabalhistas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
     <style>
-        body { padding: 20px; max-width: 1200px; margin: 0 auto; }
-        .container { background: #f8f9fa; padding: 30px; border-radius: 10px; }
-        .form-group { margin-bottom: 1.5rem; }
-        .btn-primary { background-color: #0d6efd; border: none; }
-        .btn-secondary { background-color: #6c757d; border: none; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { color: #0d6efd; }
-        .footer-buttons { margin-top: 30px; text-align: center; }
-        @media print {
-            .no-print, .footer-buttons { display: none; }
-        }
+        .container { max-width: 800px; }
+        .form-section { margin-bottom: 2rem; }
+        h2 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 0.5rem; }
+        .required::after { content: "*"; color: red; margin-left: 3px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Gerador de Reclamação Trabalhista</h1>
-        </div>
+    <div class="container mt-5">
+        <h1 class="mb-4">Dados da Reclamação Trabalhista</h1>
         
-        <form id="documentForm">
-            <!-- Campos do Reclamante -->
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Nome do Reclamante</label>
-                        <input type="text" class="form-control capitalize" id="reclamanteNome">
+        <form id="docForm" onsubmit="processarFormulario(event)">
+            <!-- Seção de Dados Pessoais -->
+            <div class="form-section">
+                <h2>Dados do Reclamante</h2>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label required">Nome Completo</label>
+                        <input type="text" class="form-control" id="RECLAMANTE_NOME" required>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <label class="form-label required">Nacionalidade</label>
+                        <select class="form-select" id="RECLAMANTE_NACIONALIDADE" required>
+                            <option selected>Brasileiro(a)</option>
+                            <option>Outra</option>
+                        </select>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label>RG</label>
-                        <input type="text" class="form-control" id="reclamanteRG" data-mask="00.000.000-A" placeholder="00.000.000-A">
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label>CPF</label>
-                        <input type="text" class="form-control" id="reclamanteCPF" data-mask="000.000.000-00" placeholder="000.000.000-00">
-                    </div>
-                </div>
+                
+                <!-- Continue com todos os outros campos seguindo o mesmo padrão -->
+                
             </div>
-
-            <!-- Mais campos conforme necessário... (todos os campos do template devem ser replicados) -->
-
-            <div class="footer-buttons">
-                <button type="button" class="btn btn-secondary me-3" onclick="window.location.href='../index.html'">Página Inicial</button>
-                <button type="button" class="btn btn-primary" onclick="gerarDocumento()">Gerar Documento</button>
-            </div>
+            
+            <button type="submit" class="btn btn-primary">Gerar Documento</button>
         </form>
-
-        <div id="documentoGerado" class="mt-5" style="display: none;">
-            <div class="d-flex justify-content-between">
-                <button class="btn btn-secondary" onclick="window.print()">Imprimir</button>
-                <button class="btn btn-success" onclick="exportarPDF()">Exportar PDF</button>
-                <button class="btn btn-info" onclick="exportarDOC()">Exportar DOC</button>
-                <button class="btn btn-secondary" onclick="window.location.href='./legal-docs-generator/gerardoc.html'">Novo Documento</button>
-            </div>
-            <div id="conteudoDocumento" class="mt-4 p-4" style="background: white; min-height: 800px;">
-                <!-- Conteúdo gerado aqui -->
-            </div>
-        </div>
     </div>
 
     <script>
+        // Aplicar máscaras
         $(document).ready(function(){
-            $('.capitalize').on('input', function() {
-                $(this).val($(this).val().replace(/\b\w/g, l => l.toUpperCase()));
-            });
-
-            $('[data-mask]').each(function() {
-                $(this).mask($(this).data('mask'));
-            });
+            $('#RECLAMANTE_CPF').mask('000.000.000-00');
+            $('#RECLAMANTE_RG').mask('00.000.000-0');
+            $('#RECLAMADA_CNPJ').mask('00.000.000/0000-00');
         });
 
-        function gerarDocumento() {
-            const dataAtual = new Date();
-            const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 
-                         'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+        function formatarTexto(texto) {
+            return texto.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+        }
+
+        function processarFormulario(e) {
+            e.preventDefault();
             
-            const cidadeData = `Rio de Janeiro, ${dataAtual.getDate()} de ${meses[dataAtual.getMonth()]} de ${dataAtual.getFullYear()}`;
-
-            const template = `...`; // Conteúdo completo do template aqui
-
-            const conteudo = template.replace(/{{VARA_TRABALHO}}/g, $('#varaTrabalho').val())
-                                    .replace(/{{CIDADE_UF}}/g, 'Rio de Janeiro/RJ')
-                                    // ... substituir todos os placeholders
-                                    .replace(/{{CIDADE_DATA}}/g, cidadeData);
-
-            $('#conteudoDocumento').html(`<pre>${conteudo}</pre>`);
-            $('#documentoGerado').show();
-        }
-
-        function exportarPDF() {
-            const doc = new jspdf.jsPDF();
-            doc.text($('#conteudoDocumento').text(), 10, 10);
-            doc.save('documento.pdf');
-        }
-
-        function exportarDOC() {
-            const blob = new Blob([$('#conteudoDocumento').text()], { type: 'application/msword' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'documento.doc';
-            link.click();
+            // Coletar e formatar todos os dados
+            let dados = {};
+            document.querySelectorAll('#docForm input, #docForm select').forEach(element => {
+                let valor = element.value;
+                
+                // Aplicar formatação específica
+                if(element.id.includes('DATA')) {
+                    const [ano, mes, dia] = valor.split('-');
+                    const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", 
+                                 "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+                    valor = `${dia} de ${meses[parseInt(mes)-1]} de ${ano}`;
+                }
+                
+                dados[element.id] = formatarTexto(valor);
+            });
+            
+            localStorage.setItem('dadosDocumento', JSON.stringify(dados));
+            window.location.href = 'documento-gerado.html';
         }
     </script>
 </body>
