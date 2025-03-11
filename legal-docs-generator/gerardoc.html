@@ -251,3 +251,68 @@
     <label>Outras Irregularidades:</label>
     <textarea name="OUTRAS_IRREGULARIDADES">Ex: Assédio moral, condições inseguras de trabalho...</textarea>
 </div>
+
+
+java
+function formatarValores(conteudo, formData) {
+    // Novo: Formatar datas
+    const formatarData = (dataString) => {
+        const data = new Date(dataString);
+        return data.toLocaleDateString('pt-BR', { 
+            day: '2-digit', 
+            month: 'long', 
+            year: 'numeric' 
+        });
+    };
+
+    // Aplicar formatações
+    conteudo = conteudo.replace(/{{RECLAMANTE_DATA_NASC}}/g, formatarData(formData.get('RECLAMANTE_DATA_NASC')));
+    conteudo = conteudo.replace(/{{DATA_ADMISSAO}}/g, formatarData(formData.get('DATA_ADMISSAO')));
+    conteudo = conteudo.replace(/{{DATA_RESCISAO}}/g, formatarData(formData.get('DATA_RESCISAO')));
+
+    // Formatar valores monetários
+    const formatadorMoeda = new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    });
+
+    const camposMonetarios = [
+        'RECLAMANTE_SALARIO', 'VALOR_SALDO_SALARIO', 'VALOR_FERIAS',
+        'VALOR_13_SALARIO', 'VALOR_AVISO_PREVIO', 'VALOR_MULTA_477',
+        'VALOR_MULTA_FGTS', 'VALOR_DANO_MORAL', 'VALOR_CAUSA'
+    ];
+
+    camposMonetarios.forEach(campo => {
+        const valor = parseFloat(formData.get(campo)) || 0;
+        conteudo = conteudo.replace(new RegExp(`{{${campo}}}`, 'g'), formatadorMoeda.format(valor));
+    });
+
+    return conteudo;
+}
+
+// Atualizar validação
+function validarCamposTrabalhista() {
+    // ... validações anteriores ...
+
+    // Validar data de nascimento
+    const dataNasc = new Date(document.querySelector('[name="RECLAMANTE_DATA_NASC"]').value);
+    const idade = new Date().getFullYear() - dataNasc.getFullYear();
+    
+    if(idade < 18) {
+        alert('Reclamante deve ser maior de idade!');
+        return false;
+    }
+
+    return true;
+}
+
+
+        
+        
+        css
+#camposTrabalhista {
+    display: none;
+    margin-top: 15px;
+    padding: 10px;
+    background: #f8f9fa;
+}
