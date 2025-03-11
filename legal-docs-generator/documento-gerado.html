@@ -73,3 +73,30 @@
     </script>
 </body>
 </html>
+
+
+<!-- Adicione este botão abaixo dos botões existentes -->
+<button onclick="addTimbrado()" class="btn btn-warning btn-export">Adicionar Timbrado</button>
+
+<script>
+// Nova função para timbrado seguro
+function addTimbrado() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = function(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            document.getElementById('documentContent').style.backgroundImage = 
+                `url(${e.target.result})`;
+            document.getElementById('documentContent').style.backgroundSize = 'cover';
+            document.getElementById('documentContent').style.backgroundRepeat = 'no-repeat';
+        };
+        
+        reader.readAsDataURL(file);
+    };
+    input.click();
+}
+</script>
