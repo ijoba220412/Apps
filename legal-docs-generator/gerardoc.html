@@ -43,52 +43,54 @@
                     <label>Endereço:</label>
                     <input type="text" id="clientAddress" required>
                 </div>
-            </div>
+            
 <!-- Dentro da seção de Dados do Cliente -->
-<div class="form-group">
-    <label>Nacionalidade:</label>
-    <input type="text" name="RECLAMANTE_NACIONALIDADE" required>
-</div>
+                <div class="form-group">
+                    <label>Nacionalidade:</label>
+                    <input type="text" name="RECLAMANTE_NACIONALIDADE" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Estado Civil:</label>
+                    <select name="RECLAMANTE_ESTADO_CIVIL" required>
+                        <option value="solteiro(a)">Solteiro(a)</option>
+                        <option value="casado(a)">Casado(a)</option>
+                        <option value="divorciado(a)">Divorciado(a)</option>
+                        <option value="viúvo(a)">Viúvo(a)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Profissão:</label>
+                    <input type="text" name="RECLAMANTE_PROFISSAO" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>RG:</label>
+                    <input type="text" name="RECLAMANTE_RG" pattern="\d{2}\.\d{3}\.\d{3}-[0-9X]" placeholder="00.000.000-0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>CTPS:</label>
+                    <input type="text" name="RECLAMANTE_CTPS" pattern="\d{7}/?\d{2}" placeholder="0000000/00" required>
+                </div>
 
-<div class="form-group">
-    <label>Estado Civil:</label>
-    <select name="RECLAMANTE_ESTADO_CIVIL" required>
-        <option value="solteiro(a)">Solteiro(a)</option>
-        <option value="casado(a)">Casado(a)</option>
-        <option value="divorciado(a)">Divorciado(a)</option>
-        <option value="viúvo(a)">Viúvo(a)</option>
-    </select>
-</div>
-
-<div class="form-group">
-    <label>Profissão:</label>
-    <input type="text" name="RECLAMANTE_PROFISSAO" required>
-</div>
-
-<div class="form-group">
-    <label>RG:</label>
-    <input type="text" name="RECLAMANTE_RG" pattern="\d{2}\.\d{3}\.\d{3}-[0-9X]" placeholder="00.000.000-0" required>
-</div>
-
-<div class="form-group">
-    <label>CTPS:</label>
-    <input type="text" name="RECLAMANTE_CTPS" pattern="\d{7}/?\d{2}" placeholder="0000000/00" required>
-</div>
-
-<div class="form-group">
-    <label>PIS:</label>
-    <input type="text" name="RECLAMANTE_PIS" pattern="\d{3}\.\d{5}\.\d{2}-\d" placeholder="000.00000.00-0" required>
-</div>
-
-<div class="form-group">
-    <label>Data de Nascimento:</label>
-    <input type="date" name="RECLAMANTE_DATA_NASC" required>
-</div>
-
-<div class="form-group">
-    <label>Nome da Mãe:</label>
-    <input type="text" name="RECLAMANTE_MAE" required>
-</div>
+                <div class="form-group">
+                    <label>PIS:</label>
+                    <input type="text" name="RECLAMANTE_PIS" pattern="\d{3}\.\d{5}\.\d{2}-\d" placeholder="000.00000.00-0" required>
+                </div>
+    
+                <div class="form-group">
+                    <label>Data de Nascimento:</label>
+                    <input type="date" name="RECLAMANTE_DATA_NASC" required>
+                </div>
+    
+                <div class="form-group">
+                        <label>Nome da Mãe:</label>
+                        <input type="text" name="RECLAMANTE_MAE" required>
+                </div>
+            </div>
+            
             <!-- Seção do Advogado -->
             <div class="form-section">
                 <h2>Dados do Advogado</h2>
