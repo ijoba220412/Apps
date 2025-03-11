@@ -248,22 +248,8 @@
             e.preventDefault();
             localStorage.setItem('lastDocumentData', JSON.stringify(docData));
         });
-    </script>
 
-    <!-- Incluir bibliotecas para exportação -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/docx@7.1.0/build/index.min.js"></script>
-</body>
-</html>
-
-
-
-
-
-
-
-java
-function formatarValores(conteudo, formData) {
+        function formatarValores(conteudo, formData) {
     // Novo: Formatar datas
     const formatarData = (dataString) => {
         const data = new Date(dataString);
@@ -314,6 +300,13 @@ function validarCamposTrabalhista() {
 
     return true;
 }
+    </script>
+
+    <!-- Incluir bibliotecas para exportação -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@7.1.0/build/index.min.js"></script>
+</body>
+</html>
 
 
         
