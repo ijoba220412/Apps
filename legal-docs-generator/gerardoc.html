@@ -174,3 +174,80 @@
     <script src="https://cdn.jsdelivr.net/npm/docx@7.1.0/build/index.min.js"></script>
 </body>
 </html>
+
+
+<!-- Dentro da seção de Dados do Cliente -->
+<div class="form-group">
+    <label>Nacionalidade:</label>
+    <input type="text" name="RECLAMANTE_NACIONALIDADE" required>
+</div>
+
+<div class="form-group">
+    <label>Estado Civil:</label>
+    <select name="RECLAMANTE_ESTADO_CIVIL" required>
+        <option value="solteiro(a)">Solteiro(a)</option>
+        <option value="casado(a)">Casado(a)</option>
+        <option value="divorciado(a)">Divorciado(a)</option>
+        <option value="viúvo(a)">Viúvo(a)</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label>Profissão:</label>
+    <input type="text" name="RECLAMANTE_PROFISSAO" required>
+</div>
+
+<div class="form-group">
+    <label>RG:</label>
+    <input type="text" name="RECLAMANTE_RG" pattern="\d{2}\.\d{3}\.\d{3}-[0-9X]" placeholder="00.000.000-0" required>
+</div>
+
+<div class="form-group">
+    <label>CTPS:</label>
+    <input type="text" name="RECLAMANTE_CTPS" pattern="\d{7}/?\d{2}" placeholder="0000000/00" required>
+</div>
+
+<div class="form-group">
+    <label>PIS:</label>
+    <input type="text" name="RECLAMANTE_PIS" pattern="\d{3}\.\d{5}\.\d{2}-\d" placeholder="000.00000.00-0" required>
+</div>
+
+<div class="form-group">
+    <label>Data de Nascimento:</label>
+    <input type="date" name="RECLAMANTE_DATA_NASC" required>
+</div>
+
+<div class="form-group">
+    <label>Nome da Mãe:</label>
+    <input type="text" name="RECLAMANTE_MAE" required>
+</div>
+
+<!-- Na seção de Detalhes do Processo -->
+<div class="form-group">
+    <label>Cargo/Função:</label>
+    <input type="text" name="RECLAMANTE_CARGO" required>
+</div>
+
+<div class="form-group">
+    <label>Último Salário (R$):</label>
+    <input type="number" name="RECLAMANTE_SALARIO" step="0.01" required>
+</div>
+
+<div class="form-group">
+    <label>Tipo de Rescisão:</label>
+    <select name="TIPO_RESCISAO" required>
+        <option value="dispensa sem justa causa">Dispensa sem Justa Causa</option>
+        <option value="dispensa por justa causa">Dispensa por Justa Causa</option>
+        <option value="pedido de demissão">Pedido de Demissão</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label>Verbas Não Pagas:</label>
+    <textarea name="VERBAS_NAO_PAGAS" required>Ex: Férias proporcionais, 13º salário, horas extras...</textarea>
+</div>
+
+<div class="form-group">
+    <label>Outras Irregularidades:</label>
+    <textarea name="OUTRAS_IRREGULARIDADES">Ex: Assédio moral, condições inseguras de trabalho...</textarea>
+</div>
