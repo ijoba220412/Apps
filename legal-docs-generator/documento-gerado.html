@@ -13,16 +13,10 @@
             min-height: 297mm;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             position: relative;
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
         }
         .btn-export { margin: 1rem; }
-
-.document-container {
-    background-color: rgba(255, 255, 255, 0.9);
-    mix-blend-mode: lighten;
-    padding: 4rem 3rem;
-    min-height: 297mm;
-}
-
     </style>
 </head>
 <body>
@@ -33,7 +27,7 @@
         </div>
 
         <div class="document-container" id="documentContent">
-            <!-- O conteúdo será preenchido via JavaScript -->
+            <!-- Conteúdo será preenchido via JavaScript -->
         </div>
 
         <div class="text-center">
@@ -45,21 +39,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
-
-// No início do script
-function carregarTemplate() {
-    // Carregar timbrado do LocalStorage
-    const timbradoData = localStorage.getItem('timbradoData');
-    
-    if(timbradoData) {
-        document.getElementById('documentContent').style.background = 
-            `url(${timbradoData}) no-repeat center center`;
-        document.getElementById('documentContent').style.backgroundSize = 'cover';
-    }
-
-    // Restante do código...
-}
-
+        // Função original estável
         const dados = JSON.parse(localStorage.getItem('dadosDocumento'));
         
         function carregarTemplate() {
@@ -75,6 +55,10 @@ function carregarTemplate() {
                 });
         }
 
+        function exportPDF() {
+            const element = document.getElementById('documentContent');
+            html2pdf().from(element).save();
+        }
 
         function exportDOC() {
             const content = document.getElementById('documentContent').innerHTML;
@@ -86,36 +70,6 @@ function carregarTemplate() {
         }
 
         window.onload = carregarTemplate;
-
-function exportPDF() {
-    const element = document.getElementById('documentContent');
-    const opt = {
-        margin: [60, 40],
-        filename: 'documento-gerado.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-            scale: 2,
-            useCORS: true,
-            background: '#ffffff',
-            logging: true
-        },
-        jsPDF: { 
-            unit: 'mm', 
-            format: 'a4', 
-            orientation: 'portrait',
-            putOnlyUsedFonts: true
-        }
-    };
-    
-    // Forçar recarregamento do background
-    const originalBackground = element.style.background;
-    element.style.background = 'none';
-    
-    html2pdf().set(opt).from(element).save().then(() => {
-        element.style.background = originalBackground; // Restaurar após exportação
-    });
-}
-
     </script>
 </body>
 </html>
