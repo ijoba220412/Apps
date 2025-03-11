@@ -1,405 +1,121 @@
-<!-- legal-docs-generator/gerardoc.html -->
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Gerador de Documentos Jurídicos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Documentos Trabalhistas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .container { max-width: 800px; margin: auto; }
-        .form-section { border: 1px solid #ccc; padding: 20px; margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; }
-        input, select, textarea { width: 100%; padding: 8px; margin-bottom: 10px; }
-        .button-group { text-align: center; margin-top: 20px; }
-        button { padding: 10px 20px; margin: 0 10px; cursor: pointer; }
-                css
-#camposTrabalhista {
-    display: none;
-    margin-top: 15px;
-    padding: 10px;
-    background: #f8f9fa;
-}
+        body { padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .container { background: #f8f9fa; padding: 30px; border-radius: 10px; }
+        .form-group { margin-bottom: 1.5rem; }
+        .btn-primary { background-color: #0d6efd; border: none; }
+        .btn-secondary { background-color: #6c757d; border: none; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: #0d6efd; }
+        .footer-buttons { margin-top: 30px; text-align: center; }
+        @media print {
+            .no-print, .footer-buttons { display: none; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="../index.html">← Voltar à Página Inicial</a>
-        <h1>Sistema de Processos Advocatícios</h1>
+        <div class="header">
+            <h1>Gerador de Reclamação Trabalhista</h1>
+        </div>
         
         <form id="documentForm">
-            <!-- Seção do Cliente -->
-            <div class="form-section">
-                <h2>Dados do Cliente</h2>
-                <div class="form-group">
-                    <label>Nome Completo:</label>
-                    <input type="text" id="clientName" required>
+            <!-- Campos do Reclamante -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Nome do Reclamante</label>
+                        <input type="text" class="form-control capitalize" id="reclamanteNome">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>CPF/CNPJ:</label>
-                    <input type="text" id="clientId" required>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>RG</label>
+                        <input type="text" class="form-control" id="reclamanteRG" data-mask="00.000.000-A" placeholder="00.000.000-A">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Endereço:</label>
-                    <input type="text" id="clientAddress" required>
-                </div>
-            
-<!-- Dentro da seção de Dados do Cliente -->
-                <div class="form-group">
-                    <label>Nacionalidade:</label>
-                    <input type="text" name="RECLAMANTE_NACIONALIDADE" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Estado Civil:</label>
-                    <select name="RECLAMANTE_ESTADO_CIVIL" required>
-                        <option value="solteiro(a)">Solteiro(a)</option>
-                        <option value="casado(a)">Casado(a)</option>
-                        <option value="divorciado(a)">Divorciado(a)</option>
-                        <option value="viúvo(a)">Viúvo(a)</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>Profissão:</label>
-                    <input type="text" name="RECLAMANTE_PROFISSAO" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>RG:</label>
-                    <input type="text" name="RECLAMANTE_RG" pattern="\d{2}\.\d{3}\.\d{3}-[0-9X]" placeholder="00.000.000-0" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>CTPS:</label>
-                    <input type="text" name="RECLAMANTE_CTPS" pattern="\d{7}/?\d{2}" placeholder="0000000/00" required>
-                </div>
-
-                <div class="form-group">
-                    <label>PIS:</label>
-                    <input type="text" name="RECLAMANTE_PIS" pattern="\d{3}\.\d{5}\.\d{2}-\d" placeholder="000.00000.00-0" required>
-                </div>
-    
-                <div class="form-group">
-                    <label>Data de Nascimento:</label>
-                    <input type="date" name="RECLAMANTE_DATA_NASC" required>
-                </div>
-    
-                <div class="form-group">
-                        <label>Nome da Mãe:</label>
-                        <input type="text" name="RECLAMANTE_MAE" required>
-                </div>
-            </div>
-            
-            <!-- Seção do Advogado -->
-            <div class="form-section">
-                <h2>Dados do Advogado</h2>
-                <div class="form-group">
-                    <label>Nome Completo:</label>
-                    <input type="text" id="lawyerName" required>
-                </div>
-                <div class="form-group">
-                    <label>OAB:</label>
-                    <input type="text" id="oabNumber" required>
-                </div>
-                <div class="form-group">
-                    <label>Escritório:</label>
-                    <input type="text" id="lawOffice" required>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>CPF</label>
+                        <input type="text" class="form-control" id="reclamanteCPF" data-mask="000.000.000-00" placeholder="000.000.000-00">
+                    </div>
                 </div>
             </div>
 
-            <!-- Seção do Processo -->
-            <div class="form-section">
-                <h2>Informações do Processo</h2>
-                <div class="form-group">
-                    <label>Tipo de Processo:</label>
-                    <select id="processType" required>
-                        <option value="">Selecione...</option>
-                        <option value="civil">Civil</option>
-                        <option value="trabalhista">Trabalhista</option>
-                        <option value="penal">Penal</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Descrição do Caso:</label>
-                    <textarea id="caseDescription" rows="4" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Template Documento:</label>
-                    <select id="documentTemplate" required>
-                        <option value="default">Modelo Padrão</option>
-                    </select>
-                </div>
-           
+            <!-- Mais campos conforme necessário... (todos os campos do template devem ser replicados) -->
 
-<!-- Na seção de Detalhes do Processo -->
-<div class="form-group">
-    <label>Cargo/Função:</label>
-    <input type="text" name="RECLAMANTE_CARGO" required>
-</div>
-
-<div class="form-group">
-    <label>Último Salário (R$):</label>
-    <input type="number" name="RECLAMANTE_SALARIO" step="0.01" required>
-</div>
-
-<div class="form-group">
-    <label>Tipo de Rescisão:</label>
-    <select name="TIPO_RESCISAO" required>
-        <option value="dispensa sem justa causa">Dispensa sem Justa Causa</option>
-        <option value="dispensa por justa causa">Dispensa por Justa Causa</option>
-        <option value="pedido de demissão">Pedido de Demissão</option>
-    </select>
-</div>
-
-<div class="form-group">
-    <label>Verbas Não Pagas:</label>
-    <textarea name="VERBAS_NAO_PAGAS" required>Ex: Férias proporcionais, 13º salário, horas extras...</textarea>
-</div>
-
-<div class="form-group">
-    <label>Outras Irregularidades:</label>
-    <textarea name="OUTRAS_IRREGULARIDADES">Ex: Assédio moral, condições inseguras de trabalho...</textarea>
-</div>
-
-     </div>
-            <div class="button-group">
-                <button type="button" onclick="generateDocument()">Gerar Documento</button>
-                <button type="reset">Limpar Formulário</button>
+            <div class="footer-buttons">
+                <button type="button" class="btn btn-secondary me-3" onclick="window.location.href='../index.html'">Página Inicial</button>
+                <button type="button" class="btn btn-primary" onclick="gerarDocumento()">Gerar Documento</button>
             </div>
         </form>
+
+        <div id="documentoGerado" class="mt-5" style="display: none;">
+            <div class="d-flex justify-content-between">
+                <button class="btn btn-secondary" onclick="window.print()">Imprimir</button>
+                <button class="btn btn-success" onclick="exportarPDF()">Exportar PDF</button>
+                <button class="btn btn-info" onclick="exportarDOC()">Exportar DOC</button>
+                <button class="btn btn-secondary" onclick="window.location.href='./legal-docs-generator/gerardoc.html'">Novo Documento</button>
+            </div>
+            <div id="conteudoDocumento" class="mt-4 p-4" style="background: white; min-height: 800px;">
+                <!-- Conteúdo gerado aqui -->
+            </div>
+        </div>
     </div>
 
     <script>
-        function generateDocument() {
-            // Coletar dados do formulário
-            const docData = {
-                client: {
-                    name: document.getElementById('clientName').value,
-                    id: document.getElementById('clientId').value,
-                    address: document.getElementById('clientAddress').value
-                },
-                lawyer: {
-                    name: document.getElementById('lawyerName').value,
-                    oab: document.getElementById('oabNumber').value,
-                    office: document.getElementById('lawOffice').value
-                },
-                case: {
-                    type: document.getElementById('processType').value,
-                    description: document.getElementById('caseDescription').value,
-                    template: document.getElementById('documentTemplate').value
-                }
-            };
+        $(document).ready(function(){
+            $('.capitalize').on('input', function() {
+                $(this).val($(this).val().replace(/\b\w/g, l => l.toUpperCase()));
+            });
 
-            // Gerar conteúdo do documento
-            const generatedContent = `
-                <html>
-                <head>
-                    <title>Documento Jurídico</title>
-                    <style>
-                        body { font-family: Arial; margin: 2cm; }
-                        .watermark { opacity: 0.1; position: fixed; bottom: 0; right: 0; }
-                    </style>
-                </head>
-                <body>
-                    <h1>${docData.case.type.toUpperCase()} - ${docData.client.name}</h1>
-                    <p>Cliente: ${docData.client.name}<br>
-                    CPF/CNPJ: ${docData.client.id}<br>
-                    Endereço: ${docData.client.address}</p>
-                    
-                    <p>Advogado Responsável: ${docData.lawyer.name}<br>
-                    OAB: ${docData.lawyer.oab}<br>
-                    Escritório: ${docData.lawyer.office}</p>
-                    
-                    <h2>Descrição do Caso:</h2>
-                    <p>${docData.case.description}</p>
-                    
-                    <div class="watermark">
-                        <img src="watermark.png" width="400">
-                    </div>
-                </body>
-                </html>
-            `;
+            $('[data-mask]').each(function() {
+                $(this).mask($(this).data('mask'));
+            });
+        });
 
-            // Abrir nova janela com o documento
-            const newWindow = window.open();
-            newWindow.document.write(generatedContent);
+        function gerarDocumento() {
+            const dataAtual = new Date();
+            const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 
+                         'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
             
-            // Adicionar botões de controle
-            newWindow.document.write(`
-                <div style="position:fixed;top:20px;right:20px;">
-                    <button onclick="window.print()">Imprimir</button>
-                    <button onclick="exportPDF()">Exportar PDF</button>
-                    <button onclick="exportDOCX()">Exportar DOCX</button>
-                </div>
-            `);
+            const cidadeData = `Rio de Janeiro, ${dataAtual.getDate()} de ${meses[dataAtual.getMonth()]} de ${dataAtual.getFullYear()}`;
 
-            // Funções para exportação (seria necessário incluir bibliotecas adicionais)
-            newWindow.exportPDF = function() {
-                // Implementar usando biblioteca como jsPDF ou html2pdf
-                alert('Exportar para PDF - Funcionalidade a implementar');
-            };
+            const template = `...`; // Conteúdo completo do template aqui
 
-            newWindow.exportDOCX = function() {
-                // Implementar usando biblioteca como docx.js
-                alert('Exportar para DOCX - Funcionalidade a implementar');
-            };
+            const conteudo = template.replace(/{{VARA_TRABALHO}}/g, $('#varaTrabalho').val())
+                                    .replace(/{{CIDADE_UF}}/g, 'Rio de Janeiro/RJ')
+                                    // ... substituir todos os placeholders
+                                    .replace(/{{CIDADE_DATA}}/g, cidadeData);
+
+            $('#conteudoDocumento').html(`<pre>${conteudo}</pre>`);
+            $('#documentoGerado').show();
         }
 
-        // Salvar dados localmente (opcional)
-        document.getElementById('documentForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            localStorage.setItem('lastDocumentData', JSON.stringify(docData));
-        });
+        function exportarPDF() {
+            const doc = new jspdf.jsPDF();
+            doc.text($('#conteudoDocumento').text(), 10, 10);
+            doc.save('documento.pdf');
+        }
 
-        function formatarValores(conteudo, formData) {
-    // Novo: Formatar datas
-    const formatarData = (dataString) => {
-        const data = new Date(dataString);
-        return data.toLocaleDateString('pt-BR', { 
-            day: '2-digit', 
-            month: 'long', 
-            year: 'numeric' 
-        });
-    };
-
-    // Aplicar formatações
-    conteudo = conteudo.replace(/{{RECLAMANTE_DATA_NASC}}/g, formatarData(formData.get('RECLAMANTE_DATA_NASC')));
-    conteudo = conteudo.replace(/{{DATA_ADMISSAO}}/g, formatarData(formData.get('DATA_ADMISSAO')));
-    conteudo = conteudo.replace(/{{DATA_RESCISAO}}/g, formatarData(formData.get('DATA_RESCISAO')));
-
-    // Formatar valores monetários
-    const formatadorMoeda = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    });
-
-    const camposMonetarios = [
-        'RECLAMANTE_SALARIO', 'VALOR_SALDO_SALARIO', 'VALOR_FERIAS',
-        'VALOR_13_SALARIO', 'VALOR_AVISO_PREVIO', 'VALOR_MULTA_477',
-        'VALOR_MULTA_FGTS', 'VALOR_DANO_MORAL', 'VALOR_CAUSA'
-    ];
-
-    camposMonetarios.forEach(campo => {
-        const valor = parseFloat(formData.get(campo)) || 0;
-        conteudo = conteudo.replace(new RegExp(`{{${campo}}}`, 'g'), formatadorMoeda.format(valor));
-    });
-
-    return conteudo;
-}
-
-// Atualizar validação
-function validarCamposTrabalhista() {
-    // ... validações anteriores ...
-
-    // Validar data de nascimento
-    const dataNasc = new Date(document.querySelector('[name="RECLAMANTE_DATA_NASC"]').value);
-    const idade = new Date().getFullYear() - dataNasc.getFullYear();
-    
-    if(idade < 18) {
-        alert('Reclamante deve ser maior de idade!');
-        return false;
-    }
-
-    return true;
-}
+        function exportarDOC() {
+            const blob = new Blob([$('#conteudoDocumento').text()], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'documento.doc';
+            link.click();
+        }
     </script>
-
-    <!-- Incluir bibliotecas para exportação -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/docx@7.1.0/build/index.min.js"></script>
 </body>
 </html>
-
-
-
-
-
-<!-- Adicione no formulário -->
-<div class="form-group">
-    <label>Papel Timbrado (PDF):</label>
-    <input type="file" id="timbradoInput" accept=".pdf">
-</div>
-
-<!-- Adicione esses scripts no final do body -->
-<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-
-
-script
-async function gerarPDFComTimbrado() {
-    const formData = new FormData(document.getElementById('docForm'));
-    const pdfInput = document.getElementById('timbradoInput');
-    
-    if (!pdfInput.files[0]) {
-        alert('Selecione um arquivo PDF de timbrado!');
-        return;
-    }
-
-    try {
-        // Carregar PDF existente
-        const timbradoBytes = await pdfInput.files[0].arrayBuffer();
-        const pdfDoc = await PDFLib.PDFDocument.load(timbradoBytes);
-        
-        // Criar nova página
-        const page = pdfDoc.getPages()[0];
-        
-        // Obter conteúdo gerado
-        const conteudo = document.getElementById('conteudoDocumento').innerText;
-        
-        // Configurar fonte e tamanho
-        const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
-        
-        // Adicionar texto
-        page.drawText(conteudo, {
-            x: 50,
-            y: 700,
-            size: 12,
-            font: font,
-            color: PDFLib.rgb(0, 0, 0),
-            maxWidth: 500,
-            lineHeight: 15
-        });
-
-        // Salvar PDF
-        const pdfBytes = await pdfDoc.save();
-        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-        saveAs(blob, 'documento-timbrado.pdf');
-        
-    } catch (error) {
-        console.error('Erro ao gerar PDF:', error);
-        alert('Erro ao processar PDF!');
-    }
-}
-
-
-if (conteudo.length > 1500) {
-    const newPage = pdfDoc.addPage();
-    // Continuar o texto na nova página
-}
-
-// Medir texto e ajustar posição
-const textWidth = font.widthOfTextAtSize(conteudo, 12);
-const textHeight = font.heightAtSize(12);
-
-
-atualizar
-function exportarPDF() {
-    if (document.getElementById('timbradoInput').files[0]) {
-        gerarPDFComTimbrado();
-    } else {
-        // Gerar PDF sem timbrado (usando outra biblioteca como jsPDF)
-        alert('Gerando PDF sem timbrado...');
-        // Implementação alternativa aqui
-    }
-}
-
-
-        
-css
-/* Estilize o input de arquivo */
-input[type="file"] {
-    border: 1px solid #ddd;
-    padding: 8px;
-    background: #f8f9fa;
-}
