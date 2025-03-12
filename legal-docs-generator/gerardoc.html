@@ -389,9 +389,44 @@
                                 <button type="reset" class="btn btn-secondary">Limpar Formulário</button>
                             </div>
                         </div>
+
+
+                        <!-- Botões de Ação -->
+<div class="row mt-4">
+    <div class="col-12 text-center">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="bi bi-file-earmark-text"></i> Gerar Documento
+        </button>
+    </div>
+</div>
+
+                        
                     </form>
                 </div>
             </div>
+
+
+            <div class="tab-pane fade" id="preview-tab-pane" role="tabpanel" tabindex="0">
+    <div class="form-container">
+        <div class="d-flex justify-content-center mb-4">
+            <button type="button" id="exportPDF" class="btn btn-primary me-2">
+                <i class="bi bi-file-pdf"></i> Exportar como PDF
+            </button>
+            <button type="button" id="exportDOCX" class="btn btn-secondary">
+                <i class="bi bi-file-word"></i> Exportar como DOCX
+            </button>
+        </div>
+        
+        <div class="preview-container">
+            <div id="documentPreview" class="bg-white">
+                <!-- O documento gerado será exibido aqui -->
+                <p class="text-center text-muted">Preencha o formulário e clique em "Gerar Documento" para visualizar o documento.</p>
+            </div>
+        </div>
+    </div>
+            </div>
+
+            
 
             <div class="tab-pane fade" id="preview-tab-pane" role="tabpanel" tabindex="0">
                 <div class="d-flex justify-content-end mb-3">
@@ -520,5 +555,9 @@
                 });
         }
     </script>
+
+
+<script src="document-generator.js"></script>
+    
 </body>
 </html>
