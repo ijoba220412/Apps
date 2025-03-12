@@ -120,7 +120,7 @@ OAB/{{ADVOGADO_UF}} nº {{ADVOGADO_OAB}}`,
             { "id": "VALOR_DANO_MORAL", "label": "Valor do Dano Moral", "type": "text" },
             
             // Dados do advogado
-            { "id": "CIDADE_DATA", "label": "Cidade e Data", "type": "text", "placeholder": "São Paulo, 12 de março de 2025" },
+            { "id": "CIDADE_DATA", "label": "Cidade e Data", "type": "text", "placeholder": "Rio de Janeiro, 12 de março de 2025" },
             { "id": "ADVOGADO_NOME", "label": "Nome do Advogado", "type": "text" },
             { "id": "ADVOGADO_UF", "label": "UF da OAB", "type": "text" },
             { "id": "ADVOGADO_OAB", "label": "Número da OAB", "type": "text" }
