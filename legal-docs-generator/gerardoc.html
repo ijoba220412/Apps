@@ -1,109 +1,105 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Documentos Jurídicos</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- jQuery -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    
-    <!-- jsPDF para exportação PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    
-    <!-- html2pdf para exportação PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    
-    <!-- docx para exportação Word -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.0/docx.min.js"></script>
-    
-    <!-- FileSaver.js para salvar arquivos -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    
-    <!-- Estilos -->
+    <title>Gerador de Petições</title>
     <style>
-        body { background-color: #f8f9fa; }
-        .preview-container { font-family: 'Times New Roman', serif; font-size: 12pt; padding: 30px; }
-        #documentPreview { padding: 40px; background-color: white; min-height: 29.7cm; }
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 20px;
+        }
+        .form-container {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .preview-container {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            white-space: pre-line;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .template-selector {
+            margin-bottom: 20px;
+        }
+        #preview {
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <h2 class="text-center">Gerador de Documentos Jurídicos</h2>
-        
-        <form id="petitionForm">
-            <div class="mb-3">
-                <label class="form-label">Nome do Reclamante</label>
-                <input type="text" class="form-control" id="reclamante_nome" name="RECLAMANTE_NOME" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Cidade</label>
-                <input type="text" class="form-control" id="cidade_uf" name="CIDADE_UF" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Descrição</label>
-                <textarea class="form-control" id="descricao" name="DESCRICAO" rows="3" required></textarea>
+    <div class="container">
+        <div class="form-container">
+            <h1>Gerador de Petições</h1>
+            
+            <div class="template-selector">
+                <label for="templateSelect">Selecione o modelo:</label>
+                <select id="templateSelect">
+                    <option value="inicial_trab">Reclamação Trabalhista Inicial</option>
+                    <!-- Outros modelos podem ser adicionados aqui -->
+                </select>
             </div>
             
-            <button type="button" id="generateBtn" class="btn btn-primary">Gerar Documento</button>
-        </form>
-        
-        <hr>
-
-        <h4>Visualização do Documento</h4>
-        <div id="documentPreview" class="preview-container">
-            <p class="text-center text-muted">Preencha o formulário e clique em "Gerar Documento".</p>
+            <div id="dynamicForm">
+                <!-- Campos serão gerados dinamicamente com base no template selecionado -->
+            </div>
+            
+            <button id="generateBtn">Gerar Petição</button>
+            <button id="downloadBtn">Baixar Documento</button>
         </div>
-
-        <hr>
-
-        <button id="exportPdfBtn" class="btn btn-danger">Exportar para PDF</button>
-        <button id="exportDocBtn" class="btn btn-success">Exportar para DOC</button>
+        
+        <div class="preview-container">
+            <h2>Visualização da Petição</h2>
+            <div id="preview"></div>
+        </div>
     </div>
 
-    <script>
-        $(document).ready(function() {
-            $('#generateBtn').click(function() {
-                if (!$('#petitionForm')[0].checkValidity()) {
-                    $('#petitionForm')[0].reportValidity();
-                    return;
-                }
-                generateDocument();
-            });
-
-            $('#exportPdfBtn').click(function() {
-                const element = document.getElementById('documentPreview');
-                html2pdf().set({ filename: 'documento.pdf', jsPDF: { format: 'a4' } }).from(element).save();
-            });
-
-            $('#exportDocBtn').click(function() {
-                const content = document.getElementById('documentPreview').innerText;
-                const doc = new docx.Document({
-                    sections: [{ children: [new docx.Paragraph(content)] }]
-                });
-                docx.Packer.toBlob(doc).then(blob => saveAs(blob, 'documento.doc'));
-            });
-        });
-
-        function generateDocument() {
-            let formData = new FormData(document.getElementById('petitionForm'));
-            let template = `
-                <h3>Documento Jurídico</h3>
-                <p><strong>Nome:</strong> {{RECLAMANTE_NOME}}</p>
-                <p><strong>Cidade:</strong> {{CIDADE_UF}}</p>
-                <p><strong>Descrição:</strong> {{DESCRICAO}}</p>
-            `;
-
-            formData.forEach((value, key) => {
-                let capitalizedValue = value.replace(/\b\w/g, char => char.toUpperCase());
-                template = template.replace(new RegExp('{{' + key + '}}', 'g'), capitalizedValue);
-            });
-
-            document.getElementById('documentPreview').innerHTML = template;
-        }
-    </script>
+    <script src="js/templates.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
