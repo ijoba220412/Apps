@@ -337,3 +337,108 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializa o formulário ao carregar a página
     initForm();
 });
+
+// Função para exportar para DOCX usando a biblioteca docx.js
+function downloadDocx() {
+    const selectedTemplate = templateSelect.value;
+    const template = templates[selectedTemplate];
+    
+    if (!template) return;
+    
+    // Importações necessárias da biblioteca docx
+    const { Document, Packer, Paragraph, TextRun, Header, ImageRun, AlignmentType } = docx;
+    
+    // Criar novo documento
+    const doc = new Document({
+        sections: [{
+            properties: {},
+            children: []
+        }]
+    });
+    
+    // Adicionar papel timbrado/logo se existir
+    if (headerLogo) {
+        const logoImage = new ImageRun({
+            data: headerLogo.split(';base64,')[1],
+            transformation: {
+                width: 400,
+                height: 100
+            }
+        });
+        
+        const headerParagraph = new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [logoImage]
+        });
+        
+        doc.addSection({
+            headers: {
+                default: new Header({
+                    children: [headerParagraph]
+                })
+            },
+            children: []
+        });
+    }
+    
+    // Preparar o conteúdo do documento
+    let documentContent = template.content;
+    
+    // Substituir todos os campos no template pelos valores do formulário
+    for (const [key, value] of Object.entries(formValues)) {
+        const placeholder = new RegExp('{{' + key + '}}', 'g');
+        documentContent = documentContent.replace(placeholder, value || `_______________`);
+    }
+    
+    // Remover campos não preenchidos
+    documentContent = documentContent.replace(/{{[A-Z_]+}}/g, '_______________');
+    
+    // Dividir por linhas para criar parágrafos
+    const lines = documentContent.split('\n');
+    
+    // Adicionar cada linha como um parágrafo
+    lines.forEach(line => {
+        if (line.trim() === '') {
+            // Linha em branco
+            doc.addParagraph(new Paragraph({}));
+        } else {
+            doc.addParagraph(
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: line,
+                            size: 24 // 12pt = 24 half-points
+                        })
+                    ]
+                })
+            );
+        }
+    });
+    
+    // Gerar o arquivo e baixar
+    Packer.toBlob(doc).then(blob => {
+        saveAs(blob, `${template.name}.docx`);
+    });
+}
+
+// Função para exportar para PDF usando html2pdf
+function generatePDF() {
+    const selectedTemplate = templateSelect.value;
+    const template = templates[selectedTemplate];
+    
+    if (!template) return;
+    
+    const opt = {
+        margin: [20, 20, 20, 20],
+        filename: `${template.name}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    
+    html2pdf().set(opt).from(preview).save();
+}
+
+// Event Listeners para novos botões
+document.getElementById('docxBtn').addEventListener('click', downloadDocx);
+document.getElementById('pdfBtn').addEventListener('click', generatePDF);
