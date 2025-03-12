@@ -119,6 +119,9 @@
         
         // Variáveis globais
         let templatePdf = null;
+        
+        // Garantindo que o jsPDF esteja disponível
+        window.jspdf = window.jspdf || {};
         const { jsPDF } = window.jspdf;
         
         // Tamanho A4 em pontos (1 mm = 2.83465 pontos)
@@ -175,11 +178,6 @@
             
             // Evento para gerar o documento final
             generateBtn.addEventListener('click', function() {
-                if (!templatePdf) {
-                    alert('Por favor, faça upload do template PDF primeiro.');
-                    return;
-                }
-                
                 const title = document.getElementById('title').value;
                 const content = document.getElementById('content').value;
                 
@@ -188,73 +186,72 @@
                     return;
                 }
                 
+                console.log("Gerando PDF com título:", title);
                 generatePDF(title, content);
             });
         });
         
         // Função para gerar o PDF final
         function generatePDF(title, content) {
-            // Primeiro carregamos o template para obter suas propriedades
-            pdfjsLib.getDocument({data: templatePdf}).promise.then(function(pdf) {
-                // Obtendo a primeira página para referência
-                pdf.getPage(1).then(function(page) {
-                    // Criando um novo documento PDF
-                    const newPdf = new jsPDF({
-                        orientation: 'portrait',
-                        unit: 'pt',
-                        format: 'a4'
-                    });
-                    
-                    // Configurando as fontes e tamanhos
-                    newPdf.setFont('helvetica', 'bold');
-                    newPdf.setFontSize(16);
-                    
-                    // Adicionando a primeira página do template
-                    newPdf.addPage();
-                    
-                    // Adicionando o título
-                    newPdf.text(title, MARGIN, MARGIN + 20);
-                    
-                    // Configurando a fonte para o conteúdo
-                    newPdf.setFont('helvetica', 'normal');
-                    newPdf.setFontSize(12);
-                    
-                    // Calculando a posição inicial do conteúdo
-                    let yPosition = MARGIN + 50;
-                    
-                    // Dividindo o conteúdo em linhas que se ajustam à largura da página
-                    const textLines = newPdf.splitTextToSize(content, TEXT_WIDTH);
-                    
-                    // Altura de uma linha de texto
-                    const lineHeight = 14;
-                    
-                    // Adicionando o conteúdo linha por linha com quebra de página
-                    let currentPage = 1;
-                    
-                    for (let i = 0; i < textLines.length; i++) {
-                        // Verificando se precisamos de uma nova página
-                        if (yPosition + lineHeight > A4_HEIGHT - MARGIN) {
-                            newPdf.addPage();
-                            currentPage++;
-                            yPosition = MARGIN + 20; // Resetando a posição Y para a nova página
-                        }
-                        
-                        // Adicionando a linha atual
-                        newPdf.text(textLines[i], MARGIN, yPosition);
-                        yPosition += lineHeight;
+            try {
+                // Criando um novo documento PDF
+                const newPdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'pt',
+                    format: 'a4'
+                });
+                
+                // Configurando as fontes e tamanhos
+                newPdf.setFont('helvetica', 'bold');
+                newPdf.setFontSize(16);
+                
+                // Adicionando o título
+                newPdf.text(title, MARGIN, MARGIN + 20);
+                
+                // Configurando a fonte para o conteúdo
+                newPdf.setFont('helvetica', 'normal');
+                newPdf.setFontSize(12);
+                
+                // Calculando a posição inicial do conteúdo
+                let yPosition = MARGIN + 50;
+                
+                // Dividindo o conteúdo em linhas que se ajustam à largura da página
+                const textLines = newPdf.splitTextToSize(content, TEXT_WIDTH);
+                
+                // Altura de uma linha de texto
+                const lineHeight = 14;
+                
+                // Adicionando o conteúdo linha por linha com quebra de página
+                let currentPage = 1;
+                
+                for (let i = 0; i < textLines.length; i++) {
+                    // Verificando se precisamos de uma nova página
+                    if (yPosition + lineHeight > A4_HEIGHT - MARGIN) {
+                        newPdf.addPage();
+                        currentPage++;
+                        yPosition = MARGIN + 20; // Resetando a posição Y para a nova página
                     }
                     
-                    // Salvando o PDF e exibindo para download
-                    const pdfOutput = newPdf.output('datauristring');
-                    
-                    // Exibindo o PDF na página
-                    const previewDiv = document.getElementById('pdfPreview');
-                    previewDiv.innerHTML = `
-                        <p>Documento gerado com sucesso! Visualize abaixo ou <a href="${pdfOutput}" download="documento_preenchido.pdf">clique aqui para baixar</a>.</p>
-                        <iframe src="${pdfOutput}" width="100%" height="500px"></iframe>
-                    `;
-                });
-            });
+                    // Adicionando a linha atual
+                    newPdf.text(textLines[i], MARGIN, yPosition);
+                    yPosition += lineHeight;
+                }
+                
+                // Salvando o PDF e exibindo para download
+                const pdfOutput = newPdf.output('datauristring');
+                
+                // Exibindo o PDF na página
+                const previewDiv = document.getElementById('pdfPreview');
+                previewDiv.innerHTML = `
+                    <p>Documento gerado com sucesso! Visualize abaixo ou <a href="${pdfOutput}" download="documento_preenchido.pdf">clique aqui para baixar</a>.</p>
+                    <iframe src="${pdfOutput}" width="100%" height="500px"></iframe>
+                `;
+                
+                console.log("Documento gerado com sucesso");
+            } catch (error) {
+                console.error("Erro ao gerar PDF:", error);
+                alert("Ocorreu um erro ao gerar o PDF: " + error.message);
+            }
         }
     </script>
 </body>
