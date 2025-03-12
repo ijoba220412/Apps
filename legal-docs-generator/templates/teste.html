@@ -1,367 +1,73 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Formulário com Template PDF</title>
-    <!-- PDF.js para visualização do PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-    <!-- PDF-LIB para manipulação de PDFs -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <title>Gerar PDF com Margens</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+            margin: 20px;
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            border-radius: 5px;
+        form {
+            max-width: 400px;
+            margin-bottom: 20px;
         }
-        h1, h2 {
-            color: #2c3e50;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
+        label, input, textarea {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input, textarea {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        textarea {
-            height: 150px;
-            resize: vertical;
-        }
-        button {
-            background-color: #2c3e50;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #1a252f;
-        }
-        #preview {
-            margin-top: 20px;
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 4px;
-            background-color: #f9f9f9;
-        }
-        #templatePreview {
-            margin-top: 10px;
-            max-width: 100%;
-            border: 1px solid #ddd;
-        }
-        .preview-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        canvas {
-            border: 1px solid #ddd;
-            max-width: 100%;
-        }
-        .loading {
-            display: none;
-            margin: 10px 0;
-            color: #2c3e50;
-        }
-        .error {
-            color: #e74c3c;
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 4px;
-            background-color: #fadbd8;
-            display: none;
-        }
-        .success {
-            color: #27ae60;
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 4px;
-            background-color: #d5f5e3;
-            display: none;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Sistema de Formulário com Template PDF</h1>
-        
-        <div class="form-group">
-            <label for="templateUpload">Upload do Template PDF (Papel Timbrado):</label>
-            <input type="file" id="templateUpload" accept=".pdf">
-            <div id="uploadStatus" class="success">Template carregado com sucesso!</div>
-        </div>
 
-        <div class="preview-container">
-            <canvas id="templatePreview"></canvas>
-        </div>
-        
-        <h2>Dados do Formulário</h2>
-        <form id="dataForm">
-            <div class="form-group">
-                <label for="title">Título:</label>
-                <input type="text" id="title" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="content">Conteúdo:</label>
-                <textarea id="content" required></textarea>
-            </div>
-            
-            <button type="button" id="generateBtn">Gerar Documento</button>
-            <div id="loading" class="loading">Processando... Por favor, aguarde.</div>
-            <div id="error" class="error"></div>
-        </form>
-        
-        <div id="preview">
-            <h3>Documento Final</h3>
-            <p>O documento será gerado aqui após o processamento.</p>
-            <div id="pdfPreview"></div>
-        </div>
-    </div>
+    <h2>Preencha os dados para gerar o PDF</h2>
+    <form id="pdfForm">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" required>
+
+        <label for="cargo">Cargo:</label>
+        <input type="text" id="cargo" required>
+
+        <label for="mensagem">Mensagem:</label>
+        <textarea id="mensagem" rows="4" required></textarea>
+
+        <button type="button" onclick="gerarPDF()">Gerar PDF</button>
+    </form>
 
     <script>
-        // Configurando o worker para o PDF.js
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-        
-        // Variáveis globais
-        let templatePdfBytes = null;
-        const { PDFDocument, StandardFonts, rgb } = PDFLib;
-        
-        // Tamanho A4 em pontos (1 mm = 2.83465 pontos)
-        const A4_WIDTH = 210 * 2.83465;
-        const A4_HEIGHT = 297 * 2.83465;
-        
-        // Margens de 3cm em pontos (aproximadamente 85 pontos)
-        const MARGIN = 85;
-        
-        // Área útil de texto
-        const TEXT_WIDTH = A4_WIDTH - (2 * MARGIN);
-        const TEXT_HEIGHT = A4_HEIGHT - (2 * MARGIN);
-        
-        // Quando o documento estiver carregado
-        document.addEventListener('DOMContentLoaded', function() {
-            const templateUpload = document.getElementById('templateUpload');
-            const generateBtn = document.getElementById('generateBtn');
-            const templatePreview = document.getElementById('templatePreview');
-            const uploadStatus = document.getElementById('uploadStatus');
-            const loadingIndicator = document.getElementById('loading');
-            const errorDisplay = document.getElementById('error');
-            
-            // Evento para carregar e pré-visualizar o template
-            templateUpload.addEventListener('change', async function(e) {
-                const file = e.target.files[0];
-                if (file && file.type === 'application/pdf') {
-                    try {
-                        // Lendo o arquivo como ArrayBuffer
-                        const arrayBuffer = await file.arrayBuffer();
-                        templatePdfBytes = new Uint8Array(arrayBuffer);
-                        
-                        // Carregando o PDF com PDF.js para preview
-                        const loadingTask = pdfjsLib.getDocument({data: templatePdfBytes});
-                        const pdf = await loadingTask.promise;
-                        
-                        // Obtendo a primeira página para preview
-                        const page = await pdf.getPage(1);
-                        const viewport = page.getViewport({scale: 0.5});
-                        const canvas = templatePreview;
-                        const context = canvas.getContext('2d');
-                        
-                        canvas.height = viewport.height;
-                        canvas.width = viewport.width;
-                        
-                        // Renderizando a página no canvas
-                        await page.render({
-                            canvasContext: context,
-                            viewport: viewport
-                        }).promise;
-                        
-                        uploadStatus.style.display = 'block';
-                    } catch (error) {
-                        console.error('Erro ao carregar o template:', error);
-                        errorDisplay.textContent = 'Erro ao carregar o template: ' + error.message;
-                        errorDisplay.style.display = 'block';
-                    }
-                }
+        function gerarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                format: "a4",
+                unit: "cm"
             });
-            
-            // Evento para gerar o documento final
-            generateBtn.addEventListener('click', async function() {
-                if (!templatePdfBytes) {
-                    errorDisplay.textContent = 'Por favor, faça upload do template PDF primeiro.';
-                    errorDisplay.style.display = 'block';
-                    return;
-                }
-                
-                const title = document.getElementById('title').value;
-                const content = document.getElementById('content').value;
-                
-                if (!title || !content) {
-                    errorDisplay.textContent = 'Por favor, preencha todos os campos do formulário.';
-                    errorDisplay.style.display = 'block';
-                    return;
-                }
-                
-                errorDisplay.style.display = 'none';
-                loadingIndicator.style.display = 'block';
-                
-                try {
-                    await generatePDF(title, content);
-                    loadingIndicator.style.display = 'none';
-                } catch (error) {
-                    console.error('Erro ao gerar PDF:', error);
-                    errorDisplay.textContent = 'Erro ao gerar o PDF: ' + error.message;
-                    errorDisplay.style.display = 'block';
-                    loadingIndicator.style.display = 'none';
-                }
-            });
-        });
-        
-        // Função que divide o texto em linhas
-        function splitTextToLines(text, maxWidth, font, fontSize) {
-            // Uma implementação simples que divide o texto em linhas
-            // baseado em um tamanho aproximado de caracteres por linha
-            const avgCharWidth = fontSize * 0.6; // Aproximação da largura média de um caractere
-            const charsPerLine = Math.floor(maxWidth / avgCharWidth);
-            
-            const words = text.split(' ');
-            const lines = [];
-            let currentLine = '';
-            
-            for (const word of words) {
-                if ((currentLine + word).length <= charsPerLine) {
-                    currentLine += (currentLine ? ' ' + word : word);
-                } else {
-                    lines.push(currentLine);
-                    currentLine = word;
-                }
-            }
-            
-            if (currentLine) {
-                lines.push(currentLine);
-            }
-            
-            return lines;
-        }
-        
-        // Função para gerar o PDF final
-        async function generatePDF(title, content) {
-            try {
-                // Carregando o template PDF
-                const templateDoc = await PDFDocument.load(templatePdfBytes);
-                
-                // Criando um novo documento PDF
-                const pdfDoc = await PDFDocument.create();
-                
-                // Copiando a primeira página do template
-                const [templatePage] = await pdfDoc.copyPages(templateDoc, [0]);
-                const page = pdfDoc.addPage(templatePage);
-                
-                // Obtendo as dimensões da página
-                const { width, height } = page.getSize();
-                
-                // Incorporando as fontes padrão
-                const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-                const helveticaBoldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-                
-                // Configuração de fontes e tamanhos
-                const titleFontSize = 16;
-                const contentFontSize = 12;
-                const lineHeight = contentFontSize * 1.2;
-                
-                // Adicionando o título
-                page.drawText(title, {
-                    x: MARGIN,
-                    y: height - MARGIN - titleFontSize,
-                    size: titleFontSize,
-                    font: helveticaBoldFont,
-                    color: rgb(0, 0, 0)
-                });
-                
-                // Dividindo o conteúdo em linhas
-                const contentLines = splitTextToLines(content, TEXT_WIDTH, helveticaFont, contentFontSize);
-                
-                // Posição Y inicial para o conteúdo
-                let yPosition = height - MARGIN - titleFontSize - 30;
-                
-                // Controle de páginas
-                let currentPage = page;
-                
-                // Adicionando o conteúdo linha por linha
-                for (let i = 0; i < contentLines.length; i++) {
-                    // Verificando se precisamos de uma nova página
-                    if (yPosition < MARGIN + lineHeight) {
-                        // Copiando novamente a primeira página do template
-                        const [newTemplatePage] = await pdfDoc.copyPages(templateDoc, [0]);
-                        currentPage = pdfDoc.addPage(newTemplatePage);
-                        yPosition = height - MARGIN - lineHeight;
-                    }
-                    
-                    // Desenhando a linha de texto
-                    currentPage.drawText(contentLines[i], {
-                        x: MARGIN,
-                        y: yPosition,
-                        size: contentFontSize,
-                        font: helveticaFont,
-                        color: rgb(0, 0, 0)
-                    });
-                    
-                    yPosition -= lineHeight;
-                }
-                
-                // Salvando o PDF
-                const pdfBytes = await pdfDoc.save();
-                
-                // Convertendo para base64 para exibição
-                const pdfBase64 = arrayBufferToBase64(pdfBytes);
-                const pdfDataUri = `data:application/pdf;base64,${pdfBase64}`;
-                
-                // Exibindo o PDF na página
-                const previewDiv = document.getElementById('pdfPreview');
-                previewDiv.innerHTML = `
-                    <p>Documento gerado com sucesso! Visualize abaixo ou <a href="${pdfDataUri}" download="documento_com_timbrado.pdf">clique aqui para baixar</a>.</p>
-                    <iframe src="${pdfDataUri}" width="100%" height="500px"></iframe>
-                `;
-                
-                console.log("Documento gerado com sucesso");
-                return pdfDataUri;
-            } catch (error) {
-                console.error("Erro na geração do PDF:", error);
-                throw error;
-            }
-        }
-        
-        // Função auxiliar para converter ArrayBuffer para Base64
-        function arrayBufferToBase64(buffer) {
-            let binary = '';
-            const bytes = new Uint8Array(buffer);
-            const len = bytes.byteLength;
-            
-            for (let i = 0; i < len; i++) {
-                binary += String.fromCharCode(bytes[i]);
-            }
-            
-            return window.btoa(binary);
+
+            // Definição das margens
+            const margemEsquerda = 3;
+            const margemSuperior = 3;
+
+            // Captura dos dados do formulário
+            const nome = document.getElementById("nome").value;
+            const cargo = document.getElementById("cargo").value;
+            const mensagem = document.getElementById("mensagem").value;
+
+            // Configuração do conteúdo no PDF
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(12);
+
+            doc.text("Documento Oficial", margemEsquerda, margemSuperior);
+            doc.text(`Nome: ${nome}`, margemEsquerda, margemSuperior + 1);
+            doc.text(`Cargo: ${cargo}`, margemEsquerda, margemSuperior + 2);
+            doc.text("Mensagem:", margemEsquerda, margemSuperior + 3);
+            doc.text(mensagem, margemEsquerda, margemSuperior + 4, { maxWidth: 15 });
+
+            // Gera e baixa o PDF
+            doc.save("documento.pdf");
         }
     </script>
+
 </body>
 </html>
