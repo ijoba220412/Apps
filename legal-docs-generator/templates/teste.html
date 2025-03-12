@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Formulário com Template PDF</title>
+    <!-- PDF.js para visualização do PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- PDF-LIB para manipulação de PDFs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -76,6 +78,27 @@
             border: 1px solid #ddd;
             max-width: 100%;
         }
+        .loading {
+            display: none;
+            margin: 10px 0;
+            color: #2c3e50;
+        }
+        .error {
+            color: #e74c3c;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #fadbd8;
+            display: none;
+        }
+        .success {
+            color: #27ae60;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #d5f5e3;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -85,6 +108,7 @@
         <div class="form-group">
             <label for="templateUpload">Upload do Template PDF (Papel Timbrado):</label>
             <input type="file" id="templateUpload" accept=".pdf">
+            <div id="uploadStatus" class="success">Template carregado com sucesso!</div>
         </div>
 
         <div class="preview-container">
@@ -104,6 +128,8 @@
             </div>
             
             <button type="button" id="generateBtn">Gerar Documento</button>
+            <div id="loading" class="loading">Processando... Por favor, aguarde.</div>
+            <div id="error" class="error"></div>
         </form>
         
         <div id="preview">
@@ -118,18 +144,15 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
         
         // Variáveis globais
-        let templatePdf = null;
-        
-        // Garantindo que o jsPDF esteja disponível
-        window.jspdf = window.jspdf || {};
-        const { jsPDF } = window.jspdf;
+        let templatePdfBytes = null;
+        const { PDFDocument, StandardFonts, rgb } = PDFLib;
         
         // Tamanho A4 em pontos (1 mm = 2.83465 pontos)
         const A4_WIDTH = 210 * 2.83465;
         const A4_HEIGHT = 297 * 2.83465;
         
-        // Margens de 3cm em pontos
-        const MARGIN = 3 * 10 * 2.83465;
+        // Margens de 3cm em pontos (aproximadamente 85 pontos)
+        const MARGIN = 85;
         
         // Área útil de texto
         const TEXT_WIDTH = A4_WIDTH - (2 * MARGIN);
@@ -140,118 +163,204 @@
             const templateUpload = document.getElementById('templateUpload');
             const generateBtn = document.getElementById('generateBtn');
             const templatePreview = document.getElementById('templatePreview');
+            const uploadStatus = document.getElementById('uploadStatus');
+            const loadingIndicator = document.getElementById('loading');
+            const errorDisplay = document.getElementById('error');
             
             // Evento para carregar e pré-visualizar o template
-            templateUpload.addEventListener('change', function(e) {
+            templateUpload.addEventListener('change', async function(e) {
                 const file = e.target.files[0];
                 if (file && file.type === 'application/pdf') {
-                    const fileReader = new FileReader();
-                    
-                    fileReader.onload = function() {
-                        const typedarray = new Uint8Array(this.result);
+                    try {
+                        // Lendo o arquivo como ArrayBuffer
+                        const arrayBuffer = await file.arrayBuffer();
+                        templatePdfBytes = new Uint8Array(arrayBuffer);
                         
-                        // Carregando o PDF com PDF.js
-                        pdfjsLib.getDocument({data: typedarray}).promise.then(function(pdf) {
-                            templatePdf = typedarray;
-                            
-                            // Exibindo a primeira página como preview
-                            pdf.getPage(1).then(function(page) {
-                                const viewport = page.getViewport({scale: 0.5});
-                                const canvas = templatePreview;
-                                const context = canvas.getContext('2d');
-                                
-                                canvas.height = viewport.height;
-                                canvas.width = viewport.width;
-                                
-                                // Renderizando a página no canvas
-                                page.render({
-                                    canvasContext: context,
-                                    viewport: viewport
-                                });
-                            });
-                        });
-                    };
-                    
-                    fileReader.readAsArrayBuffer(file);
+                        // Carregando o PDF com PDF.js para preview
+                        const loadingTask = pdfjsLib.getDocument({data: templatePdfBytes});
+                        const pdf = await loadingTask.promise;
+                        
+                        // Obtendo a primeira página para preview
+                        const page = await pdf.getPage(1);
+                        const viewport = page.getViewport({scale: 0.5});
+                        const canvas = templatePreview;
+                        const context = canvas.getContext('2d');
+                        
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+                        
+                        // Renderizando a página no canvas
+                        await page.render({
+                            canvasContext: context,
+                            viewport: viewport
+                        }).promise;
+                        
+                        uploadStatus.style.display = 'block';
+                    } catch (error) {
+                        console.error('Erro ao carregar o template:', error);
+                        errorDisplay.textContent = 'Erro ao carregar o template: ' + error.message;
+                        errorDisplay.style.display = 'block';
+                    }
                 }
             });
             
             // Evento para gerar o documento final
-            generateBtn.addEventListener('click', function() {
+            generateBtn.addEventListener('click', async function() {
+                if (!templatePdfBytes) {
+                    errorDisplay.textContent = 'Por favor, faça upload do template PDF primeiro.';
+                    errorDisplay.style.display = 'block';
+                    return;
+                }
+                
                 const title = document.getElementById('title').value;
                 const content = document.getElementById('content').value;
                 
                 if (!title || !content) {
-                    alert('Por favor, preencha todos os campos do formulário.');
+                    errorDisplay.textContent = 'Por favor, preencha todos os campos do formulário.';
+                    errorDisplay.style.display = 'block';
                     return;
                 }
                 
-                console.log("Gerando PDF com título:", title);
-                generatePDF(title, content);
+                errorDisplay.style.display = 'none';
+                loadingIndicator.style.display = 'block';
+                
+                try {
+                    await generatePDF(title, content);
+                    loadingIndicator.style.display = 'none';
+                } catch (error) {
+                    console.error('Erro ao gerar PDF:', error);
+                    errorDisplay.textContent = 'Erro ao gerar o PDF: ' + error.message;
+                    errorDisplay.style.display = 'block';
+                    loadingIndicator.style.display = 'none';
+                }
             });
         });
         
+        // Função que divide o texto em linhas
+        function splitTextToLines(text, maxWidth, font, fontSize) {
+            // Uma implementação simples que divide o texto em linhas
+            // baseado em um tamanho aproximado de caracteres por linha
+            const avgCharWidth = fontSize * 0.6; // Aproximação da largura média de um caractere
+            const charsPerLine = Math.floor(maxWidth / avgCharWidth);
+            
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = '';
+            
+            for (const word of words) {
+                if ((currentLine + word).length <= charsPerLine) {
+                    currentLine += (currentLine ? ' ' + word : word);
+                } else {
+                    lines.push(currentLine);
+                    currentLine = word;
+                }
+            }
+            
+            if (currentLine) {
+                lines.push(currentLine);
+            }
+            
+            return lines;
+        }
+        
         // Função para gerar o PDF final
-        function generatePDF(title, content) {
+        async function generatePDF(title, content) {
             try {
-                // Criando um novo documento PDF
-                const newPdf = new jsPDF({
-                    orientation: 'portrait',
-                    unit: 'pt',
-                    format: 'a4'
-                });
+                // Carregando o template PDF
+                const templateDoc = await PDFDocument.load(templatePdfBytes);
                 
-                // Configurando as fontes e tamanhos
-                newPdf.setFont('helvetica', 'bold');
-                newPdf.setFontSize(16);
+                // Criando um novo documento PDF
+                const pdfDoc = await PDFDocument.create();
+                
+                // Copiando a primeira página do template
+                const [templatePage] = await pdfDoc.copyPages(templateDoc, [0]);
+                const page = pdfDoc.addPage(templatePage);
+                
+                // Obtendo as dimensões da página
+                const { width, height } = page.getSize();
+                
+                // Incorporando as fontes padrão
+                const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+                const helveticaBoldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+                
+                // Configuração de fontes e tamanhos
+                const titleFontSize = 16;
+                const contentFontSize = 12;
+                const lineHeight = contentFontSize * 1.2;
                 
                 // Adicionando o título
-                newPdf.text(title, MARGIN, MARGIN + 20);
+                page.drawText(title, {
+                    x: MARGIN,
+                    y: height - MARGIN - titleFontSize,
+                    size: titleFontSize,
+                    font: helveticaBoldFont,
+                    color: rgb(0, 0, 0)
+                });
                 
-                // Configurando a fonte para o conteúdo
-                newPdf.setFont('helvetica', 'normal');
-                newPdf.setFontSize(12);
+                // Dividindo o conteúdo em linhas
+                const contentLines = splitTextToLines(content, TEXT_WIDTH, helveticaFont, contentFontSize);
                 
-                // Calculando a posição inicial do conteúdo
-                let yPosition = MARGIN + 50;
+                // Posição Y inicial para o conteúdo
+                let yPosition = height - MARGIN - titleFontSize - 30;
                 
-                // Dividindo o conteúdo em linhas que se ajustam à largura da página
-                const textLines = newPdf.splitTextToSize(content, TEXT_WIDTH);
+                // Controle de páginas
+                let currentPage = page;
                 
-                // Altura de uma linha de texto
-                const lineHeight = 14;
-                
-                // Adicionando o conteúdo linha por linha com quebra de página
-                let currentPage = 1;
-                
-                for (let i = 0; i < textLines.length; i++) {
+                // Adicionando o conteúdo linha por linha
+                for (let i = 0; i < contentLines.length; i++) {
                     // Verificando se precisamos de uma nova página
-                    if (yPosition + lineHeight > A4_HEIGHT - MARGIN) {
-                        newPdf.addPage();
-                        currentPage++;
-                        yPosition = MARGIN + 20; // Resetando a posição Y para a nova página
+                    if (yPosition < MARGIN + lineHeight) {
+                        // Copiando novamente a primeira página do template
+                        const [newTemplatePage] = await pdfDoc.copyPages(templateDoc, [0]);
+                        currentPage = pdfDoc.addPage(newTemplatePage);
+                        yPosition = height - MARGIN - lineHeight;
                     }
                     
-                    // Adicionando a linha atual
-                    newPdf.text(textLines[i], MARGIN, yPosition);
-                    yPosition += lineHeight;
+                    // Desenhando a linha de texto
+                    currentPage.drawText(contentLines[i], {
+                        x: MARGIN,
+                        y: yPosition,
+                        size: contentFontSize,
+                        font: helveticaFont,
+                        color: rgb(0, 0, 0)
+                    });
+                    
+                    yPosition -= lineHeight;
                 }
                 
-                // Salvando o PDF e exibindo para download
-                const pdfOutput = newPdf.output('datauristring');
+                // Salvando o PDF
+                const pdfBytes = await pdfDoc.save();
+                
+                // Convertendo para base64 para exibição
+                const pdfBase64 = arrayBufferToBase64(pdfBytes);
+                const pdfDataUri = `data:application/pdf;base64,${pdfBase64}`;
                 
                 // Exibindo o PDF na página
                 const previewDiv = document.getElementById('pdfPreview');
                 previewDiv.innerHTML = `
-                    <p>Documento gerado com sucesso! Visualize abaixo ou <a href="${pdfOutput}" download="documento_preenchido.pdf">clique aqui para baixar</a>.</p>
-                    <iframe src="${pdfOutput}" width="100%" height="500px"></iframe>
+                    <p>Documento gerado com sucesso! Visualize abaixo ou <a href="${pdfDataUri}" download="documento_com_timbrado.pdf">clique aqui para baixar</a>.</p>
+                    <iframe src="${pdfDataUri}" width="100%" height="500px"></iframe>
                 `;
                 
                 console.log("Documento gerado com sucesso");
+                return pdfDataUri;
             } catch (error) {
-                console.error("Erro ao gerar PDF:", error);
-                alert("Ocorreu um erro ao gerar o PDF: " + error.message);
+                console.error("Erro na geração do PDF:", error);
+                throw error;
             }
+        }
+        
+        // Função auxiliar para converter ArrayBuffer para Base64
+        function arrayBufferToBase64(buffer) {
+            let binary = '';
+            const bytes = new Uint8Array(buffer);
+            const len = bytes.byteLength;
+            
+            for (let i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            
+            return window.btoa(binary);
         }
     </script>
 </body>
