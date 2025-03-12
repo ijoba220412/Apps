@@ -59,9 +59,23 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            margin-right: 10px;
+            margin-bottom: 10px;
         }
         button:hover {
             background-color: #45a049;
+        }
+        button.secondary {
+            background-color: #2196F3;
+        }
+        button.secondary:hover {
+            background-color: #0b7dda;
+        }
+        button.tertiary {
+            background-color: #f44336;
+        }
+        button.tertiary:hover {
+            background-color: #d32f2f;
         }
         .template-selector {
             margin-bottom: 20px;
@@ -70,10 +84,34 @@
             font-family: 'Times New Roman', Times, serif;
             line-height: 1.5;
         }
+        .buttons-group {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .logo-section {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px dashed #ccc;
+            border-radius: 4px;
+        }
+        #logoPreview {
+            max-width: 200px;
+            max-height: 100px;
+            margin-top: 10px;
+            display: none;
+        }
+        @media print {
+            .form-container {
+                display: none;
+            }
+            .preview-container {
+                width: 100%;
+                box-shadow: none;
+            }
+        }
     </style>
 </head>
 <body>
-    <a href="../index.html">Página Inicial</a>
     <div class="container">
         <div class="form-container">
             <h1>Gerador de Petições</h1>
@@ -86,12 +124,23 @@
                 </select>
             </div>
             
+            <div class="logo-section">
+                <label for="logoUpload">Papel Timbrado / Logo:</label>
+                <input type="file" id="logoUpload" accept="image/*">
+                <img id="logoPreview" alt="Pré-visualização do logo">
+            </div>
+            
             <div id="dynamicForm">
                 <!-- Campos serão gerados dinamicamente com base no template selecionado -->
             </div>
             
-            <button id="generateBtn">Gerar Petição</button>
-            <button id="downloadBtn">Baixar Documento</button>
+            <div class="buttons-group">
+                <button id="generateBtn">Gerar Petição</button>
+                <button id="downloadBtn" class="secondary">TXT</button>
+                <button id="docxBtn" class="secondary">DOCX</button>
+                <button id="pdfBtn" class="secondary">PDF</button>
+                <button id="printBtn" class="tertiary">Imprimir</button>
+            </div>
         </div>
         
         <div class="preview-container">
@@ -100,6 +149,11 @@
         </div>
     </div>
 
+    <!-- Bibliotecas para exportação -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.0/docx.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
     <script src="./templates/templates.js"></script>
     <script src="./templates/app.js"></script>
 </body>
