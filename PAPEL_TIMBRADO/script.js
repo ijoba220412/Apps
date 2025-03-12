@@ -5,17 +5,13 @@ async function gerarPDF() {
     const timbradoInput = document.getElementById('timbrado');
     const timbradoFile = timbradoInput.files[0];
 
-    let pdfDoc;
+    let pdfDoc = await PDFDocument.create();
     let templatePage = null;
 
-    // Carrega o timbrado ou cria PDF em branco
+    // Carrega o timbrado (se existir)
     if (timbradoFile) {
-        const arrayBuffer = await timbradoFile.arrayBuffer();
-        const timbradoDoc = await PDFDocument.load(arrayBuffer);
-        pdfDoc = await PDFDocument.create();
+        const timbradoDoc = await PDFDocument.load(await timbradoFile.arrayBuffer());
         [templatePage] = await pdfDoc.copyPages(timbradoDoc, [0]); // Copia a primeira página do timbrado
-    } else {
-        pdfDoc = await PDFDocument.create();
     }
 
     pdfDoc.registerFontkit(fontkit);
@@ -39,83 +35,90 @@ async function gerarPDF() {
         conteudo: document.getElementById('conteudo').value
     };
 
-    // Função para justificar texto
+    // Função para justificar texto (exceto última linha do parágrafo)
     function justifyText(text, maxWidth) {
         const words = text.split(' ');
         let lines = [];
-        let currentLine = [words[0]];
-        let currentWidth = font.widthOfTextAtSize(words[0], fontSize);
+        let currentLine = [];
+        let currentWidth = 0;
 
-        for (let i = 1; i < words.length; i++) {
-            const word = words[i];
-            const wordWidth = font.widthOfTextAtSize(` ${word}`, fontSize);
-            
-            if (currentWidth + wordWidth <= maxWidth) {
+        for (const word of words) {
+            const wordWidth = font.widthOfTextAtSize(word, fontSize);
+            const spaceWidth = currentLine.length > 0 ? font.widthOfTextAtSize(' ', fontSize) : 0;
+
+            if (currentWidth + spaceWidth + wordWidth <= maxWidth) {
                 currentLine.push(word);
-                currentWidth += wordWidth;
+                currentWidth += wordWidth + spaceWidth;
             } else {
                 lines.push(currentLine);
                 currentLine = [word];
-                currentWidth = font.widthOfTextAtSize(word, fontSize);
+                currentWidth = wordWidth;
             }
         }
-        lines.push(currentLine);
-        return lines.map(line => ({
-            text: line,
-            width: font.widthOfTextAtSize(line.join(' '), fontSize)
-        }));
+        lines.push(currentLine); // Última linha do parágrafo
+        return lines;
     }
 
-    // Função para adicionar texto com paginação e justificação
-    async function addTextWithPagination(text, startY) {
-        const maxWidth = templatePage 
-            ? templatePage.getWidth() - margin.left - margin.right 
-            : 595.28 - margin.left - margin.right;
-
-        const paragraphs = text.split('\n');
-        let currentPage = templatePage ? pdfDoc.addPage(templatePage) : pdfDoc.addPage([595.28, 841.89]);
-        let y = startY;
-
-        for (const paragraph of paragraphs) {
-            const lines = justifyText(paragraph, maxWidth);
-            
-            for (const line of lines) {
-                if (y < margin.bottom) {
-                    // Adiciona nova página com timbrado
-                    currentPage = templatePage 
-                        ? pdfDoc.addPage(templatePage) 
-                        : pdfDoc.addPage([595.28, 841.89]);
-                    y = currentPage.getHeight() - margin.top;
-                }
-
-                // Calcula espaçamento para justificar
-                const spaceWidth = (maxWidth - line.width) / (line.text.length - 1 || 1);
-                let x = margin.left;
-
-                for (const [index, word] of line.text.entries()) {
-                    currentPage.drawText(word, { x, y, size: fontSize, font });
-                    x += font.widthOfTextAtSize(word, fontSize) + spaceWidth;
-                }
-
-                y -= lineHeight;
-            }
+    // Função para adicionar páginas com timbrado
+    function addNewPage() {
+        if (templatePage) {
+            return pdfDoc.addPage(templatePage);
+        } else {
+            return pdfDoc.addPage([595.28, 841.89]); // Tamanho A4
         }
     }
 
-    // Adiciona dados às páginas
-    let currentPage = templatePage || pdfDoc.addPage([595.28, 841.89]);
+    // Adiciona cabeçalho (remetente, destinatário, assunto)
+    let currentPage = addNewPage();
     let yPosition = currentPage.getHeight() - margin.top;
 
-    // Campos fixos
     currentPage.drawText(formData.remetente, { x: margin.left, y: yPosition, size: fontSize, font });
     yPosition -= lineHeight * 2;
     currentPage.drawText(formData.destinatario, { x: margin.left, y: yPosition, size: fontSize, font });
     yPosition -= lineHeight * 2;
     currentPage.drawText(formData.assunto, { x: margin.left, y: yPosition, size: fontSize, font });
-    yPosition -= lineHeight * 2;
+    yPosition -= lineHeight * 3; // Espaço antes do conteúdo
 
-    // Conteúdo justificado
-    await addTextWithPagination(formData.conteudo, yPosition);
+    // Processa o conteúdo com quebra de páginas
+    const paragraphs = formData.conteudo.split('\n');
+    const maxWidth = templatePage 
+        ? templatePage.getWidth() - margin.left - margin.right 
+        : 595.28 - margin.left - margin.right;
+
+    for (const paragraph of paragraphs) {
+        const lines = justifyText(paragraph, maxWidth);
+        
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const isLastLine = i === lines.length - 1;
+
+            // Quebra de página se necessário
+            if (yPosition < margin.bottom) {
+                currentPage = addNewPage();
+                yPosition = currentPage.getHeight() - margin.top;
+            }
+
+            // Largura do texto e espaçamento
+            const text = line.join(' ');
+            const textWidth = font.widthOfTextAtSize(text, fontSize);
+            
+            // Justifica apenas se não for a última linha e tiver mais de uma palavra
+            if (!isLastLine && line.length > 1) {
+                const spaceWidth = (maxWidth - textWidth) / (line.length - 1);
+                let x = margin.left;
+                
+                for (const [index, word] of line.entries()) {
+                    currentPage.drawText(word, { x, y: yPosition, size: fontSize, font });
+                    x += font.widthOfTextAtSize(word, fontSize) + spaceWidth;
+                }
+            } else {
+                // Alinha à esquerda para última linha ou palavras únicas
+                currentPage.drawText(text, { x: margin.left, y: yPosition, size: fontSize, font });
+            }
+
+            yPosition -= lineHeight;
+        }
+    }
 
     // Finaliza e baixa o PDF
     const pdfBytes = await pdfDoc.save();
