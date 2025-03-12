@@ -5,28 +5,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const preview = document.getElementById('preview');
     const generateBtn = document.getElementById('generateBtn');
     const downloadBtn = document.getElementById('downloadBtn');
+    const pdfBtn = document.getElementById('pdfBtn');
+    const printBtn = document.getElementById('printBtn');
+    const logoUpload = document.getElementById('logoUpload');
+    let headerLogo = null;
     
-    // Valores do formulário
-    let formValues = {};
-    
-    // Valores padrão para campos comuns
-    const defaultValues = {
-        "RECLAMANTE_NACIONALIDADE": "brasileiro(a)",
-        "CIDADE_UF": "Rio de Janeiro/RJ",
-        "VARA_TRABALHO": "1ª"
+    // Valores do formulário com valores padrão
+    let formValues = {
+        RECLAMANTE_NACIONALIDADE: 'brasileiro(a)',
+        CIDADE_UF: 'Rio de Janeiro/RJ',
+        ADVOGADO_UF: 'RJ'
     };
     
-    // Função para converter data para formato por extenso
-    function formatDateExtended(dateString) {
-        if (!dateString) return "";
+    // Função para formatar data por extenso
+    function formatDateExtended(dateStr) {
+        if (!dateStr) return '';
         
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) return dateString;
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return dateStr;
         
         const day = date.getDate();
         const months = [
-            "janeiro", "fevereiro", "março", "abril", "maio", "junho", 
-            "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+            'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 
+            'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
         ];
         const month = months[date.getMonth()];
         const year = date.getFullYear();
@@ -34,57 +35,62 @@ document.addEventListener('DOMContentLoaded', function() {
         return `${day} de ${month} de ${year}`;
     }
     
-    // Função para capitalizar a primeira letra de cada palavra
+    // Função para capitalizar primeira letra de cada palavra
     function capitalizeWords(str) {
-        if (!str) return "";
-        return str.replace(/\b\w/g, letter => letter.toUpperCase());
+        if (!str) return '';
+        return str.replace(/\b\w/g, match => match.toUpperCase());
     }
     
-    // Função para aplicar máscara de CPF: 000.000.000-00
-    function maskCPF(cpf) {
-        if (!cpf) return "";
-        cpf = cpf.replace(/\D/g, "");
-        return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-    }
-    
-    // Função para aplicar máscara de CNPJ: 00.000.000/0001-00
-    function maskCNPJ(cnpj) {
-        if (!cnpj) return "";
-        cnpj = cnpj.replace(/\D/g, "");
-        return cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
-    }
-    
-    // Função para aplicar máscara de PIS: 000.00000.00-0
-    function maskPIS(pis) {
-        if (!pis) return "";
-        pis = pis.replace(/\D/g, "");
-        return pis.replace(/(\d{3})(\d{5})(\d{2})(\d{1})/, "$1.$2.$3-$4");
-    }
-    
-    // Função para formatar valores monetários: R$ 0.000,00
-    function formatCurrency(value) {
-        if (!value) return "";
-        value = value.replace(/\D/g, "");
-        value = (parseInt(value) / 100).toFixed(2);
-        return "R$ " + value.replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
-    
-    // Aplica a máscara ao digitar em um input
-    function applyInputMask(input, maskFunction) {
-        input.addEventListener('input', function() {
-            const cursorPos = this.selectionStart;
-            const originalLength = this.value.length;
-            this.value = maskFunction(this.value);
-            const newLength = this.value.length;
-            
-            // Ajusta a posição do cursor após aplicar a máscara
-            if (cursorPos < originalLength) {
-                this.setSelectionRange(cursorPos + (newLength - originalLength), cursorPos + (newLength - originalLength));
-            }
-            
-            // Atualiza o valor no objeto formValues
-            formValues[this.name] = this.value;
-        });
+    // Função para aplicar máscaras de formatação
+    function applyMask(value, fieldId) {
+        if (!value) return '';
+        
+        // Remove caracteres não numéricos para processamento
+        const numbers = value.replace(/\D/g, '');
+        
+        switch(fieldId) {
+            case 'RECLAMANTE_CPF':
+                // Formato: 000.000.000-00
+                if (numbers.length <= 11) {
+                    return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+                }
+                return value;
+                
+            case 'RECLAMANTE_PIS':
+                // Formato: 000.00000.00-0
+                if (numbers.length <= 11) {
+                    return numbers.replace(/(\d{3})(\d{5})(\d{2})(\d{1})/, '$1.$2.$3-$4');
+                }
+                return value;
+                
+            case 'RECLAMANTE_RG':
+                // Formato básico para RG: 00.000.000-0
+                if (numbers.length <= 9) {
+                    return numbers.replace(/(\d{2})(\d{3})(\d{3})(\d{1})/, '$1.$2.$3-$4');
+                }
+                return value;
+                
+            case 'RECLAMADA_CNPJ':
+                // Formato: 00.000.000/0000-00
+                if (numbers.length <= 14) {
+                    return numbers.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+                }
+                return value;
+                
+            case 'ADVOGADO_OAB':
+                // Mantém como está, pois OAB pode variar por estado
+                return value;
+                
+            case 'RECLAMANTE_CTPS':
+                // Formato: 0000000 série 000-0
+                if (numbers.length <= 8) {
+                    return numbers.replace(/(\d{7})(\d{1})/, '$1 série 000-$2');
+                }
+                return value;
+                
+            default:
+                return value;
+        }
     }
     
     // Inicializa o formulário com o template selecionado
@@ -96,7 +102,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Limpa o formulário atual
         dynamicForm.innerHTML = '';
-        formValues = JSON.parse(JSON.stringify(defaultValues)); // Clone os valores padrão
+        // Mantém os valores padrão
+        const defaultValues = {
+            RECLAMANTE_NACIONALIDADE: 'brasileiro(a)',
+            CIDADE_UF: 'Rio de Janeiro/RJ', 
+            ADVOGADO_UF: 'RJ'
+        };
+        formValues = {...defaultValues};
         
         // Cria os campos do formulário dinamicamente com base nos campos do template
         template.fields.forEach(field => {
@@ -118,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 field.options.forEach(option => {
                     const optElement = document.createElement('option');
                     optElement.value = option;
-                    optElement.textContent = capitalizeWords(option);
+                    optElement.textContent = option;
                     input.appendChild(optElement);
                 });
             } else {
@@ -134,39 +146,50 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Preenche com valor padrão se existir
-            if (defaultValues[field.id]) {
-                input.value = defaultValues[field.id];
-                formValues[field.id] = defaultValues[field.id];
-            }
-            
-            // Aplica máscaras específicas com base no campo
-            if (field.id === "RECLAMANTE_CPF") {
-                applyInputMask(input, maskCPF);
-            } else if (field.id === "RECLAMADA_CNPJ") {
-                applyInputMask(input, maskCNPJ);
-            } else if (field.id === "RECLAMANTE_PIS") {
-                applyInputMask(input, maskPIS);
-            } else if (field.id.includes("VALOR_")) {
-                // Para campos de valor monetário
-                input.placeholder = "R$ 0,00";
-                applyInputMask(input, formatCurrency);
-            } else {
-                // Adiciona listener para atualizar os valores
-                input.addEventListener('input', function() {
-                    // Capitaliza a primeira letra de palavras para campos de texto
-                    if (field.type === 'text' && !field.id.includes("_RG") && 
-                        !field.id.includes("_CTPS") && !field.id.includes("_OAB")) {
-                        formValues[field.id] = capitalizeWords(this.value);
-                    } else {
-                        formValues[field.id] = this.value;
+            if (formValues[field.id]) {
+                if (field.type === 'select') {
+                    // Para select, precisamos encontrar a opção correspondente
+                    for (let i = 0; i < input.options.length; i++) {
+                        if (input.options[i].value === formValues[field.id]) {
+                            input.selectedIndex = i;
+                            break;
+                        }
                     }
-                });
+                } else {
+                    input.value = formValues[field.id];
+                }
             }
             
-            // Caso especial para TIPO_RESCISAO, que precisa atualizar formValues ao ser selecionado
-            if (field.id === "TIPO_RESCISAO") {
+            // Adiciona listener para atualizar os valores
+            if (field.type === 'select') {
                 input.addEventListener('change', function() {
                     formValues[field.id] = this.value;
+                });
+            } else if (field.type === 'date') {
+                input.addEventListener('change', function() {
+                    // Para campos de data, já convertemos para o formato por extenso
+                    formValues[field.id] = formatDateExtended(this.value);
+                });
+            } else {
+                input.addEventListener('input', function() {
+                    let value = this.value;
+                    
+                    // Aplicar máscaras para documentos
+                    if (['RECLAMANTE_CPF', 'RECLAMANTE_PIS', 'RECLAMANTE_RG', 
+                         'RECLAMADA_CNPJ', 'ADVOGADO_OAB', 'RECLAMANTE_CTPS'].includes(field.id)) {
+                        value = applyMask(value, field.id);
+                        this.value = value; // Atualiza o campo visualmente
+                    }
+                    
+                    // Capitaliza a primeira letra de cada palavra em campos de texto
+                    if (field.type === 'text' && 
+                        !['RECLAMANTE_CPF', 'RECLAMANTE_PIS', 'RECLAMANTE_RG', 
+                          'RECLAMADA_CNPJ', 'ADVOGADO_OAB', 'RECLAMANTE_CTPS'].includes(field.id)) {
+                        value = capitalizeWords(value);
+                        this.value = value; // Atualiza o campo visualmente
+                    }
+                    
+                    formValues[field.id] = value;
                 });
             }
             
@@ -186,15 +209,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Substitui todos os campos no template pelos valores do formulário
         for (const [key, value] of Object.entries(formValues)) {
-            let formattedValue = value;
-            
-            // Formata datas para o formato por extenso
-            if (key === "DATA_ADMISSAO" || key === "DATA_RESCISAO" || key === "RECLAMANTE_DATA_NASC") {
-                formattedValue = formatDateExtended(value);
-            }
-            
             const placeholder = new RegExp('{{' + key + '}}', 'g');
-            documentContent = documentContent.replace(placeholder, formattedValue || `[${key} não preenchido]`);
+            documentContent = documentContent.replace(placeholder, value || `[${key} não preenchido]`);
         }
         
         // Destaca campos não preenchidos
@@ -202,10 +218,64 @@ document.addEventListener('DOMContentLoaded', function() {
             return `<span style="background-color: yellow; color: red;">${match}</span>`;
         });
         
+        // Adiciona papel timbrado se existir
+        if (headerLogo) {
+            const headerHtml = `<div style="text-align:center; margin-bottom: 20px;">
+                <img src="${headerLogo}" style="max-width: 100%; max-height: 150px;">
+            </div>`;
+            documentContent = headerHtml + documentContent;
+        }
+        
         preview.innerHTML = documentContent;
     }
     
-    // Baixa o documento como arquivo .docx
+    // Exporta para formato .docx usando docx.js
+    function downloadDocx() {
+        // Código simplificado - na implementação real você usaria a biblioteca docx.js
+        alert("Para implementar a exportação DOCX, é necessário incluir a biblioteca docx.js!");
+        
+        // Em uma implementação real, você montaria o documento usando a API da biblioteca
+        // Por exemplo:
+        /*
+        const doc = new Document();
+        // Montar o documento com paragraphs, sections, etc.
+        // Packing para download
+        Packer.toBlob(doc).then(blob => {
+            saveAs(blob, `${templates[templateSelect.value].name}.docx`);
+        });
+        */
+    }
+    
+    // Exporta para PDF
+    function generatePDF() {
+        // Código simplificado - na implementação real você usaria uma biblioteca como html2pdf.js
+        alert("Para implementar a exportação PDF, é necessário incluir a biblioteca html2pdf.js!");
+        
+        // Em uma implementação real:
+        /*
+        html2pdf().from(preview).save(`${templates[templateSelect.value].name}.pdf`);
+        */
+    }
+    
+    // Função de impressão
+    function printDocument() {
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write('<html><head><title>Imprimir Petição</title>');
+        printWindow.document.write('<style>body { font-family: "Times New Roman", Times, serif; line-height: 1.5; }</style>');
+        printWindow.document.write('</head><body>');
+        printWindow.document.write(preview.innerHTML);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.focus();
+        
+        // Imprimir após carregar todo o conteúdo
+        printWindow.onload = function() {
+            printWindow.print();
+            printWindow.close();
+        };
+    }
+    
+    // Baixa o documento como arquivo .txt
     function downloadDocument() {
         const selectedTemplate = templateSelect.value;
         const template = templates[selectedTemplate];
@@ -216,15 +286,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Substitui todos os campos no template pelos valores do formulário
         for (const [key, value] of Object.entries(formValues)) {
-            let formattedValue = value;
-            
-            // Formata datas para o formato por extenso
-            if (key === "DATA_ADMISSAO" || key === "DATA_RESCISAO" || key === "RECLAMANTE_DATA_NASC") {
-                formattedValue = formatDateExtended(value);
-            }
-            
             const placeholder = new RegExp('{{' + key + '}}', 'g');
-            documentContent = documentContent.replace(placeholder, formattedValue || `_______________`);
+            documentContent = documentContent.replace(placeholder, value || `_______________`);
         }
         
         // Remove campos não preenchidos
@@ -243,10 +306,33 @@ document.addEventListener('DOMContentLoaded', function() {
         URL.revokeObjectURL(url);
     }
     
+    // Gerenciar upload de logo/papel timbrado
+    function handleLogoUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                headerLogo = e.target.result;
+                // Exibe miniatura do logo
+                const logoPreview = document.getElementById('logoPreview');
+                if (logoPreview) {
+                    logoPreview.src = headerLogo;
+                    logoPreview.style.display = 'block';
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+    
     // Event Listeners
     templateSelect.addEventListener('change', initForm);
     generateBtn.addEventListener('click', generateDocument);
     downloadBtn.addEventListener('click', downloadDocument);
+    
+    // Novos event listeners
+    if (pdfBtn) pdfBtn.addEventListener('click', generatePDF);
+    if (printBtn) printBtn.addEventListener('click', printDocument);
+    if (logoUpload) logoUpload.addEventListener('change', handleLogoUpload);
     
     // Inicializa o formulário ao carregar a página
     initForm();
