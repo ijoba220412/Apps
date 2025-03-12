@@ -1,33 +1,27 @@
 document.getElementById('gerarPdfBtn').addEventListener('click', gerarPDF);
 
 async function gerarPDF() {
-    const { PDFDocument } = PDFLib;
+    const { PDFDocument, rgb } = PDFLib;
     const timbradoInput = document.getElementById('timbrado');
     const timbradoFile = timbradoInput.files[0];
 
-    let pdfDoc = await PDFDocument.create();
-    let templatePages = [];
+    // Cria um novo PDF
+    const pdfDoc = await PDFDocument.create();
+    let templateDoc = null;
 
-    // Carrega o papel timbrado (se existir)
+    // Carrega o timbrado (se existir)
     if (timbradoFile) {
         const timbradoBuffer = await timbradoFile.arrayBuffer();
-        const timbradoDoc = await PDFDocument.load(timbradoBuffer);
-        // Copia TODAS as páginas do timbrado (para casos de templates multi-página)
-        templatePages = await pdfDoc.copyPages(timbradoDoc, timbradoDoc.getPageIndices());
+        templateDoc = await PDFDocument.load(timbradoBuffer);
     }
 
     pdfDoc.registerFontkit(fontkit);
     const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
 
-    // Configurações de layout
-    const margin = {
-        top: 100,
-        bottom: 100,
-        left: 100,
-        right: 100
-    };
-    const lineHeight = 20;
+    // Configurações
+    const margin = { top: 150, bottom: 100, left: 100, right: 100 };
     const fontSize = 12;
+    const lineHeight = 20;
 
     // Dados do formulário
     const formData = {
@@ -37,7 +31,17 @@ async function gerarPDF() {
         conteudo: document.getElementById('conteudo').value
     };
 
-    // Função para quebrar texto em linhas justificadas
+    // Função para criar uma nova página (com ou sem timbrado)
+    async function addNewPage() {
+        if (templateDoc) {
+            const [templatePage] = await pdfDoc.copyPages(templateDoc, [0]);
+            return pdfDoc.addPage(templatePage);
+        } else {
+            return pdfDoc.addPage([595.28, 841.89]); // A4
+        }
+    }
+
+    // Função para justificar texto
     function justifyText(text, maxWidth) {
         const words = text.split(' ');
         let lines = [];
@@ -48,27 +52,24 @@ async function gerarPDF() {
             const wordWidth = font.widthOfTextAtSize(word, fontSize);
             const spaceWidth = font.widthOfTextAtSize(' ', fontSize);
 
-            if (currentWidth + wordWidth + (currentLine.length * spaceWidth) > maxWidth) {
+            if (currentLine.length > 0 && (currentWidth + wordWidth + spaceWidth > maxWidth)) {
                 lines.push(currentLine);
-                currentLine = [word];
-                currentWidth = wordWidth;
-            } else {
-                currentLine.push(word);
-                currentWidth += wordWidth + spaceWidth;
+                currentLine = [];
+                currentWidth = 0;
             }
+
+            currentLine.push(word);
+            currentWidth += wordWidth + (currentLine.length > 1 ? spaceWidth : 0);
         }
 
-        lines.push(currentLine);
-        return lines.map(line => ({
-            words: line,
-            width: line.reduce((acc, word) => acc + font.widthOfTextAtSize(word, fontSize), 0)
-        }));
+        if (currentLine.length > 0) lines.push(currentLine);
+        return lines;
     }
 
-    // Função para adicionar texto com paginação
-    async function addText(text, startPage, startY) {
+    // Função para adicionar texto com controle de páginas
+    async function addContent(text, startPage) {
         let currentPage = startPage;
-        let y = startY;
+        let y = currentPage.getHeight() - margin.top;
         const maxWidth = currentPage.getWidth() - margin.left - margin.right;
 
         const paragraphs = text.split('\n');
@@ -76,22 +77,22 @@ async function gerarPDF() {
             const lines = justifyText(paragraph, maxWidth);
 
             for (const line of lines) {
+                // Verifica se precisa de nova página
                 if (y < margin.bottom) {
-                    // Adiciona nova página (com timbrado ou branca)
-                    currentPage = templatePages.length > 0 
-                        ? pdfDoc.addPage(templatePages[0]) // Usa a primeira página do timbrado
-                        : pdfDoc.addPage([595.28, 841.89]);
+                    currentPage = await addNewPage();
                     y = currentPage.getHeight() - margin.top;
                 }
 
-                const spaceCount = line.words.length - 1;
-                const totalSpaceWidth = maxWidth - line.width;
-                const spaceWidth = spaceCount > 0 ? totalSpaceWidth / spaceCount : 0;
+                // Calcula espaçamento para justificar
+                const textWidth = font.widthOfTextAtSize(line.join(' '), fontSize);
+                const spaceCount = line.length - 1;
+                const spaceWidth = spaceCount > 0 ? (maxWidth - textWidth) / spaceCount : 0;
 
+                // Desenha cada palavra
                 let x = margin.left;
-                for (let i = 0; i < line.words.length; i++) {
-                    currentPage.drawText(line.words[i], { x, y, size: fontSize, font });
-                    x += font.widthOfTextAtSize(line.words[i], fontSize) + (i < spaceCount ? spaceWidth : 0);
+                for (const [index, word] of line.entries()) {
+                    currentPage.drawText(word, { x, y, size: fontSize, font, color: rgb(0, 0, 0) });
+                    x += font.widthOfTextAtSize(word, fontSize) + (index < spaceCount ? spaceWidth : 0);
                 }
 
                 y -= lineHeight;
@@ -99,28 +100,28 @@ async function gerarPDF() {
         }
     }
 
-    // Adiciona a primeira página (timbrado ou branca)
-    const firstPage = templatePages.length > 0 
-        ? pdfDoc.addPage(templatePages[0]) 
-        : pdfDoc.addPage([595.28, 841.89]);
+    // Processamento principal
+    try {
+        // Adiciona primeira página
+        let currentPage = await addNewPage();
 
-    // Campos fixos (apenas na primeira página)
-    firstPage.drawText(formData.remetente, { x: margin.left, y: firstPage.getHeight() - margin.top, size: fontSize, font });
-    firstPage.drawText(formData.destinatario, { x: margin.left, y: firstPage.getHeight() - margin.top - lineHeight * 2, size: fontSize, font });
-    firstPage.drawText(formData.assunto, { x: margin.left, y: firstPage.getHeight() - margin.top - lineHeight * 4, size: fontSize, font });
+        // Campos fixos (só na primeira página)
+        currentPage.drawText(formData.remetente, { x: margin.left, y: currentPage.getHeight() - margin.top, size: fontSize, font });
+        currentPage.drawText(formData.destinatario, { x: margin.left, y: currentPage.getHeight() - margin.top - 40, size: fontSize, font });
+        currentPage.drawText(formData.assunto, { x: margin.left, y: currentPage.getHeight() - margin.top - 80, size: fontSize, font });
 
-    // Conteúdo justificado (começa após os campos fixos)
-    await addText(
-        formData.conteudo, 
-        firstPage, 
-        firstPage.getHeight() - margin.top - lineHeight * 6
-    );
+        // Adiciona conteúdo (começa abaixo dos campos fixos)
+        await addContent(formData.conteudo, currentPage);
 
-    // Finaliza e baixa o PDF
-    const pdfBytes = await pdfDoc.save();
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'documento_gerado.pdf';
-    link.click();
+        // Baixa o PDF
+        const pdfBytes = await pdfDoc.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'documento_gerado.pdf';
+        link.click();
+
+    } catch (error) {
+        alert('Erro ao gerar PDF: ' + error.message);
+    }
 }
