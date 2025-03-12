@@ -4,558 +4,105 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Documentos Jurídicos</title>
+    
     <!-- Bootstrap CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <!-- jQuery e jQuery Mask -->
+    
+    <!-- jQuery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-    <!-- jsPDF para exportar para PDF -->
+    
+    <!-- jsPDF para exportação PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- html2canvas para conversão HTML para canvas -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- html2pdf para exportar PDF -->
+    
+    <!-- html2pdf para exportação PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- docx para exportar para Word -->
+    
+    <!-- docx para exportação Word -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.0/docx.min.js"></script>
+    
     <!-- FileSaver.js para salvar arquivos -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <!-- pdf.js para renderizar PDF de papel timbrado -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    
+    <!-- Estilos -->
     <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .header {
-            background-color: #0d47a1;
-            color: white;
-            padding: 20px 0;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .form-container {
-            background-color: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-        .section-title {
-            background-color: #e3f2fd;
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-weight: 600;
-            color: #0d47a1;
-            border-left: 5px solid #0d47a1;
-        }
-        .btn-primary {
-            background-color: #0d47a1;
-            border-color: #0d47a1;
-        }
-        .btn-primary:hover {
-            background-color: #0a3d8f;
-            border-color: #0a3d8f;
-        }
-        .btn-secondary {
-            background-color: #6c757d;
-            border-color: #6c757d;
-        }
-        .btn-secondary:hover {
-            background-color: #5a6268;
-            border-color: #5a6268;
-        }
-        .preview-container {
-            font-family: 'Times New Roman', Times, serif;
-            font-size: 12pt;
-            line-height: 1.5;
-            padding: 30px;
-            margin-top: 20px;
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            position: relative;
-        }
-        #documentPreview {
-            margin: 20px auto;
-            padding: 40px;
-            background-color: white;
-            width: 21cm;
-            min-height: 29.7cm;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            page-break-after: always;
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-        .form-label {
-            font-weight: 600;
-            color: #495057;
-        }
-        .form-control:focus {
-            border-color: #0d47a1;
-            box-shadow: 0 0 0 0.2rem rgba(13, 71, 161, 0.25);
-        }
-        .footer {
-            background-color: #0d47a1;
-            color: white;
-            padding: 15px 0;
-            text-align: center;
-            margin-top: 30px;
-        }
-        .nav-tabs .nav-link {
-            color: #495057;
-        }
-        .nav-tabs .nav-link.active {
-            color: #0d47a1;
-            font-weight: 600;
-        }
+        body { background-color: #f8f9fa; }
+        .preview-container { font-family: 'Times New Roman', serif; font-size: 12pt; padding: 30px; }
+        #documentPreview { padding: 40px; background-color: white; min-height: 29.7cm; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="container">
-            <h1 class="text-center">Gerador de Documentos Jurídicos</h1>
-            <p class="text-center mb-0">Sistema de geração de petições e documentos legais</p>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="d-flex justify-content-between mb-4">
-            <a href="../index.html" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Voltar à Página Inicial
-            </a>
-        </div>
-
-        <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="form-tab" data-bs-toggle="tab" data-bs-target="#form-tab-pane" type="button" role="tab">Formulário</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="preview-tab" data-bs-toggle="tab" data-bs-target="#preview-tab-pane" type="button" role="tab">Visualizar Documento</button>
-            </li>
-        </ul>
-
-        <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="form-tab-pane" role="tabpanel" tabindex="0">
-                <div class="form-container">
-                    <form id="petitionForm">
-                        <!-- Informações do Documento -->
-                        <div class="section-title">Informações do Documento</div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="tipoDocumento" class="form-label">Tipo de Documento</label>
-                                <select class="form-select" id="tipoDocumento" name="tipoDocumento">
-                                    <option value="inicial_trab" selected>Petição Inicial Trabalhista</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="vara_trabalho" class="form-label">Vara do Trabalho</label>
-                                <input type="text" class="form-control" id="vara_trabalho" name="VARA_TRABALHO" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="cidade_uf" class="form-label">Cidade/UF</label>
-                                <select class="form-select" id="cidade_uf" name="CIDADE_UF" required>
-                                    <option value="Rio de Janeiro/RJ" selected>Rio de Janeiro/RJ</option>
-                                    <option value="São Paulo/SP">São Paulo/SP</option>
-                                    <option value="Belo Horizonte/MG">Belo Horizonte/MG</option>
-                                    <option value="Brasília/DF">Brasília/DF</option>
-                                    <option value="Salvador/BA">Salvador/BA</option>
-                                    <option value="Recife/PE">Recife/PE</option>
-                                    <option value="Fortaleza/CE">Fortaleza/CE</option>
-                                    <option value="Porto Alegre/RS">Porto Alegre/RS</option>
-                                    <option value="Curitiba/PR">Curitiba/PR</option>
-                                    <option value="Manaus/AM">Manaus/AM</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Dados do Reclamante -->
-                        <div class="section-title">Dados do Reclamante</div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="reclamante_nome" class="form-label">Nome Completo</label>
-                                <input type="text" class="form-control" id="reclamante_nome" name="RECLAMANTE_NOME" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="reclamante_nacionalidade" class="form-label">Nacionalidade</label>
-                                <select class="form-select" id="reclamante_nacionalidade" name="RECLAMANTE_NACIONALIDADE" required>
-                                    <option value="brasileiro(a)" selected>Brasileiro(a)</option>
-                                    <option value="português(a)">Português(a)</option>
-                                    <option value="argentino(a)">Argentino(a)</option>
-                                    <option value="italiano(a)">Italiano(a)</option>
-                                    <option value="alemão(ã)">Alemão(ã)</option>
-                                    <option value="espanhol(a)">Espanhol(a)</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="reclamante_estado_civil" class="form-label">Estado Civil</label>
-                                <select class="form-select" id="reclamante_estado_civil" name="RECLAMANTE_ESTADO_CIVIL" required>
-                                    <option value="solteiro(a)">Solteiro(a)</option>
-                                    <option value="casado(a)">Casado(a)</option>
-                                    <option value="divorciado(a)">Divorciado(a)</option>
-                                    <option value="viúvo(a)">Viúvo(a)</option>
-                                    <option value="união estável">União Estável</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="reclamante_profissao" class="form-label">Profissão</label>
-                                <input type="text" class="form-control" id="reclamante_profissao" name="RECLAMANTE_PROFISSAO" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="reclamante_rg" class="form-label">RG</label>
-                                <input type="text" class="form-control" id="reclamante_rg" name="RECLAMANTE_RG" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="reclamante_cpf" class="form-label">CPF</label>
-                                <input type="text" class="form-control" id="reclamante_cpf" name="RECLAMANTE_CPF" required>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-3">
-                                <label for="reclamante_ctps" class="form-label">CTPS</label>
-                                <input type="text" class="form-control" id="reclamante_ctps" name="RECLAMANTE_CTPS" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="reclamante_pis" class="form-label">PIS</label>
-                                <input type="text" class="form-control" id="reclamante_pis" name="RECLAMANTE_PIS" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="reclamante_data_nasc" class="form-label">Data de Nascimento</label>
-                                <input type="date" class="form-control" id="reclamante_data_nasc" name="RECLAMANTE_DATA_NASC" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="reclamante_mae" class="form-label">Nome da Mãe</label>
-                                <input type="text" class="form-control" id="reclamante_mae" name="RECLAMANTE_MAE" required>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="reclamante_endereco" class="form-label">Endereço Completo</label>
-                                <input type="text" class="form-control" id="reclamante_endereco" name="RECLAMANTE_ENDERECO" required>
-                            </div>
-                        </div>
-
-                        <!-- Dados da Reclamada -->
-                        <div class="section-title">Dados da Reclamada</div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="reclamada_nome" class="form-label">Nome/Razão Social</label>
-                                <input type="text" class="form-control" id="reclamada_nome" name="RECLAMADA_NOME" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="reclamada_cnpj" class="form-label">CNPJ</label>
-                                <input type="text" class="form-control" id="reclamada_cnpj" name="RECLAMADA_CNPJ" required>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="reclamada_endereco" class="form-label">Endereço Completo</label>
-                                <input type="text" class="form-control" id="reclamada_endereco" name="RECLAMADA_ENDERECO" required>
-                            </div>
-                        </div>
-
-                        <!-- Dados do Contrato de Trabalho -->
-                        <div class="section-title">Dados do Contrato de Trabalho</div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="data_admissao" class="form-label">Data de Admissão</label>
-                                <input type="date" class="form-control" id="data_admissao" name="DATA_ADMISSAO" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="reclamante_cargo" class="form-label">Cargo/Função</label>
-                                <input type="text" class="form-control" id="reclamante_cargo" name="RECLAMANTE_CARGO" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="reclamante_salario" class="form-label">Último Salário (R$)</label>
-                                <input type="text" class="form-control" id="reclamante_salario" name="RECLAMANTE_SALARIO" required>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="data_rescisao" class="form-label">Data da Rescisão</label>
-                                <input type="date" class="form-control" id="data_rescisao" name="DATA_RESCISAO" required>
-                            </div>
-                            <div class="col-md-8">
-                                <label for="tipo_rescisao" class="form-label">Tipo de Rescisão</label>
-                                <select class="form-select" id="tipo_rescisao" name="TIPO_RESCISAO" required>
-                                    <option value="dispensa sem justa causa">Dispensa sem justa causa</option>
-                                    <option value="dispensa por justa causa">Dispensa por justa causa</option>
-                                    <option value="pedido de demissão">Pedido de demissão</option>
-                                    <option value="término de contrato">Término de contrato</option>
-                                    <option value="acordo mútuo">Acordo mútuo</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Informações da Reclamação -->
-                        <div class="section-title">Informações da Reclamação</div>
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="verbas_nao_pagas" class="form-label">Verbas Não Pagas</label>
-                                <textarea class="form-control" id="verbas_nao_pagas" name="VERBAS_NAO_PAGAS" rows="3" required></textarea>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="outras_irregularidades" class="form-label">Outras Irregularidades</label>
-                                <textarea class="form-control" id="outras_irregularidades" name="OUTRAS_IRREGULARIDADES" rows="3" required></textarea>
-                            </div>
-                        </div>
-
-                        <!-- Valores dos Pedidos -->
-                        <div class="section-title">Valores dos Pedidos</div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="valor_saldo_salario" class="form-label">Saldo de Salário (R$)</label>
-                                <input type="text" class="form-control" id="valor_saldo_salario" name="VALOR_SALDO_SALARIO" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="valor_ferias" class="form-label">Férias Proporcionais + 1/3 (R$)</label>
-                                <input type="text" class="form-control" id="valor_ferias" name="VALOR_FERIAS" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="valor_13_salario" class="form-label">13º Salário Proporcional (R$)</label>
-                                <input type="text" class="form-control" id="valor_13_salario" name="VALOR_13_SALARIO" required>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="valor_aviso_previo" class="form-label">Aviso Prévio Indenizado (R$)</label>
-                                <input type="text" class="form-control" id="valor_aviso_previo" name="VALOR_AVISO_PREVIO" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="valor_multa_477" class="form-label">Multa Art. 477 CLT (R$)</label>
-                                <input type="text" class="form-control" id="valor_multa_477" name="VALOR_MULTA_477" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="valor_multa_fgts" class="form-label">Multa FGTS 40% (R$)</label>
-                                <input type="text" class="form-control" id="valor_multa_fgts" name="VALOR_MULTA_FGTS" required>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="valor_dano_moral" class="form-label">Dano Moral (R$, se aplicável)</label>
-                                <input type="text" class="form-control" id="valor_dano_moral" name="VALOR_DANO_MORAL">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="valor_causa" class="form-label">Valor da Causa (R$)</label>
-                                <input type="text" class="form-control" id="valor_causa" name="VALOR_CAUSA" required>
-                            </div>
-                        </div>
-
-                        <!-- Dados do Advogado -->
-                        <div class="section-title">Dados do Advogado</div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="advogado_nome" class="form-label">Nome Completo</label>
-                                <input type="text" class="form-control" id="advogado_nome" name="ADVOGADO_NOME" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="advogado_uf" class="form-label">UF da OAB</label>
-                                <select class="form-select" id="advogado_uf" name="ADVOGADO_UF" required>
-                                    <option value="RJ" selected>RJ</option>
-                                    <option value="SP">SP</option>
-                                    <option value="MG">MG</option>
-                                    <option value="DF">DF</option>
-                                    <option value="BA">BA</option>
-                                    <option value="PE">PE</option>
-                                    <option value="CE">CE</option>
-                                    <option value="RS">RS</option>
-                                    <option value="PR">PR</option>
-                                    <option value="AM">AM</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="advogado_oab" class="form-label">Número OAB</label>
-                                <input type="text" class="form-control" id="advogado_oab" name="ADVOGADO_OAB" required>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="advogado_endereco" class="form-label">Endereço Profissional</label>
-                                <input type="text" class="form-control" id="advogado_endereco" name="ADVOGADO_ENDERECO" required>
-                            </div>
-                        </div>
-
-                        <!-- Papel Timbrado -->
-                        <div class="section-title">Papel Timbrado (Opcional)</div>
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="backgroundPdf" class="form-label">Selecione um PDF para usar como plano de fundo (opcional)</label>
-                                <input type="file" class="form-control" id="backgroundPdf" accept=".pdf">
-                            </div>
-                        </div>
-
-                        <div class="row mt-4">
-                            <div class="col-12 text-center">
-                                <button type="button" id="generateBtn" class="btn btn-primary me-2">Gerar Documento</button>
-                                <button type="reset" class="btn btn-secondary">Limpar Formulário</button>
-                            </div>
-                        </div>
-
-                        <!-- Botão de Ação (geração via submit) -->
-                        <div class="row mt-4">
-                            <div class="col-12 text-center">
-                                <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="bi bi-file-earmark-text"></i> Gerar Documento
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+    <div class="container mt-4">
+        <h2 class="text-center">Gerador de Documentos Jurídicos</h2>
+        
+        <form id="petitionForm">
+            <div class="mb-3">
+                <label class="form-label">Nome do Reclamante</label>
+                <input type="text" class="form-control" id="reclamante_nome" name="RECLAMANTE_NOME" required>
             </div>
-
-            <div class="tab-pane fade" id="preview-tab-pane" role="tabpanel" tabindex="0">
-                <div class="d-flex justify-content-end mb-3">
-                    <button id="exportPdfBtn" class="btn btn-primary me-2">Exportar para PDF</button>
-                    <button id="exportDocBtn" class="btn btn-primary">Exportar para DOC</button>
-                </div>
-                <div class="preview-container">
-                    <div id="documentPreview">
-                        <p class="text-center text-muted">Preencha o formulário e clique em "Gerar Documento" para visualizar o documento.</p>
-                    </div>
-                </div>
+            <div class="mb-3">
+                <label class="form-label">Cidade</label>
+                <input type="text" class="form-control" id="cidade_uf" name="CIDADE_UF" required>
             </div>
-        </div>
-    </div>
+            <div class="mb-3">
+                <label class="form-label">Descrição</label>
+                <textarea class="form-control" id="descricao" name="DESCRICAO" rows="3" required></textarea>
+            </div>
+            
+            <button type="button" id="generateBtn" class="btn btn-primary">Gerar Documento</button>
+        </form>
+        
+        <hr>
 
-    <div class="footer">
-        <div class="container">
-            <p class="mb-0">© 2025 Gerador de Documentos Jurídicos - Todos os direitos reservados</p>
+        <h4>Visualização do Documento</h4>
+        <div id="documentPreview" class="preview-container">
+            <p class="text-center text-muted">Preencha o formulário e clique em "Gerar Documento".</p>
         </div>
-    </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+        <hr>
+
+        <button id="exportPdfBtn" class="btn btn-danger">Exportar para PDF</button>
+        <button id="exportDocBtn" class="btn btn-success">Exportar para DOC</button>
+    </div>
 
     <script>
         $(document).ready(function() {
-            // Aplicando máscaras
-            $('#reclamante_cpf').mask('000.000.000-00');
-            $('#reclamante_rg').mask('00.000.000-0');
-            $('#reclamante_ctps').mask('0000000/00000');
-            $('#reclamante_pis').mask('000.00000.00-0');
-            $('#reclamada_cnpj').mask('00.000.000/0000-00');
-            $('#advogado_oab').mask('000000');
-            
-            // Máscara para valores monetários
-            $('.form-control[id^="valor_"]').mask('#.##0,00', {reverse: true});
-            $('#reclamante_salario').mask('#.##0,00', {reverse: true});
-
-            // Ação ao clicar no botão de gerar documento
             $('#generateBtn').click(function() {
                 if (!$('#petitionForm')[0].checkValidity()) {
                     $('#petitionForm')[0].reportValidity();
                     return;
                 }
                 generateDocument();
-                document.getElementById('preview-tab').click();
             });
 
-            // Exportar para PDF (formato A4)
             $('#exportPdfBtn').click(function() {
                 const element = document.getElementById('documentPreview');
-                const opt = {
-                    margin: [10, 10, 10, 10],
-                    filename: 'peticao_trabalhista.pdf',
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2 },
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
-                html2pdf().set(opt).from(element).save();
+                html2pdf().set({ filename: 'documento.pdf', jsPDF: { format: 'a4' } }).from(element).save();
             });
 
-            // Exportar para DOC usando a biblioteca docx
             $('#exportDocBtn').click(function() {
                 const content = document.getElementById('documentPreview').innerText;
-                const paragraphs = content.split('\n').map(line => new docx.Paragraph(line));
                 const doc = new docx.Document({
-                    sections: [{
-                        properties: {
-                            page: {
-                                size: { width: 11906, height: 16838 }
-                            }
-                        },
-                        children: paragraphs
-                    }]
+                    sections: [{ children: [new docx.Paragraph(content)] }]
                 });
-                docx.Packer.toBlob(doc).then(blob => {
-                    saveAs(blob, 'peticao_trabalhista.doc');
-                });
+                docx.Packer.toBlob(doc).then(blob => saveAs(blob, 'documento.doc'));
             });
         });
 
         function generateDocument() {
-            fetch('../templates/inicial_trab.txt')
-                .then(response => response.text())
-                .then(template => {
-                    let formData = new FormData(document.getElementById('petitionForm'));
-                    let filledTemplate = template;
-                    for (let [key, value] of formData.entries()) {
-                        if (typeof value === 'string') {
-                            if (key.startsWith('VALOR_') || key === 'RECLAMANTE_SALARIO') {
-                                filledTemplate = filledTemplate.replace(new RegExp('{{' + key + '}}', 'g'), value);
-                            } else {
-                                const capitalizedValue = value.split(' ').map(word => 
-                                    word.length > 0 ? word.charAt(0).toUpperCase() + word.slice(1) : ''
-                                ).join(' ');
-                                filledTemplate = filledTemplate.replace(new RegExp('{{' + key + '}}', 'g'), capitalizedValue);
-                            }
-                        }
-                    }
-                    // Remover eventuais placeholders não preenchidos
-                    filledTemplate = filledTemplate.replace(/{{.*?}}/g, '');
-                    
-                    const dataAtual = new Date();
-                    const dia = dataAtual.getDate();
-                    const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
-                    const mes = meses[dataAtual.getMonth()];
-                    const ano = dataAtual.getFullYear();
-                    
-                    const cidade = document.getElementById('cidade_uf').value.split('/')[0];
-                    const dataFormatada = `${cidade}, ${dia} de ${mes} de ${ano}`;
-                    
-                    filledTemplate = filledTemplate.replace('{{CIDADE_DATA}}', dataFormatada);
-                    document.getElementById('documentPreview').innerHTML = filledTemplate.replace(/\n/g, '<br>');
+            let formData = new FormData(document.getElementById('petitionForm'));
+            let template = `
+                <h3>Documento Jurídico</h3>
+                <p><strong>Nome:</strong> {{RECLAMANTE_NOME}}</p>
+                <p><strong>Cidade:</strong> {{CIDADE_UF}}</p>
+                <p><strong>Descrição:</strong> {{DESCRICAO}}</p>
+            `;
 
-                    // Inclusão de papel timbrado se fornecido
-                    var backgroundInput = document.getElementById('backgroundPdf');
-                    if (backgroundInput.files && backgroundInput.files[0]) {
-                        var file = backgroundInput.files[0];
-                        var reader = new FileReader();
-                        reader.onload = function(e) {
-                            var typedarray = new Uint8Array(e.target.result);
-                            pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
-                                pdf.getPage(1).then(function(page) {
-                                    var scale = 1.5;
-                                    var viewport = page.getViewport({ scale: scale });
-                                    var canvas = document.createElement('canvas');
-                                    var context = canvas.getContext('2d');
-                                    canvas.height = viewport.height;
-                                    canvas.width = viewport.width;
-                                    var renderContext = {
-                                        canvasContext: context,
-                                        viewport: viewport
-                                    };
-                                    page.render(renderContext).promise.then(function() {
-                                        var dataURL = canvas.toDataURL();
-                                        document.getElementById('documentPreview').style.backgroundImage = 'url(' + dataURL + ')';
-                                    });
-                                });
-                            });
-                        }
-                        reader.readAsArrayBuffer(file);
-                    } else {
-                        document.getElementById('documentPreview').style.backgroundImage = 'none';
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar o template:', error);
-                    alert('Erro ao carregar o template. Por favor, tente novamente.');
-                });
+            formData.forEach((value, key) => {
+                let capitalizedValue = value.replace(/\b\w/g, char => char.toUpperCase());
+                template = template.replace(new RegExp('{{' + key + '}}', 'g'), capitalizedValue);
+            });
+
+            document.getElementById('documentPreview').innerHTML = template;
         }
     </script>
 </body>
