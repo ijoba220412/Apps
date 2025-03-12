@@ -65,17 +65,10 @@
         button:hover {
             background-color: #45a049;
         }
-        button.secondary {
-            background-color: #2196F3;
-        }
-        button.secondary:hover {
-            background-color: #0b7dda;
-        }
-        button.tertiary {
-            background-color: #f44336;
-        }
-        button.tertiary:hover {
-            background-color: #d32f2f;
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
         }
         .template-selector {
             margin-bottom: 20px;
@@ -84,29 +77,24 @@
             font-family: 'Times New Roman', Times, serif;
             line-height: 1.5;
         }
-        .buttons-group {
-            display: flex;
-            flex-wrap: wrap;
-        }
         .logo-section {
             margin-bottom: 20px;
-            padding: 10px;
-            border: 1px dashed #ccc;
-            border-radius: 4px;
         }
         #logoPreview {
-            max-width: 200px;
-            max-height: 100px;
+            max-width: 100%;
+            max-height: 150px;
             margin-top: 10px;
             display: none;
         }
-        @media print {
-            .form-container {
-                display: none;
-            }
-            .preview-container {
-                width: 100%;
-                box-shadow: none;
+        .section-title {
+            margin-top: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            color: #4CAF50;
+        }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
             }
         }
     </style>
@@ -123,23 +111,23 @@
                     <!-- Outros modelos podem ser adicionados aqui -->
                 </select>
             </div>
-            
+
             <div class="logo-section">
-                <label for="logoUpload">Papel Timbrado / Logo:</label>
-                <input type="file" id="logoUpload" accept="image/*">
-                <img id="logoPreview" alt="Pré-visualização do logo">
+                <h3 class="section-title">Papel Timbrado</h3>
+                <label for="logoInput">Carregar logotipo (opcional):</label>
+                <input type="file" id="logoInput" accept="image/png,image/jpeg,application/pdf">
+                <img id="logoPreview" alt="Preview do logotipo">
             </div>
             
             <div id="dynamicForm">
                 <!-- Campos serão gerados dinamicamente com base no template selecionado -->
             </div>
             
-            <div class="buttons-group">
+            <div class="button-group">
                 <button id="generateBtn">Gerar Petição</button>
-                <button id="downloadBtn" class="secondary">TXT</button>
-                <button id="docxBtn" class="secondary">DOCX</button>
-                <button id="pdfBtn" class="secondary">PDF</button>
-                <button id="printBtn" class="tertiary">Imprimir</button>
+                <button id="downloadBtn">Baixar como DOCX</button>
+                <button id="pdfBtn">Baixar como PDF</button>
+                <button id="printBtn">Imprimir Documento</button>
             </div>
         </div>
         
@@ -149,11 +137,6 @@
         </div>
     </div>
 
-    <!-- Bibliotecas para exportação -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.0/docx.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    
     <script src="./templates/templates.js"></script>
     <script src="./templates/app.js"></script>
 </body>
