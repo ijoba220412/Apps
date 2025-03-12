@@ -1,73 +1,145 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerar PDF com Margens</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <title>Gerador de Documento Timbrado</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
         }
-        form {
-            max-width: 400px;
-            margin-bottom: 20px;
+        .form-group {
+            margin-bottom: 15px;
         }
-        label, input, textarea {
+        label {
             display: block;
+            margin-bottom: 5px;
+        }
+        input, textarea {
             width: 100%;
-            margin-bottom: 10px;
+            padding: 8px;
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h2>Gerar Documento Timbrado</h2>
+        
+        <!-- Formulário -->
+        <form id="documentForm">
+            <div class="form-group">
+                <label>Papel Timbrado (PDF):</label>
+                <input type="file" id="timbrado" accept=".pdf" required>
+            </div>
 
-    <h2>Preencha os dados para gerar o PDF</h2>
-    <form id="pdfForm">
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" required>
+            <div class="form-group">
+                <label>Remetente:</label>
+                <input type="text" id="remetente" required>
+            </div>
 
-        <label for="cargo">Cargo:</label>
-        <input type="text" id="cargo" required>
+            <div class="form-group">
+                <label>Destinatário:</label>
+                <input type="text" id="destinatario" required>
+            </div>
 
-        <label for="mensagem">Mensagem:</label>
-        <textarea id="mensagem" rows="4" required></textarea>
+            <div class="form-group">
+                <label>Assunto:</label>
+                <input type="text" id="assunto" required>
+            </div>
 
-        <button type="button" onclick="gerarPDF()">Gerar PDF</button>
-    </form>
+            <div class="form-group">
+                <label>Conteúdo:</label>
+                <textarea id="conteudo" rows="5" required></textarea>
+            </div>
+
+            <button type="button" onclick="gerarPDF()">Gerar Documento</button>
+        </form>
+    </div>
+
+    <!-- Biblioteca PDF-LIB (via CDN) -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://unpkg.com/@pdf-lib/fontkit@0.0.4/dist/fontkit.umd.min.js"></script>
 
     <script>
-        function gerarPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({
-                format: "a4",
-                unit: "cm"
-            });
+        async function gerarPDF() {
+            // Configurações do PDF
+            const timbradoFile = document.getElementById('timbrado').files[0];
+            const { PDFDocument } = PDFLib;
 
-            // Definição das margens
-            const margemEsquerda = 3;
-            const margemSuperior = 3;
+            // Carrega o papel timbrado
+            const reader = new FileReader();
+            reader.readAsArrayBuffer(timbradoFile);
+            
+            reader.onload = async () => {
+                try {
+                    // Cria o documento PDF
+                    const pdfDoc = await PDFDocument.load(reader.result);
+                    pdfDoc.registerFontkit(fontkit);
 
-            // Captura dos dados do formulário
-            const nome = document.getElementById("nome").value;
-            const cargo = document.getElementById("cargo").value;
-            const mensagem = document.getElementById("mensagem").value;
+                    // Obtém a primeira página do PDF timbrado
+                    const page = pdfDoc.getPages()[0];
 
-            // Configuração do conteúdo no PDF
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(12);
+                    // Coleta dados do formulário
+                    const formData = {
+                        remetente: document.getElementById('remetente').value,
+                        destinatario: document.getElementById('destinatario').value,
+                        assunto: document.getElementById('assunto').value,
+                        conteudo: document.getElementById('conteudo').value
+                    };
 
-            doc.text("Documento Oficial", margemEsquerda, margemSuperior);
-            doc.text(`Nome: ${nome}`, margemEsquerda, margemSuperior + 1);
-            doc.text(`Cargo: ${cargo}`, margemEsquerda, margemSuperior + 2);
-            doc.text("Mensagem:", margemEsquerda, margemSuperior + 3);
-            doc.text(mensagem, margemEsquerda, margemSuperior + 4, { maxWidth: 15 });
+                    // Adiciona texto ao PDF (ajuste as coordenadas conforme seu template)
+                    const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+                    
+                    // Exemplo de posicionamento:
+                    page.drawText(formData.remetente, {
+                        x: 100,
+                        y: 700,
+                        size: 12,
+                        font
+                    });
 
-            // Gera e baixa o PDF
-            doc.save("documento.pdf");
+                    page.drawText(formData.destinatario, {
+                        x: 100,
+                        y: 650,
+                        size: 12,
+                        font
+                    });
+
+                    page.drawText(formData.assunto, {
+                        x: 100,
+                        y: 600,
+                        size: 12,
+                        font
+                    });
+
+                    // Conteúdo com quebra de linhas
+                    const lines = formData.conteudo.split('\n');
+                    let yPosition = 550;
+                    lines.forEach(line => {
+                        page.drawText(line, {
+                            x: 100,
+                            y: yPosition,
+                            size: 12,
+                            font
+                        });
+                        yPosition -= 20;
+                    });
+
+                    // Gera e baixa o PDF
+                    const pdfBytes = await pdfDoc.save();
+                    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'documento_timbrado.pdf';
+                    link.click();
+                    
+                } catch (error) {
+                    alert('Erro ao gerar PDF: ' + error.message);
+                }
+            };
         }
     </script>
-
 </body>
 </html>
