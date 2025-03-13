@@ -1,4 +1,5 @@
 // templates.js - Armazena os modelos de documentos
+
 const templates = {
     "inicial_trab": {
         "name": "Reclamação Trabalhista Inicial",
