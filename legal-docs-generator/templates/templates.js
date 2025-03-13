@@ -126,7 +126,7 @@ OAB/{{ADVOGADO_UF}} nº {{ADVOGADO_OAB}}`,
             { "id": "ADVOGADO_UF", "label": "UF da OAB", "type": "text" },
             { "id": "ADVOGADO_OAB", "label": "Número da OAB", "type": "text" }
         ]
-    };
+    },
     // Você pode adicionar mais modelos aqui
 
 
