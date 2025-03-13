@@ -184,12 +184,12 @@ ____________________________________________
         { "id": "ADVOGADO_ENDERECO", "label": "Endereço Profissional Completo", "type": "textarea" },
 
         // Poderes
+        { "id": "CIDADE_DATA", "label": "Cidade e Data", "type": "text", "placeholder": "Rio de Janeiro, 12 de março de 2025" },    
         { "id": "PODERES_GERAIS", "label": "Poderes Gerais", "type": "textarea", "default": "Propor, acompanhar e interpor ações, defesas, recursos, exceções, contestações, impugnações, alegações finais, memoriais, razões e contrarrazões em qualquer instância judicial ou administrativa." },
         { "id": "PODERES_ESPECIFICOS", "label": "Poderes Específicos", "type": "textarea", "default": "Firmar compromissos, assinar petições, receber citações e intimações, transigir, desistir, reconhecer pedidos, firmar acordos, levantar valores e dar quitação, requerer certidões e documentos, praticando todos os atos inerentes ao fiel cumprimento deste mandato." },
         { "id": "PODERES_ESPECIAIS", "label": "Poderes Especiais", "type": "textarea", "default": "Receber valores, assinar recibos e dar quitação, firmar contratos, solicitar restituições, propor ações de qualquer natureza, representá-lo(a) perante órgãos públicos e privados, ingressar com ações revisionais, execuções, inventários, separações e divórcios, bem como renunciar a direitos e impetrar habeas corpus e mandado de segurança." },
         { "id": "PODER_SUBSTABELECER", "label": "Poder de Substabelecer", "type": "textarea", "default": "Com ou sem reserva de poderes, no todo ou em parte, a terceiros, para os fins que se fizerem necessários." }
 
-        { "id": "CIDADE_DATA", "label": "Cidade e Data", "type": "text", "placeholder": "Rio de Janeiro, 12 de março de 2025" },
          
         ]
     }
