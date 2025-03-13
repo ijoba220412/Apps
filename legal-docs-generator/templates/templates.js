@@ -147,7 +147,7 @@ Por meio do presente instrumento particular de procuração, o OUTORGANTE nomeia
 
 1. Poderes gerais:
 
-<textarea>Propor, acompanhar e interpor ações, defesas, recursos, exceções, contestações, impugnações, alegações finais, memoriais, razões e contrarrazões em qualquer instância judicial ou administrativa.</textarea>  
+{{PODERES_GERAIS}} ! provavelmente ele escrevera um texto antes e depois deste  comunicado ! Propor, acompanhar e interpor ações, defesas, recursos, exceções, contestações, impugnações, alegações finais, memoriais, razões e contrarrazões em qualquer instância judicial ou administrativa.</textarea>  
 2. Poderes específicos:
 
 <textarea>Firmar compromissos, assinar petições, receber citações e intimações, transigir, desistir, reconhecer pedidos, firmar acordos, levantar valores e dar quitação, requerer certidões e documentos, praticando todos os atos inerentes ao fiel cumprimento deste mandato.</textarea>  
