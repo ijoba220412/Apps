@@ -188,7 +188,7 @@ ____________________________________________
         { "id": "PODERES_ESPECIAIS", "label": "Poderes Especiais", "type": "textarea", "default": "Receber valores, assinar recibos e dar quitação, firmar contratos, solicitar restituições, propor ações de qualquer natureza, representá-lo(a) perante órgãos públicos e privados, ingressar com ações revisionais, execuções, inventários, separações e divórcios, bem como renunciar a direitos e impetrar habeas corpus e mandado de segurança." },
         { "id": "PODER_SUBSTABELECER", "label": "Poder de Substabelecer", "type": "textarea", "default": "Com ou sem reserva de poderes, no todo ou em parte, a terceiros, para os fins que se fizerem necessários." }
 
-        { "id": "CIDADE_DATA", "label": "Cidade e Data", "type": "text", "placeholder": Date() },
+        { "id": "CIDADE_DATA", "label": "Cidade e Data", "type": "text", "placeholder": "Rio de Janeiro, 12 de março de 2025" },
          
         ]
     }
