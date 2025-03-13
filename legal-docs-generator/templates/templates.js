@@ -127,6 +127,69 @@ OAB/{{ADVOGADO_UF}} nº {{ADVOGADO_OAB}}`,
         ]
     }
     // Você pode adicionar mais modelos aqui
+
+
+    // Aqui inicia o template da procuração 
+    
+    "procuracao": {
+        "name": "Procuração",
+        "content": `PROCURAÇÃO AD JUDICIA E EXTRAJUDICIA
+
+OUTORGANTE:
+
+{{RECLAMANTE_NOME}}, {{RECLAMANTE_NACIONALIDADE}}, {{RECLAMANTE_ESTADO_CIVIL}}, {{RECLAMANTE_PROFISSAO}}, portador do RG nº {{RECLAMANTE_RG}}, inscrito no CPF sob o nº {{RECLAMANTE_CPF}}, residente e domiciliado em {{RECLAMANTE_ENDERECO}}.
+
+OUTORGADO:
+
+{{ADVOGADO_NOME}}, {{ADVOGADO_NACIONALIDADE}}, {{ADVOGADO_ESTADO_CIVIL}}, advogado regularmente inscrito na Ordem dos Advogados do Brasil, Seccional {{ADVOGADO_UF}}, sob o nº {{ADVOGADO_OAB}}, com endereço profissional em {{ADVOGADO_ENDERECO}}.
+
+Por meio do presente instrumento particular de procuração, o OUTORGANTE nomeia e constitui como seu bastante procurador o OUTORGADO, conferindo-lhe plenos poderes para representá-lo(a), ativa e passivamente, em juízo e fora dele, perante quaisquer repartições públicas, autarquias, empresas privadas, bancos, órgãos administrativos e judiciais, de qualquer instância ou jurisdição, podendo, para tanto, praticar todos os atos necessários à defesa de seus interesses, incluindo, mas não se limitando a:
+
+1. Poderes gerais:
+
+<textarea>Propor, acompanhar e interpor ações, defesas, recursos, exceções, contestações, impugnações, alegações finais, memoriais, razões e contrarrazões em qualquer instância judicial ou administrativa.</textarea>  
+2. Poderes específicos:
+
+<textarea>Firmar compromissos, assinar petições, receber citações e intimações, transigir, desistir, reconhecer pedidos, firmar acordos, levantar valores e dar quitação, requerer certidões e documentos, praticando todos os atos inerentes ao fiel cumprimento deste mandato.</textarea>  
+3. Poderes especiais:
+
+<textarea>Receber valores, assinar recibos e dar quitação, firmar contratos, solicitar restituições, propor ações de qualquer natureza, representá-lo(a) perante órgãos públicos e privados, ingressar com ações revisionais, execuções, inventários, separações e divórcios, bem como renunciar a direitos e impetrar habeas corpus e mandado de segurança.</textarea>  
+4. Poder de substabelecer:
+
+<textarea>Com ou sem reserva de poderes, no todo ou em parte, a terceiros, para os fins que se fizerem necessários.</textarea>  
+
+Esta procuração é concedida em caráter irrevogável e irretratável, salvo manifestação expressa em contrário pelo OUTORGANTE, e terá validade até a conclusão dos atos para os quais foi concedida ou até sua revogação expressa.
+
+{{CIDADE_DATA}}
+
+____________________________________________
+{{RECLAMANTE_NOME}}`,
+        "fields": [
+        // Dados do Outorgante
+        { "id": "RECLAMANTE_NOME", "label": "Nome Completo do Outorgante", "type": "text" },
+        { "id": "RECLAMANTE_NACIONALIDADE", "label": "Nacionalidade", "type": "text" },
+        { "id": "RECLAMANTE_ESTADO_CIVIL", "label": "Estado Civil", "type": "select", "options": ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)", "União Estável"] },
+        { "id": "RECLAMANTE_PROFISSAO", "label": "Profissão", "type": "text" },
+        { "id": "RECLAMANTE_RG", "label": "RG", "type": "text" },
+        { "id": "RECLAMANTE_CPF", "label": "CPF", "type": "text" },
+        { "id": "RECLAMANTE_ENDERECO", "label": "Endereço Completo", "type": "textarea" },
+
+        // Dados do Outorgado (Advogado)
+        { "id": "ADVOGADO_NOME", "label": "Nome Completo do Advogado", "type": "text" },
+        { "id": "ADVOGADO_NACIONALIDADE", "label": "Nacionalidade", "type": "text" },
+        { "id": "ADVOGADO_ESTADO_CIVIL", "label": "Estado Civil", "type": "select", "options": ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)", "União Estável"] },
+        { "id": "ADVOGADO_OAB", "label": "Número da OAB", "type": "text" },
+        { "id": "ADVOGADO_UF", "label": "Seccional da OAB (UF)", "type": "text" },
+        { "id": "ADVOGADO_ENDERECO", "label": "Endereço Profissional Completo", "type": "textarea" },
+
+        // Poderes
+        { "id": "PODERES_GERAIS", "label": "Poderes Gerais", "type": "textarea", "default": "Propor, acompanhar e interpor ações, defesas, recursos, exceções, contestações, impugnações, alegações finais, memoriais, razões e contrarrazões em qualquer instância judicial ou administrativa." },
+        { "id": "PODERES_ESPECIFICOS", "label": "Poderes Específicos", "type": "textarea", "default": "Firmar compromissos, assinar petições, receber citações e intimações, transigir, desistir, reconhecer pedidos, firmar acordos, levantar valores e dar quitação, requerer certidões e documentos, praticando todos os atos inerentes ao fiel cumprimento deste mandato." },
+        { "id": "PODERES_ESPECIAIS", "label": "Poderes Especiais", "type": "textarea", "default": "Receber valores, assinar recibos e dar quitação, firmar contratos, solicitar restituições, propor ações de qualquer natureza, representá-lo(a) perante órgãos públicos e privados, ingressar com ações revisionais, execuções, inventários, separações e divórcios, bem como renunciar a direitos e impetrar habeas corpus e mandado de segurança." },
+        { "id": "PODER_SUBSTABELECER", "label": "Poder de Substabelecer", "type": "textarea", "default": "Com ou sem reserva de poderes, no todo ou em parte, a terceiros, para os fins que se fizerem necessários." }
+        
+        ]
+    }
 };
 
 // Exporta os templates para uso em outros arquivos
