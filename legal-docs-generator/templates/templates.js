@@ -187,7 +187,9 @@ ____________________________________________
         { "id": "PODERES_ESPECIFICOS", "label": "Poderes Específicos", "type": "textarea", "default": "Firmar compromissos, assinar petições, receber citações e intimações, transigir, desistir, reconhecer pedidos, firmar acordos, levantar valores e dar quitação, requerer certidões e documentos, praticando todos os atos inerentes ao fiel cumprimento deste mandato." },
         { "id": "PODERES_ESPECIAIS", "label": "Poderes Especiais", "type": "textarea", "default": "Receber valores, assinar recibos e dar quitação, firmar contratos, solicitar restituições, propor ações de qualquer natureza, representá-lo(a) perante órgãos públicos e privados, ingressar com ações revisionais, execuções, inventários, separações e divórcios, bem como renunciar a direitos e impetrar habeas corpus e mandado de segurança." },
         { "id": "PODER_SUBSTABELECER", "label": "Poder de Substabelecer", "type": "textarea", "default": "Com ou sem reserva de poderes, no todo ou em parte, a terceiros, para os fins que se fizerem necessários." }
-        
+
+        { "id": "CIDADE_DATA", "label": "Cidade e Data", "type": "text", "placeholder": Date() },
+         
         ]
     }
 };
