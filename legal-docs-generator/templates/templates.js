@@ -121,10 +121,25 @@ OAB/{{ADVOGADO_UF}} nº {{ADVOGADO_OAB}}`,
             { "id": "VALOR_DANO_MORAL", "label": "Valor do Dano Moral", "type": "text" },
             
             // Dados do advogado
+
+// No modelo "inicial_trab" e "procuracao", atualize os campos:
+{
+    "id": "ADVOGADO_UF",
+    "label": "UF da OAB",
+    "type": "select",
+    "options": ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"]
+},
+{
+    "id": "ADVOGADO_OAB",
+    "label": "Número da OAB",
+    "type": "text",
+    "pattern": "\\d{1,6}",
+    "maxlength": 6,
+    "placeholder": "Apenas números (ex: 123456)"
+},
+
             { "id": "CIDADE_DATA", "label": "Cidade e Data", "type": "text", "placeholder": "Rio de Janeiro, 12 de março de 2025" },
-            { "id": "ADVOGADO_NOME", "label": "Nome do Advogado", "type": "text" },
-            { "id": "ADVOGADO_UF", "label": "UF da OAB", "type": "text" },
-            { "id": "ADVOGADO_OAB", "label": "Número da OAB", "type": "text" }
+            { "id": "ADVOGADO_NOME", "label": "Nome do Advogado", "type": "text" }
         ]
     },
     // Você pode adicionar mais modelos aqui
