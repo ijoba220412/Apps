@@ -147,17 +147,16 @@ OUTORGADO:
 Por meio do presente instrumento particular de procuração, o OUTORGANTE nomeia e constitui como seu bastante procurador o OUTORGADO, conferindo-lhe plenos poderes para representá-lo(a), ativa e passivamente, em juízo e fora dele, perante quaisquer repartições públicas, autarquias, empresas privadas, bancos, órgãos administrativos e judiciais, de qualquer instância ou jurisdição, podendo, para tanto, praticar todos os atos necessários à defesa de seus interesses, incluindo, mas não se limitando a:
 
 1. Poderes gerais:
+{{PODERES_GERAIS}}
 
-{{PODERES_GERAIS}} ! provavelmente ele escrevera um texto antes e depois deste  comunicado ! Propor, acompanhar e interpor ações, defesas, recursos, exceções, contestações, impugnações, alegações finais, memoriais, razões e contrarrazões em qualquer instância judicial ou administrativa.</textarea>  
 2. Poderes específicos:
+{{PODERES_ESPECIFICOS}}
 
-<textarea>Firmar compromissos, assinar petições, receber citações e intimações, transigir, desistir, reconhecer pedidos, firmar acordos, levantar valores e dar quitação, requerer certidões e documentos, praticando todos os atos inerentes ao fiel cumprimento deste mandato.</textarea>  
 3. Poderes especiais:
+{{PODERES_ESPECIAIS}}
 
-<textarea>Receber valores, assinar recibos e dar quitação, firmar contratos, solicitar restituições, propor ações de qualquer natureza, representá-lo(a) perante órgãos públicos e privados, ingressar com ações revisionais, execuções, inventários, separações e divórcios, bem como renunciar a direitos e impetrar habeas corpus e mandado de segurança.</textarea>  
 4. Poder de substabelecer:
-
-<textarea>Com ou sem reserva de poderes, no todo ou em parte, a terceiros, para os fins que se fizerem necessários.</textarea>  
+{{PODER_SUBSTABELECER}}
 
 Esta procuração é concedida em caráter irrevogável e irretratável, salvo manifestação expressa em contrário pelo OUTORGANTE, e terá validade até a conclusão dos atos para os quais foi concedida ou até sua revogação expressa.
 
@@ -185,10 +184,30 @@ ____________________________________________
 
         // Poderes
         { "id": "CIDADE_DATA", "label": "Cidade e Data", "type": "text", "placeholder": "Rio de Janeiro, 12 de março de 2025" },    
-        { "id": "PODERES_GERAIS", "label": "Poderes Gerais", "type": "textarea", "default": "Propor, acompanhar e interpor ações, defesas, recursos, exceções, contestações, impugnações, alegações finais, memoriais, razões e contrarrazões em qualquer instância judicial ou administrativa." },
-        { "id": "PODERES_ESPECIFICOS", "label": "Poderes Específicos", "type": "textarea", "default": "Firmar compromissos, assinar petições, receber citações e intimações, transigir, desistir, reconhecer pedidos, firmar acordos, levantar valores e dar quitação, requerer certidões e documentos, praticando todos os atos inerentes ao fiel cumprimento deste mandato." },
-        { "id": "PODERES_ESPECIAIS", "label": "Poderes Especiais", "type": "textarea", "default": "Receber valores, assinar recibos e dar quitação, firmar contratos, solicitar restituições, propor ações de qualquer natureza, representá-lo(a) perante órgãos públicos e privados, ingressar com ações revisionais, execuções, inventários, separações e divórcios, bem como renunciar a direitos e impetrar habeas corpus e mandado de segurança." },
-        { "id": "PODER_SUBSTABELECER", "label": "Poder de Substabelecer", "type": "textarea", "default": "Com ou sem reserva de poderes, no todo ou em parte, a terceiros, para os fins que se fizerem necessários." }
+          { 
+            "id": "PODERES_GERAIS", 
+            "label": "Poderes Gerais", 
+            "type": "textarea",
+            "default": "- Propor, acompanhar e interpor ações, defesas, recursos\n- Representar em todas as instâncias judiciais\n- Praticar todos os atos processuais necessários"
+        },
+        { 
+            "id": "PODERES_ESPECIFICOS", 
+            "label": "Poderes Específicos", 
+            "type": "textarea",
+            "default": "- Assinar petições e recibos\n- Firmar acordos e transações\n- Receber valores e dar quitação"
+        },
+        { 
+            "id": "PODERES_ESPECIAIS", 
+            "label": "Poderes Especiais", 
+            "type": "textarea",
+            "default": "- Substabelecer poderes\n- Renunciar direitos\n- Impetrar mandados de segurança"
+        },
+        { 
+            "id": "PODER_SUBSTABELECER", 
+            "label": "Poder de Substabelecer", 
+            "type": "textarea",
+            "default": "Com ou sem reserva de poderes, no todo ou em parte, a terceiros de sua confiança."
+        }
 
          
         ]
