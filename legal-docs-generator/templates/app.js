@@ -9,8 +9,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const printBtn = document.getElementById('printBtn');
     const logoInput = document.getElementById('logoInput');
     const logoPreview = document.getElementById('logoPreview');
+document.addEventListener('DOMContentLoaded', function() {
+  // Seleciona o campo pelo ID
+  const campoCidadeData = document.getElementById('CIDADE_DATA');
+  
+  // Formata a data
+  const data = new Date();
+  const opcoes = { day: 'numeric', month: 'long', year: 'numeric' };
+  const dataFormatada = data.toLocaleDateString('pt-BR', opcoes).replace(/ /g, ' de ');
+  
+  // Atualiza o placeholder com a cidade e data
+  campoCidadeData.placeholder = `Rio de Janeiro, ${dataFormatada}`;
+});    
     
-    // Valores do formulário
+
+
+// Valores do formulário
     let formValues = {};
     let logoFile = null;
     
