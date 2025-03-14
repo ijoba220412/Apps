@@ -440,6 +440,65 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+
+// Máscara para OAB
+function aplicarMascaraOAB(input) {
+    input.value = input.value.replace(/\D/g, '').slice(0, 6);
+}
+
+// Validação antes do envio
+function validarFormulario() {
+    const oabInput = document.getElementById('ADVOGADO_OAB');
+    const ufSelect = document.getElementById('ADVOGADO_UF');
+    
+    if (!/^\d{1,6}$/.test(oabInput.value)) {
+        alert('Número OAB inválido! Deve conter até 6 dígitos numéricos.');
+        return false;
+    }
+    
+    if (!ufSelect.value) {
+        alert('Selecione a UF da OAB!');
+        return false;
+    }
+    
+    return true;
+}
+
+// Vincular eventos
+document.addEventListener('DOMContentLoaded', () => {
+    const oabField = document.getElementById('ADVOGADO_OAB');
+    if (oabField) {
+        oabField.addEventListener('input', (e) => {
+            aplicarMascaraOAB(e.target);
+        });
+    }
+    
+    // Ao enviar formulário
+    const form = document.getElementById('meuFormulario');
+    if (form) {
+        form.onsubmit = validarFormulario;
+    }
+});
+
+
+function popularSelectUF() {
+    const ufOptions = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
+    const ufSelects = document.querySelectorAll('select[id="ADVOGADO_UF"]');
+    
+    ufSelects.forEach(select => {
+        ufOptions.forEach(uf => {
+            const option = document.createElement('option');
+            option.value = uf;
+            option.textContent = uf;
+            select.appendChild(option);
+        });
+    });
+}
+
+// Chamar ao carregar a página
+document.addEventListener('DOMContentLoaded', popularSelectUF);
+
+
     // Imprime o documento atual
     function printDocument() {
         const printWindow = window.open('', '_blank');
