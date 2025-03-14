@@ -183,7 +183,12 @@ ____________________________________________
         { "id": "ADVOGADO_ENDERECO", "label": "Endereço Profissional Completo", "type": "textarea" },
 
         // Poderes
-        { "id": "CIDADE_DATA", "label": "Cidade e Data", "type": "text", "placeholder": "Rio de Janeiro, 12 de março de 2025" },    
+        {
+  "id": "CIDADE_DATA",
+  "label": "Cidade e Data",
+  "type": "text",
+  "placeholder": "Rio de Janeiro, ${new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}"
+},    
           { 
             "id": "PODERES_GERAIS", 
             "label": "Poderes Gerais", 
