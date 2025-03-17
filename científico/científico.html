@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesquisador Acadêmico IA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+        }
+        
+        .search-container {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+        
+        .options {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .sources, .years, .language {
+            flex: 1;
+            margin-right: 10px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .results {
+            margin-top: 30px;
+        }
+        
+        .result-item {
+            background-color: #fff;
+            border: 1px solid #eee;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .result-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .result-source {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+        
+        .academic-reference {
+            font-style: italic;
+            border-left: 3px solid #3498db;
+            padding-left: 15px;
+            margin: 15px 0;
+            color: #555;
+        }
+        
+        .loading {
+            text-align: center;
+            display: none;
+            margin: 20px 0;
+        }
+        
+        .citation {
+            font-size: 12px;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+            margin-top: 10px;
+            padding-top: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+        
+        .tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        #summary-view {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Pesquisador Acadêmico IA</h1>
+        <p>Faça uma pergunta e obtenha respostas baseadas em artigos científicos</p>
+    </header>
+    
+    <main>
+        <div class="search-container">
+            <input type="text" id="question" class="search-input" placeholder="Ex: Quais são os efeitos do exercício físico na cognição?">
+            
+            <div class="options">
+                <div class="sources">
+                    <label for="sources">Fontes Acadêmicas:</label>
+                    <select id="sources" multiple>
+                        <option value="pubmed" selected>PubMed</option>
+                        <option value="arxiv" selected>arXiv</option>
+                        <option value="scholar" selected>Google Scholar</option>
+                        <option value="scielo" selected>SciELO</option>
+                        <option value="scopus">Scopus</option>
+                        <option value="webofscience">Web of Science</option>
+                    </select>
+                </div>
+                
+                <div class="years">
+                    <label for="year-range">Período:</label>
+                    <select id="year-range">
+                        <option value="1">Último ano</option>
+                        <option value="5" selected>Últimos 5 anos</option>
+                        <option value="10">Últimos 10 anos</option>
+                        <option value="any">Qualquer período</option>
+                    </select>
+                </div>
+                
+                <div class="language">
+                    <label for="lang">Idioma dos Artigos:</label>
+                    <select id="lang">
+                        <option value="any" selected>Qualquer idioma</option>
+                        <option value="pt">Português</option>
+                        <option value="en">Inglês</option>
+                        <option value="es">Espanhol</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button id="search-button">Pesquisar</button>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" id="tab-answer">Resposta Sintetizada</div>
+            <div class="tab" id="tab-sources">Artigos Fonte</div>
+        </div>
+        
+        <div id="summary-view">
+            <h2>Resposta Acadêmica</h2>
+            <div id="ai-answer" style="text-align: justify; line-height: 1.8;">
+                Faça uma pergunta para obter uma resposta baseada em evidências científicas com citações em formato APA.
+            </div>
+        </div>
+        
+        <div class="loading" id="loading">
+            <p>Consultando bases de dados acadêmicas...</p>
+            <p>Isso pode levar alguns instantes...</p>
+        </div>
+        
+        <div class="results" id="results">
+            <!-- Resultados serão inseridos aqui pelo JavaScript -->
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('search-button').addEventListener('click', function() {
+            const question = document.getElementById('question').value;
+            if (!question) {
+                alert('Por favor, insira uma pergunta');
+                return;
+            }
+            
+            // Mostrar loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('summary-view').style.display = 'none';
+            
+            // Simulação de busca e processamento (em um sistema real, isso seria uma chamada de API)
+            setTimeout(() => {
+                searchAndProcess(question);
+            }, 2000);
+        });
+        
+        // Função que simularia a busca e processamento em bases acadêmicas
+        function searchAndProcess(question) {
+            // Em um sistema real, esta função faria:
+            // 1. Chamada a APIs de bases acadêmicas ou web scraping
+            // 2. Processamento das informações com NLP
+            // 3. Geração de resposta baseada nos artigos encontrados
+            
+            // Simulação de resposta
+            const mockResults = [
+                {
+                    title: "Efeitos do exercício aeróbico na função cognitiva em adultos idosos: uma revisão sistemática",
+                    authors: "Silva, J., Oliveira, M., Santos, P.",
+                    source: "Revista Brasileira de Geriatria e Gerontologia, 2022",
+                    doi: "10.1590/1234-5678.2022.001",
+                    abstract: "Esta revisão sistemática examinou os efeitos do exercício aeróbico na função cognitiva em adultos idosos. A análise de 24 estudos clínicos randomizados demonstrou melhoras significativas na memória, função executiva e velocidade de processamento após intervenções de exercício aeróbico regular.",
+                    relevance: 0.95
+                },
+                {
+                    title: "Mecanismos neurobiológicos subjacentes aos benefícios cognitivos do exercício físico",
+                    authors: "Rodrigues, A., Ferreira, C., Martins, L.",
+                    source: "Frontiers in Neuroscience, 2023",
+                    doi: "10.3389/fnins.2023.12345",
+                    abstract: "Este artigo revisa os mecanismos neurobiológicos que explicam como o exercício físico melhora a cognição. Os dados indicam que o exercício aumenta o fator neurotrófico derivado do cérebro (BDNF), promove a neurogênese e melhora a plasticidade sináptica, contribuindo para melhorias na função cognitiva.",
+                    relevance: 0.92
+                },
+                {
+                    title: "Dose-resposta entre exercício físico e performance cognitiva: uma meta-análise",
+                    authors: "Costa, R., Lima, T., Mendes, S.",
+                    source: "Journal of Cognitive Enhancement, 2023",
+                    doi: "10.1007/s41465-023-00789-z",
+                    abstract: "Esta meta-análise de 32 estudos avaliou a relação dose-resposta entre exercício físico e performance cognitiva. Os resultados indicam que exercícios de intensidade moderada realizados 3-5 vezes por semana por pelo menos 12 semanas proporcionam os maiores benefícios cognitivos.",
+                    relevance: 0.89
+                }
+            ];
+            
+            // Simulação de resposta sintetizada da IA com citações em formato APA
+            const aiAnswer = `
+                <p>A literatura científica recente demonstra que o exercício físico promove efeitos positivos significativos na cognição humana através de múltiplos mecanismos neurobiológicos e comportamentais. O exercício físico regular aumenta os níveis do Fator Neurotrófico Derivado do Cérebro (BDNF), uma proteína que promove a sobrevivência neuronal e estimula a neurogênese no hipocampo, região cerebral crucial para a formação de memórias (Rodrigues et al., 2023). Esta adaptação molecular contribui para melhorias na plasticidade sináptica, facilitando a comunicação entre neurônios e potencializando processos cognitivos diversos.</p>
+                
+                <p>Ensaios clínicos randomizados recentes documentam melhorias consistentes em diversas funções cognitivas após a implementação de programas regulares de exercícios físicos. Estas melhorias abrangem domínios como memória de curto e longo prazo, funções executivas (incluindo planejamento, tomada de decisão e controle inibitório), velocidade de processamento e atenção sustentada (Silva et al., 2022). Tais benefícios parecem ser mais pronunciados em populações idosas, onde o exercício físico regular tem demonstrado potencial para atenuar o declínio cognitivo associado ao envelhecimento e possivelmente reduzir o risco de desenvolvimento de quadros demenciais.</p>
+                
+                <p>Quanto à prescrição ideal, meta-análises recentes estabelecem uma relação dose-resposta indicando que exercícios aeróbicos de intensidade moderada, realizados entre 3-5 vezes por semana, durante um período mínimo de 12 semanas, proporcionam os maiores benefícios cognitivos (Costa et al., 2023). Tanto intervenções baseadas em exercícios aeróbicos quanto de resistência demonstram efeitos positivos, embora programas combinados pareçam oferecer vantagens adicionais. Esta relação dose-resposta sugere que existe um limiar mínimo de atividade física necessário para induzir adaptações neurobiológicas significativas, mas também aponta para uma possível curva em forma de U invertido, onde volumes excessivos de treinamento podem não proporcionar benefícios adicionais ou até mesmo gerar efeitos adversos.</p>
+                
+                <p>A compreensão dos mecanismos subjacentes à relação entre exercício físico e cognição continua avançando. Além dos efeitos mediados pelo BDNF, pesquisas recentes identificam o papel de outros fatores neurotróficos, redução de processos inflamatórios crônicos, melhoria da perfusão cerebral e otimização da função mitocondrial como potenciais mediadores dos benefícios cognitivos induzidos pelo exercício (Rodrigues et al., 2023). Estes achados reforçam a importância da atividade física como uma intervenção não-farmacológica eficaz para a manutenção e otimização da função cognitiva ao longo da vida.</p>
+                
+                <p><strong>Referências:</strong><br>
+                Costa, R., Lima, T., & Mendes, S. (2023). Dose-resposta entre exercício físico e performance cognitiva: uma meta-análise. <em>Journal of Cognitive Enhancement</em>. https://doi.org/10.1007/s41465-023-00789-z<br>
+                Rodrigues, A., Ferreira, C., & Martins, L. (2023). Mecanismos neurobiológicos subjacentes aos benefícios cognitivos do exercício físico. <em>Frontiers in Neuroscience</em>. https://doi.org/10.3389/fnins.2023.12345<br>
+                Silva, J., Oliveira, M., & Santos, P. (2022). Efeitos do exercício aeróbico na função cognitiva em adultos idosos: uma revisão sistemática. <em>Revista Brasileira de Geriatria e Gerontologia</em>. https://doi.org/10.1590/1234-5678.2022.001</p>
+            `;
+            
+            // Exibir resultados
+            document.getElementById('loading').style.display = 'none';
+            
+            // Exibir resposta sintetizada
+            document.getElementById('ai-answer').innerHTML = aiAnswer;
+            document.getElementById('summary-view').style.display = 'block';
+            
+            // Exibir artigos fonte
+            const resultsContainer = document.getElementById('results');
+            mockResults.forEach(result => {
+                const resultElement = document.createElement('div');
+                resultElement.className = 'result-item';
+                resultElement.innerHTML = `
+                    <div class="result-title">${result.title}</div>
+                    <div class="result-source">${result.authors} - ${result.source}</div>
+                    <div class="result-abstract">${result.abstract}</div>
+                    <div class="citation">DOI: ${result.doi} | Relevância: ${(result.relevance * 100).toFixed(1)}%</div>
+                `;
+                resultsContainer.appendChild(resultElement);
+            });
+        }
+        
+        // Controle das tabs
+        document.getElementById('tab-answer').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('tab-sources').classList.remove('active');
+            document.getElementById('summary-view').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+        });
+        
+        document.getElementById('tab-sources').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('tab-answer').classList.remove('active');
+            document.getElementById('summary-view').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
