@@ -85,7 +85,7 @@ OAB/{{ADVOGADO_UF}} nº {{ADVOGADO_OAB}}`,
             // Dados do reclamante
             { "id": "RECLAMANTE_NOME", "label": "Nome do Reclamante", "type": "text" },
             { "id": "RECLAMANTE_NACIONALIDADE", "label": "Nacionalidade", "type": "text" },
-            { "id": "RECLAMANTE_ESTADO_CIVIL", "label": "Estado Civil", "type": "select", "options": ["solteiro(a)", "casado(a)", "divorciado(a)", "viúvo(a)", "união estável"] },
+            { "id": "RECLAMANTE_ESTADO_CIVIL", "label": "Estado Civil", "type": "text" }, // Alterado de select para text
             { "id": "RECLAMANTE_PROFISSAO", "label": "Profissão", "type": "text" },
             { "id": "RECLAMANTE_RG", "label": "RG", "type": "text" },
             { "id": "RECLAMANTE_CPF", "label": "CPF", "type": "text" },
@@ -105,7 +105,7 @@ OAB/{{ADVOGADO_UF}} nº {{ADVOGADO_OAB}}`,
             // Dados do contrato
             { "id": "DATA_ADMISSAO", "label": "Data de Admissão", "type": "date" },
             { "id": "DATA_RESCISAO", "label": "Data de Rescisão", "type": "date" },
-            { "id": "TIPO_RESCISAO", "label": "Tipo de Rescisão", "type": "select", "options": ["dispensa sem justa causa", "dispensa por justa causa", "pedido de demissão", "comum acordo", "término de contrato"] },
+            { "id": "TIPO_RESCISAO", "label": "Tipo de Rescisão", "type": "text" }, // Alterado de select para text
             
             // Detalhes da reclamação
             { "id": "VERBAS_NAO_PAGAS", "label": "Verbas Não Pagas", "type": "textarea" },
@@ -123,7 +123,7 @@ OAB/{{ADVOGADO_UF}} nº {{ADVOGADO_OAB}}`,
             // Dados do advogado
             { "id": "ADVOGADO_NOME", "label": "Nome do Advogado", "type": "text" },
             { "id": "ADVOGADO_UF", "label": "UF da OAB", "type": "select", "options": ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"] },
-            { "id": "ADVOGADO_OAB", "label": "Número da OAB", "type": "text", "pattern": "\\d{1,6}", "maxlength": 6, "placeholder": "Apenas números (ex: 123456)" },
+            { "id": "ADVOGADO_OAB", "label": "Número da OAB", "type": "text" }, // Removido pattern e maxlength
             { "id": "CIDADE_DATA", "label": "Cidade e Data", "type": "text", "placeholder": "Rio de Janeiro, 12 de março de 2025" }
         ]
     },
@@ -165,7 +165,7 @@ ____________________________________________
             // Dados do Outorgante
             { "id": "RECLAMANTE_NOME", "label": "Nome Completo do Outorgante", "type": "text" },
             { "id": "RECLAMANTE_NACIONALIDADE", "label": "Nacionalidade", "type": "text" },
-            { "id": "RECLAMANTE_ESTADO_CIVIL", "label": "Estado Civil", "type": "select", "options": ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)", "União Estável"] },
+            { "id": "RECLAMANTE_ESTADO_CIVIL", "label": "Estado Civil", "type": "text" }, // Alterado de select para text
             { "id": "RECLAMANTE_PROFISSAO", "label": "Profissão", "type": "text" },
             { "id": "RECLAMANTE_RG", "label": "RG", "type": "text" },
             { "id": "RECLAMANTE_CPF", "label": "CPF", "type": "text" },
@@ -174,9 +174,9 @@ ____________________________________________
             // Dados do Outorgado (Advogado)
             { "id": "ADVOGADO_NOME", "label": "Nome Completo do Advogado", "type": "text" },
             { "id": "ADVOGADO_NACIONALIDADE", "label": "Nacionalidade", "type": "text" },
-            { "id": "ADVOGADO_ESTADO_CIVIL", "label": "Estado Civil", "type": "select", "options": ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)", "União Estável"] },
+            { "id": "ADVOGADO_ESTADO_CIVIL", "label": "Estado Civil", "type": "text" }, // Alterado de select para text
             { "id": "ADVOGADO_UF", "label": "UF da OAB", "type": "select", "options": ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"] },
-            { "id": "ADVOGADO_OAB", "label": "Número da OAB", "type": "text", "pattern": "\\d{1,6}", "maxlength": 6, "placeholder": "Apenas números (ex: 123456)" },
+            { "id": "ADVOGADO_OAB", "label": "Número da OAB", "type": "text" }, // Removido pattern e maxlength
             { "id": "ADVOGADO_ENDERECO", "label": "Endereço Profissional Completo", "type": "textarea" },
 
             // Poderes
