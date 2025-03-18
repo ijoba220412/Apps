@@ -121,32 +121,14 @@ OAB/{{ADVOGADO_UF}} nº {{ADVOGADO_OAB}}`,
             { "id": "VALOR_DANO_MORAL", "label": "Valor do Dano Moral", "type": "text" },
             
             // Dados do advogado
-
-// No modelo "inicial_trab" e "procuracao", atualize os campos:
-{
-    "id": "ADVOGADO_UF",
-    "label": "UF da OAB",
-    "type": "select",
-    "options": ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"]
-},
-{
-    "id": "ADVOGADO_OAB",
-    "label": "Número da OAB",
-    "type": "text",
-    "pattern": "\\d{1,6}",
-    "maxlength": 6,
-    "placeholder": "Apenas números (ex: 123456)"
-},
-
-            { "id": "CIDADE_DATA", "label": "Cidade e Data", "type": "text", "placeholder": "Rio de Janeiro, 12 de março de 2025" },
-            { "id": "ADVOGADO_NOME", "label": "Nome do Advogado", "type": "text" }
+            { "id": "ADVOGADO_NOME", "label": "Nome do Advogado", "type": "text" },
+            { "id": "ADVOGADO_UF", "label": "UF da OAB", "type": "select", "options": ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"] },
+            { "id": "ADVOGADO_OAB", "label": "Número da OAB", "type": "text", "pattern": "\\d{1,6}", "maxlength": 6, "placeholder": "Apenas números (ex: 123456)" },
+            { "id": "CIDADE_DATA", "label": "Cidade e Data", "type": "text", "placeholder": "Rio de Janeiro, 12 de março de 2025" }
         ]
     },
-    // Você pode adicionar mais modelos aqui
-
-
-    // Aqui inicia o template da procuração 
     
+    // Aqui inicia o template da procuração 
     "procuracao": {
         "name": "Procuração",
         "content": `PROCURAÇÃO AD JUDICIA E EXTRAJUDICIA
@@ -180,56 +162,49 @@ Esta procuração é concedida em caráter irrevogável e irretratável, salvo m
 ____________________________________________
 {{RECLAMANTE_NOME}}`,
         "fields": [
-        // Dados do Outorgante
-        { "id": "RECLAMANTE_NOME", "label": "Nome Completo do Outorgante", "type": "text" },
-        { "id": "RECLAMANTE_NACIONALIDADE", "label": "Nacionalidade", "type": "text" },
-        { "id": "RECLAMANTE_ESTADO_CIVIL", "label": "Estado Civil", "type": "select", "options": ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)", "União Estável"] },
-        { "id": "RECLAMANTE_PROFISSAO", "label": "Profissão", "type": "text" },
-        { "id": "RECLAMANTE_RG", "label": "RG", "type": "text" },
-        { "id": "RECLAMANTE_CPF", "label": "CPF", "type": "text" },
-        { "id": "RECLAMANTE_ENDERECO", "label": "Endereço Completo", "type": "textarea" },
+            // Dados do Outorgante
+            { "id": "RECLAMANTE_NOME", "label": "Nome Completo do Outorgante", "type": "text" },
+            { "id": "RECLAMANTE_NACIONALIDADE", "label": "Nacionalidade", "type": "text" },
+            { "id": "RECLAMANTE_ESTADO_CIVIL", "label": "Estado Civil", "type": "select", "options": ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)", "União Estável"] },
+            { "id": "RECLAMANTE_PROFISSAO", "label": "Profissão", "type": "text" },
+            { "id": "RECLAMANTE_RG", "label": "RG", "type": "text" },
+            { "id": "RECLAMANTE_CPF", "label": "CPF", "type": "text" },
+            { "id": "RECLAMANTE_ENDERECO", "label": "Endereço Completo", "type": "textarea" },
 
-        // Dados do Outorgado (Advogado)
-        { "id": "ADVOGADO_NOME", "label": "Nome Completo do Advogado", "type": "text" },
-        { "id": "ADVOGADO_NACIONALIDADE", "label": "Nacionalidade", "type": "text" },
-        { "id": "ADVOGADO_ESTADO_CIVIL", "label": "Estado Civil", "type": "select", "options": ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)", "União Estável"] },
-        { "id": "ADVOGADO_OAB", "label": "Número da OAB", "type": "text" },
-        { "id": "ADVOGADO_UF", "label": "Seccional da OAB (UF)", "type": "text" },
-        { "id": "ADVOGADO_ENDERECO", "label": "Endereço Profissional Completo", "type": "textarea" },
+            // Dados do Outorgado (Advogado)
+            { "id": "ADVOGADO_NOME", "label": "Nome Completo do Advogado", "type": "text" },
+            { "id": "ADVOGADO_NACIONALIDADE", "label": "Nacionalidade", "type": "text" },
+            { "id": "ADVOGADO_ESTADO_CIVIL", "label": "Estado Civil", "type": "select", "options": ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)", "União Estável"] },
+            { "id": "ADVOGADO_UF", "label": "UF da OAB", "type": "select", "options": ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"] },
+            { "id": "ADVOGADO_OAB", "label": "Número da OAB", "type": "text", "pattern": "\\d{1,6}", "maxlength": 6, "placeholder": "Apenas números (ex: 123456)" },
+            { "id": "ADVOGADO_ENDERECO", "label": "Endereço Profissional Completo", "type": "textarea" },
 
-        // Poderes
-        {
-  "id": "CIDADE_DATA",
-  "label": "Cidade e Data",
-  "type": "text",
-  "placeholder": "Rio de Janeiro, ${new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}"
-},    
-          { 
-            "id": "PODERES_GERAIS", 
-            "label": "Poderes Gerais", 
-            "type": "textarea",
-            "default": "- Propor, acompanhar e interpor ações, defesas, recursos\n- Representar em todas as instâncias judiciais\n- Praticar todos os atos processuais necessários"
-        },
-        { 
-            "id": "PODERES_ESPECIFICOS", 
-            "label": "Poderes Específicos", 
-            "type": "textarea",
-            "default": "- Assinar petições e recibos\n- Firmar acordos e transações\n- Receber valores e dar quitação"
-        },
-        { 
-            "id": "PODERES_ESPECIAIS", 
-            "label": "Poderes Especiais", 
-            "type": "textarea",
-            "default": "- Substabelecer poderes\n- Renunciar direitos\n- Impetrar mandados de segurança"
-        },
-        { 
-            "id": "PODER_SUBSTABELECER", 
-            "label": "Poder de Substabelecer", 
-            "type": "textarea",
-            "default": "Com ou sem reserva de poderes, no todo ou em parte, a terceiros de sua confiança."
-        }
-
-         
+            // Poderes
+            { "id": "CIDADE_DATA", "label": "Cidade e Data", "type": "text", "placeholder": "Rio de Janeiro, 17 de março de 2025" },
+            { 
+                "id": "PODERES_GERAIS", 
+                "label": "Poderes Gerais", 
+                "type": "textarea",
+                "default": "- Propor, acompanhar e interpor ações, defesas, recursos\n- Representar em todas as instâncias judiciais\n- Praticar todos os atos processuais necessários"
+            },
+            { 
+                "id": "PODERES_ESPECIFICOS", 
+                "label": "Poderes Específicos", 
+                "type": "textarea",
+                "default": "- Assinar petições e recibos\n- Firmar acordos e transações\n- Receber valores e dar quitação"
+            },
+            { 
+                "id": "PODERES_ESPECIAIS", 
+                "label": "Poderes Especiais", 
+                "type": "textarea",
+                "default": "- Substabelecer poderes\n- Renunciar direitos\n- Impetrar mandados de segurança"
+            },
+            { 
+                "id": "PODER_SUBSTABELECER", 
+                "label": "Poder de Substabelecer", 
+                "type": "textarea",
+                "default": "Com ou sem reserva de poderes, no todo ou em parte, a terceiros de sua confiança."
+            }
         ]
     }
 };
