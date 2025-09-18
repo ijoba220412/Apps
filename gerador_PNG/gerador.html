@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de PNG Transparente</title>
+    <!-- Incluindo Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Incluindo a fonte Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilo para o corpo da página e fonte padrão */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Fundo quadriculado para a área de visualização para indicar transparência */
+        .checkerboard {
+            background-color: #1a202c; /* Cor de fundo de fallback */
+            background-image:
+                linear-gradient(45deg, #2d3748 25%, transparent 25%),
+                linear-gradient(-45deg, #2d3748 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #2d3748 75%),
+                linear-gradient(-45deg, transparent 75%, #2d3748 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            transition: all 0.2s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-2xl mx-auto">
+        <div class="bg-gray-800 border border-gray-700 rounded-xl shadow-2xl p-6 md:p-8">
+
+            <!-- Cabeçalho -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl md:text-4xl font-bold text-cyan-400">Gerador de PNG Transparente</h1>
+                <p class="text-gray-400 mt-2">Crie arquivos PNG transparentes com dimensões personalizadas.</p>
+            </div>
+
+            <!-- Controles de Dimensão -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Entrada de Largura -->
+                <div>
+                    <label for="widthInput" class="block mb-2 text-sm font-medium text-gray-300">Largura (px)</label>
+                    <input type="number" id="widthInput" value="1920" min="1" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5" placeholder="ex: 1920" required>
+                </div>
+                <!-- Entrada de Altura -->
+                <div>
+                    <label for="heightInput" class="block mb-2 text-sm font-medium text-gray-300">Altura (px)</label>
+                    <input type="number" id="heightInput" value="1080" min="1" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5" placeholder="ex: 1080" required>
+                </div>
+            </div>
+
+            <!-- Predefinições de Proporção -->
+            <div class="mb-8">
+                <p class="block mb-3 text-sm font-medium text-gray-300 text-center">Ou escolha uma proporção comum</p>
+                <div class="flex flex-wrap justify-center gap-2">
+                    <button data-w="1920" data-h="1080" class="preset-btn bg-gray-700 hover:bg-cyan-600 text-gray-300 hover:text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">16:9</button>
+                    <button data-w="1080" data-h="1920" class="preset-btn bg-gray-700 hover:bg-cyan-600 text-gray-300 hover:text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">9:16</button>
+                    <button data-w="1280" data-h="960" class="preset-btn bg-gray-700 hover:bg-cyan-600 text-gray-300 hover:text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">4:3</button>
+                    <button data-w="1080" data-h="1080" class="preset-btn bg-gray-700 hover:bg-cyan-600 text-gray-300 hover:text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">1:1</button>
+                    <button data-w="2560" data-h="1080" class="preset-btn bg-gray-700 hover:bg-cyan-600 text-gray-300 hover:text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">21:9</button>
+                </div>
+            </div>
+
+            <!-- Área de Visualização -->
+            <div class="mb-8">
+                 <p class="block mb-3 text-sm font-medium text-gray-300 text-center">Visualização da Proporção</p>
+                <div id="previewContainer" class="w-full max-w-xl mx-auto h-64 flex items-center justify-center">
+                    <div id="previewBox" class="checkerboard border-2 border-dashed border-gray-500 rounded-lg flex items-center justify-center relative shadow-lg">
+                        <span id="dimensionText" class="text-gray-300 font-mono bg-black bg-opacity-50 px-2 py-1 rounded-md">1920 x 1080</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botão de Download -->
+            <div class="text-center">
+                <button id="downloadBtn" class="w-full md:w-auto text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:outline-none focus:ring-cyan-800 font-bold rounded-lg text-lg px-8 py-3 transition-all duration-200 transform hover:scale-105 shadow-lg">
+                    Baixar PNG Transparente
+                </button>
+            </div>
+        </div>
+        <footer class="text-center mt-6">
+            <p class="text-sm text-gray-500">Uma ferramenta simples para suas necessidades criativas.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Selecionando os elementos do DOM
+        const widthInput = document.getElementById('widthInput');
+        const heightInput = document.getElementById('heightInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewBox = document.getElementById('previewBox');
+        const dimensionText = document.getElementById('dimensionText');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const presetBtns = document.querySelectorAll('.preset-btn');
+
+        // Função para atualizar a visualização
+        function updatePreview() {
+            // Obtém e valida a largura e altura, definindo como 1 se for inválido ou menor que 1
+            const width = parseInt(widthInput.value, 10) || 1;
+            const height = parseInt(heightInput.value, 10) || 1;
+
+            if (width < 1) widthInput.value = 1;
+            if (height < 1) heightInput.value = 1;
+
+            // Atualiza o texto da dimensão na visualização
+            dimensionText.textContent = `${width} x ${height}`;
+
+            // Calcula as dimensões da caixa de visualização mantendo a proporção
+            const containerWidth = previewContainer.offsetWidth;
+            const containerHeight = previewContainer.offsetHeight;
+            const aspectRatio = width / height;
+
+            let previewWidth = containerWidth;
+            let previewHeight = previewWidth / aspectRatio;
+
+            if (previewHeight > containerHeight) {
+                previewHeight = containerHeight;
+                previewWidth = previewHeight * aspectRatio;
+            }
+
+            // Aplica os estilos à caixa de visualização
+            previewBox.style.width = `${previewWidth}px`;
+            previewBox.style.height = `${previewHeight}px`;
+        }
+        
+        // Função para gerar e baixar o arquivo PNG
+        function downloadPNG() {
+            const width = parseInt(widthInput.value, 10);
+            const height = parseInt(heightInput.value, 10);
+
+            // Validação final antes do download
+            if (!width || !height || width < 1 || height < 1) {
+                alert('Por favor, insira uma largura e altura válidas.');
+                return;
+            }
+
+            // Cria um elemento canvas fora da tela
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+
+            // O canvas já é transparente por padrão, então não é necessário desenhar nada
+            // const ctx = canvas.getContext('2d');
+            // ctx.clearRect(0, 0, width, height);
+
+            // Converte o canvas para uma URL de dados PNG
+            const dataURL = canvas.toDataURL('image/png');
+
+            // Cria um link temporário para iniciar o download
+            const link = document.createElement('a');
+            link.href = dataURL;
+            link.download = `transparent_${width}x${height}.png`; // Nome do arquivo
+
+            // Adiciona ao corpo, clica e remove
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Adiciona ouvintes de eventos
+        widthInput.addEventListener('input', updatePreview);
+        heightInput.addEventListener('input', updatePreview);
+        downloadBtn.addEventListener('click', downloadPNG);
+
+        // Adiciona ouvintes de eventos para os botões de predefinição
+        presetBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const w = btn.dataset.w;
+                const h = btn.dataset.h;
+                widthInput.value = w;
+                heightInput.value = h;
+                // Dispara o evento de input para garantir que a visualização seja atualizada
+                widthInput.dispatchEvent(new Event('input'));
+            });
+        });
+        
+        // Adiciona um ouvinte de evento de redimensionamento da janela para ajustar a visualização
+        window.addEventListener('resize', updatePreview);
+
+        // Chama a função de atualização inicial ao carregar a página
+        updatePreview();
+
+    </script>
+</body>
+</html>
+
