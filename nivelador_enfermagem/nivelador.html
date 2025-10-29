@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteador de Níveis de Enfermagem</title>
+    <!-- Carrega o TailwindCSS para estilos --><script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carrega a biblioteca de ícones Heroicons --><link href="https://cdnjs.cloudflare.com/ajax/libs/heroicons/2.1.1/24/solid/heroicons.min.css" rel="stylesheet">
+    <style>
+        /* Estilo para a fonte Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Importa a fonte Inter do Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        /* Estilos de Impressão (MODIFICADOS PARA ROBUSTEZ) */
+        @media print {
+            /* Define a orientação da página para paisagem */
+            @page {
+                size: landscape;
+            }
+
+            /* Esconde tudo no corpo por padrão usando visibilidade */
+            body * {
+                visibility: hidden;
+            }
+
+            /* Mostra APENAS a seção do relatório e seus filhos */
+            #printableReport, #printableReport * {
+                visibility: visible;
+            }
+
+            /* Posiciona o relatório para preencher a página */
+            #printableReport {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                border: none;
+                box-shadow: none;
+                margin: 0;
+                padding: 0;
+            }
+            
+            /* Garante que o botão e o texto de ajuda NUNCA sejam impressos */
+            #printButton, #printHelperText {
+                visibility: hidden;
+            }
+            
+            /* Estilos da Tabela para Impressão */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th, td {
+                border: 1px solid #999 !important; /* Borda visível na impressão */
+                padding: 8px;
+                text-align: left;
+            }
+            th {
+                background-color: #f4f4f4 !important; /* Fundo do cabeçalho */
+            }
+            /* Garante que o sumário seja impresso */
+            .print-summary {
+                margin-bottom: 20px;
+                border: 1px solid #ccc;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans p-4 md:p-8">
+
+    <!-- Container Principal --><div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+        
+        <!-- Cabeçalho --><header class="bg-blue-600 p-6 text-white relative overflow-hidden">
+            <h1 class="text-3xl font-bold">Sorteador de Níveis</h1>
+            <p class="text-blue-100 mt-1">Distribuição e Balanceamento para Equipes de Enfermagem</p> <!-- ALTERADO AQUI: EQUIPES --><!-- NOVO ÍCONE DE FUNDO (ESTETOSCÓPIO) --><svg class="absolute -right-4 -bottom-8 w-32 h-32 text-blue-500 opacity-30" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2a4 4 0 0 0-4 4v2.5H6A2.5 2.5 0 0 0 3.5 11v5a2.5 2.5 0 0 0 2.5 2.5h1.5V20a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-1.5h1.5a2.5 2.5 0 0 0 2.5-2.5v-5A2.5 2.5 0 0 0 17 8.5h-2V6a4 4 0 0 0-4-4Zm0 2a2 2 0 0 1 2 2v2.5H10V6a2 2 0 0 1 2-2Z"/>
+            </svg>
+        </header>
+
+        <!-- Formulário de Inputs --><main class="p-6 md:p-8">
+            
+            <!-- Secção de Enfermeiros --><section class="mb-6">
+                <label for="nurseCount" class="block text-lg font-semibold text-gray-800 mb-2">
+                    Quantidade de Enfermeiras(os)
+                </label>
+                <p class="text-sm text-gray-600 mb-3">Insira o número total de enfermeiras(os) no plantão.</p>
+                <input type="number" id="nurseCount" min="1" class="w-full md:w-1/3 p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition" placeholder="Ex: 5" value="1">
+            </section>
+
+            <!-- Secção de Níveis --><section>
+                <label class="block text-lg font-semibold text-gray-800 mb-3">
+                    Níveis de Pacientes
+                </label>
+                <p class="text-sm text-gray-600 mb-4">Insira a quantidade de pacientes para cada nível de complexidade.</p>
+                
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <!-- Nível 1 --><div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <label for="level1" class="block text-sm font-medium text-gray-700">Nível 1 (Baixo)</label>
+                        <input type="number" id="level1" min="0" class="w-full mt-2 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500" value="0">
+                    </div>
+                    <!-- Nível 2 --><div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <label for="level2" class="block text-sm font-medium text-gray-700">Nível 2</label>
+                        <input type="number" id="level2" min="0" class="w-full mt-2 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500" value="0">
+                    </div>
+                    <!-- Nível 3 --><div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <label for="level3" class="block text-sm font-medium text-gray-700">Nível 3 (Médio)</label>
+                        <input type="number" id="level3" min="0" class="w-full mt-2 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500" value="0">
+                    </div>
+                    <!-- Nível 4 --><div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <label for="level4" class="block text-sm font-medium text-gray-700">Nível 4</label>
+                        <input type="number" id="level4" min="0" class="w-full mt-2 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500" value="0">
+                    </div>
+                    <!-- Nível 5 --><div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <label for="level5" class="block text-sm font-medium text-gray-700">Nível 5 (Alto)</label>
+                        <input type="number" id="level5" min="0" class="w-full mt-2 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500" value="0">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Botão de Sortear --><div class="mt-8">
+                <button id="sortButton" class="w-full bg-blue-600 text-white p-4 rounded-lg font-semibold text-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-200 flex items-center justify-center space-x-2">
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M14.615 1.595a.75.75 0 0 1 .359.852L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262l-10.5 11.25a.75.75 0 0 1-1.272-.71l1.992-9.301H3.75a.75.75 0 0 1-.548-1.262l10.5-11.25a.75.75 0 0 1 .913-.143Z" clip-rule="evenodd" />
+                    </svg>
+                    <span>Sortear e Balancear Carga</span>
+                </button>
+            </div>
+
+            <!-- Caixa de Mensagem (Erro/Sucesso) --><div id="messageBox" class="hidden mt-6 p-4 rounded-lg text-center">
+                <p id="messageText"></p>
+            </div>
+
+            <!-- Resultados / Relatório para Impressão --><section id="printableReport" class="hidden mt-10 p-6 md:p-8 border border-gray-200 rounded-lg bg-white">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-semibold text-gray-800">Relatório de Distribuição</h2>
+                    <button id="printButton" onclick="window.print()" class="flex items-center space-x-2 bg-gray-600 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
+                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path fill-rule="evenodd" d="M7.875 1.5C6.839 1.5 6 2.34 6 3.375v1.5H4.125C3.504 4.875 3 5.379 3 6V18c0 .621.504 1.125 1.125 1.125h17.75C21.496 19.125 22 18.621 22 18V6c0-.621-.504-1.125-1.125-1.125H18v-1.5C18 2.34 17.161 1.5 16.125 1.5H7.875ZM7.5 3.375c0-.207.168-.375.375-.375h8.25c.207 0 .375.168.375.375v1.5H7.5v-1.5Zm-3.375 3h15.75v1.125H4.125V6.375Zm0 1.5h15.75v9H4.125v-9Z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Imprimir / PDF</span>
+                    </button>
+                </div>
+
+                <!-- NOVO TEXTO DE AJUDA PARA IMPRESSÃO --><p id="printHelperText" class="text-xs text-gray-500 text-right -mt-4">
+                    Se o botão não funcionar, use <kbd class="font-sans px-1 py-0.5 border border-gray-400 rounded bg-gray-100">Ctrl+P</kbd> (ou <kbd class="font-sans px-1 py-0.5 border border-gray-400 rounded bg-gray-100">Cmd+P</kbd>) para imprimir.
+                </p>
+                
+                <div id="resultsOutput" class="space-y-4 mt-4"> <!-- Margem adicionada --><!-- Resultados em Tabela serão injetados aqui --></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer --><footer class="text-center p-6 text-gray-500 text-sm">
+        Criado com expertise e carinho.
+    </footer>
+
+    <!-- SCRIPT COMPLETO E CORRIGIDO --><script>
+        // Adiciona o listener ao botão de sortear
+        document.getElementById('sortButton').addEventListener('click', sortLevels);
+
+        /**
+         * Embaralha um array no local usando o algoritmo Fisher-Yates
+         * @param {Array} array O array a ser embaralhado
+         */
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        /**
+         * Função principal para sortear os níveis
+         */
+        function sortLevels() {
+            const messageBox = document.getElementById('messageBox');
+            const messageText = document.getElementById('messageText');
+            const resultsContainer = document.getElementById('printableReport');
+            const resultsOutput = document.getElementById('resultsOutput');
+
+            // Limpa mensagens e resultados anteriores
+            messageBox.classList.add('hidden');
+            resultsContainer.classList.add('hidden');
+            resultsOutput.innerHTML = '';
+            messageBox.classList.remove('bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
+
+            try {
+                // --- 1. Obter Enfermeiros ---
+                const nurseCountInput = document.getElementById('nurseCount');
+                const numNurses = parseInt(nurseCountInput.value) || 0;
+
+                if (numNurses <= 0) {
+                    throw new Error('Por favor, insira uma quantidade válida de enfermeiras(os) (pelo menos 1).');
+                }
+
+                // Gerar a lista de enfermeiros
+                let nurses = [];
+                for (let i = 1; i <= numNurses; i++) {
+                    nurses.push(`Enfermeira(o) ${i}`);
+                }
+                
+                // --- 2. Inicializar Estruturas ---
+                const assignments = new Map();
+                // Rastreia a CONTAGEM TOTAL de pacientes
+                const nursePatientCount = new Map(); 
+                nurses.forEach(nurse => {
+                    assignments.set(nurse, []);
+                    nursePatientCount.set(nurse, 0); // Todos começam com 0 pacientes
+                });
+                
+                const leftoverPool = [];
+                let totalLevels = 0;
+
+                // --- 3. Pré-validação ---
+                // Verifica o número total de níveis ANTES de qualquer distribuição
+                for (let i = 1; i <= 5; i++) {
+                    const count = parseInt(document.getElementById(`level${i}`).value) || 0;
+                    if (count < 0) {
+                        throw new Error(`A quantidade para o Nível ${i} não pode ser negativa.`);
+                    }
+                    totalLevels += count;
+                }
+                
+                if (totalLevels < numNurses) {
+                     throw new Error(`O número total de níveis (${totalLevels}) é menor que o número de enfermeiras(os) (${numNurses}). Cada enfermeira(o) deve receber pelo menos um nível.`);
+                }
+
+                // --- 4. FASE 1: Distribuição Base e Exata ---
+                // Itera por cada nível (1 a 5)
+                for (let level = 1; level <= 5; level++) {
+                    const count = parseInt(document.getElementById(`level${level}`).value) || 0;
+                    
+                    if (count >= numNurses) {
+                        // Se há níveis suficientes (ou exatos) para todos, distribui 1 para cada
+                        shuffleArray(nurses); // Embaralha para justiça na distribuição base
+                        nurses.forEach(nurse => {
+                            assignments.get(nurse).push(level);
+                            nursePatientCount.set(nurse, nursePatientCount.get(nurse) + 1);
+                        });
+                        // Adiciona as sobras ao pool de sobras
+                        const remainingCount = count - numNurses;
+                        for (let j = 0; j < remainingCount; j++) {
+                            leftoverPool.push(level);
+                        }
+                    } else if (count > 0) {
+                        // Se são insuficientes, vão todos para o pool de sobras
+                        for (let j = 0; j < count; j++) {
+                            leftoverPool.push(level);
+                        }
+                    }
+                }
+
+                // --- 5. FASE 2: Distribuir Sobras (Balanceamento por Quantidade) ---
+                
+                // Ordena o pool de sobras do MAIS difícil (5) para o MAIS fácil (1)
+                leftoverPool.sort((a, b) => b - a);
+                
+                for (const levelToAssign of leftoverPool) {
+                    // Encontra a MENOR contagem de pacientes
+                    let minCount = Infinity;
+                    for (const nurse of nurses) {
+                        minCount = Math.min(minCount, nursePatientCount.get(nurse));
+                    }
+                    // Encontra TODOS os enfermeiros com essa contagem mínima
+                    let eligibleNurses = nurses.filter(nurse => nursePatientCount.get(nurse) === minCount);
+                    // Embaralha APENAS os enfermeiros elegíveis para desempate
+                    shuffleArray(eligibleNurses);
+                    // O alvo é o primeiro da lista embaralhada
+                    let targetNurse = eligibleNurses[0];
+
+                    // Atribui o nível e atualiza a contagem de pacientes
+                    assignments.get(targetNurse).push(levelToAssign);
+                    nursePatientCount.set(targetNurse, nursePatientCount.get(targetNurse) + 1);
+                }
+
+                // --- 6. Renderizar os Resultados (FORMATO DE TABELA) ---
+                resultsOutput.innerHTML = ''; // Limpa novamente por segurança
+                let totalAssigned = 0;
+
+                // C-1. Criar a estrutura da tabela
+                const tableContainer = document.createElement('div');
+                tableContainer.className = 'overflow-x-auto'; // Para responsividade móvel
+
+                const table = document.createElement('table');
+                table.className = 'w-full text-left border-collapse mt-4'; // Adiciona margem
+
+                table.innerHTML = `
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="p-3 border border-gray-300 font-semibold text-gray-700">Enfermeira(o)</th>
+                            <th class="p-3 border border-gray-300 font-semibold text-gray-700 text-center">Nível 1</th>
+                            <th class="p-3 border border-gray-300 font-semibold text-gray-700 text-center">Nível 2</th>
+                            <th class="p-3 border border-gray-300 font-semibold text-gray-700 text-center">Nível 3</th>
+                            <th class="p-3 border border-gray-300 font-semibold text-gray-700 text-center">Nível 4</th>
+                            <th class="p-3 border border-gray-300 font-semibold text-gray-700 text-center">Nível 5</th>
+                            <th class="p-3 border border-gray-300 font-semibold text-gray-700 text-center">Total Pacientes</th>
+                        </tr>
+                    </thead>
+                `;
+                
+                const tbody = document.createElement('tbody');
+
+                assignments.forEach((levels, nurse) => {
+                    // C-2. Contar os níveis para cada enfermeiro
+                    const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+                    for (const level of levels) {
+                        counts[level]++;
+                    }
+                    
+                    const totalForNurse = nursePatientCount.get(nurse); // Pega o total já calculado
+                    totalAssigned += totalForNurse; // Soma para o total geral
+
+                    // C-3. Criar a linha da tabela
+                    const row = document.createElement('tr');
+                    row.className = 'bg-white hover:bg-gray-50';
+                    row.innerHTML = `
+                        <td class="p-3 border border-gray-300 font-semibold text-blue-800">${nurse}</td>
+                        <td class="p-3 border border-gray-300 text-center">${counts[1]}</td>
+                        <td class="p-3 border border-gray-300 text-center">${counts[2]}</td>
+                        <td class="p-3 border border-gray-300 text-center">${counts[3]}</td>
+                        <td class="p-3 border border-gray-300 text-center">${counts[4]}</td>
+                        <td class="p-3 border border-gray-300 text-center">${counts[5]}</td>
+                        <td class="p-3 border border-gray-300 text-center font-bold">${totalForNurse}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                table.appendChild(tbody);
+                tableContainer.appendChild(table);
+                resultsOutput.appendChild(tableContainer); // Adiciona a tabela
+
+                // Adiciona um sumário
+                const summary = document.createElement('div');
+                summary.className = 'p-4 bg-blue-50 border-l-4 border-blue-400 text-blue-800 rounded-r-lg print-summary';
+                summary.innerHTML = `
+                    <p class="font-semibold">Resumo da Distribuição:</p>
+                    <p>Total de ${totalAssigned} pacientes distribuídos para ${numNurses} enfermeiras(os).</p>
+                `;
+                resultsOutput.prepend(summary); // Adiciona no início dos resultados
+
+                // Mostrar o contêiner de resultados
+                resultsContainer.classList.remove('hidden');
+
+            } catch (error) {
+                // Mostrar mensagem de erro
+                messageText.textContent = error.message;
+                messageBox.classList.add('bg-red-100', 'text-red-700');
+                messageBox.classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
