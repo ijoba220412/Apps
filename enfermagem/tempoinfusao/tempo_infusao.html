@@ -1,340 +1,331 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Clock, Plus, Trash2, Edit2, Play, Save, RotateCcw, Droplet, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Infusão - Enfermagem</title>
+    <!-- Tailwind CSS para o estilo (Carregado via CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Ajustes finos de scrollbar */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .slide-in {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 pb-20">
 
-const InfusionApp = () => {
-  // Estado inicial
-  const [startTime, setStartTime] = useState(() => {
-    const now = new Date();
-    return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-  });
-  
-  const [medications, setMedications] = useState([
-    { id: 1, name: 'Soro Fisiológico (Exemplo)', duration: 15, type: 'pre' },
-    { id: 2, name: 'Antibiótico', duration: 60, type: 'med' }
-  ]);
-
-  const [newMedName, setNewMedName] = useState('');
-  const [newMedDuration, setNewMedDuration] = useState('');
-  const [customStart, setCustomStart] = useState('');
-  const [customEnd, setCustomEnd] = useState('');
-  
-  // Histórico de durações usadas para sugestões (começa com padrões comuns)
-  const [suggestedDurations, setSuggestedDurations] = useState([15, 30, 45, 60, 120]);
-
-  // Função auxiliar para somar minutos a uma hora HH:MM
-  const addMinutes = (timeStr, minsToAdd) => {
-    if (!timeStr) return '';
-    const [hours, minutes] = timeStr.split(':').map(Number);
-    const date = new Date();
-    date.setHours(hours);
-    date.setMinutes(minutes + minsToAdd);
-    
-    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-  };
-
-  // Função auxiliar para calcular diferença em minutos entre duas horas
-  const getDiffInMinutes = (start, end) => {
-    if (!start || !end) return 0;
-    const [h1, m1] = start.split(':').map(Number);
-    const [h2, m2] = end.split(':').map(Number);
-    
-    let minutes1 = h1 * 60 + m1;
-    let minutes2 = h2 * 60 + m2;
-
-    // Lidar com virada do dia (ex: 23:00 a 01:00)
-    if (minutes2 < minutes1) {
-      minutes2 += 24 * 60;
-    }
-
-    return minutes2 - minutes1;
-  };
-
-  // Calcular a linha do tempo completa
-  const timeline = medications.map((med, index) => {
-    // O início do atual é o fim do anterior, ou o startTime global para o primeiro
-    const prevEnd = index === 0 ? startTime : null; 
-    
-    // Precisamos calcular cumulativamente
-    let currentStart = startTime;
-    for (let i = 0; i < index; i++) {
-      currentStart = addMinutes(currentStart, medications[i].duration);
-    }
-    
-    const currentEnd = addMinutes(currentStart, med.duration);
-    
-    return {
-      ...med,
-      calculatedStart: currentStart,
-      calculatedEnd: currentEnd
-    };
-  });
-
-  const totalDuration = medications.reduce((acc, curr) => acc + curr.duration, 0);
-  const finalTime = timeline.length > 0 ? timeline[timeline.length - 1].calculatedEnd : startTime;
-
-  // Adicionar novo medicamento
-  const handleAddMedication = (e) => {
-    e.preventDefault();
-    if (!newMedName || !newMedDuration) return;
-
-    const durationNum = parseInt(newMedDuration);
-    
-    const newMed = {
-      id: Date.now(),
-      name: newMedName,
-      duration: durationNum,
-      type: 'med'
-    };
-
-    setMedications([...medications, newMed]);
-    
-    // Adicionar às sugestões se não existir
-    if (!suggestedDurations.includes(durationNum)) {
-      setSuggestedDurations(prev => [...prev, durationNum].sort((a, b) => a - b));
-    }
-
-    setNewMedName('');
-    setNewMedDuration('');
-    setCustomStart('');
-    setCustomEnd('');
-  };
-
-  const removeMedication = (id) => {
-    setMedications(medications.filter(m => m.id !== id));
-  };
-
-  const resetAll = () => {
-    if (confirm('Deseja limpar todo o protocolo?')) {
-      setMedications([]);
-    }
-  };
-
-  // Função para lidar com a calculadora manual de tempo
-  const handleManualTimeCalculation = () => {
-    if (customStart && customEnd) {
-      const diff = getDiffInMinutes(customStart, customEnd);
-      setNewMedDuration(diff);
-    }
-  };
-
-  // Efeito para calcular duração se usuário preencher início e fim manuais no form
-  useEffect(() => {
-    handleManualTimeCalculation();
-  }, [customStart, customEnd]);
-
-  return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-20">
-      {/* Header */}
-      <header className="bg-blue-600 text-white p-4 shadow-lg sticky top-0 z-10">
-        <div className="max-w-md mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Clock className="w-6 h-6" />
-            <h1 className="text-xl font-bold">Cronograma de Infusão</h1>
-          </div>
-          <button 
-            onClick={resetAll}
-            className="text-xs bg-blue-700 hover:bg-blue-800 px-3 py-1 rounded transition-colors"
-          >
-            Novo Protocolo
-          </button>
-        </div>
-      </header>
-
-      <main className="max-w-md mx-auto p-4 space-y-6">
-        
-        {/* Configuração Inicial */}
-        <section className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-          <label className="block text-sm font-semibold text-slate-500 mb-1 uppercase tracking-wider">
-            Início do Protocolo
-          </label>
-          <div className="flex items-center gap-4">
-            <div className="relative flex-1">
-              <input
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className="w-full text-3xl font-bold text-blue-600 bg-slate-50 border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-              />
+    <!-- Header -->
+    <header class="bg-blue-600 text-white p-4 shadow-lg sticky top-0 z-10">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <!-- Icon Clock -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <h1 class="text-xl font-bold">Infusão Segura</h1>
             </div>
-            <div className="text-right">
-              <p className="text-xs text-slate-500">Término Previsto</p>
-              <p className="text-xl font-bold text-slate-700">{finalTime}</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Linha do Tempo (Lista de Medicamentos) */}
-        <section className="space-y-4">
-          <div className="flex justify-between items-end">
-            <h2 className="text-lg font-bold flex items-center gap-2">
-              <Droplet className="w-5 h-5 text-blue-500" />
-              Medicamentos ({medications.length})
-            </h2>
-            <span className="text-xs font-medium text-slate-500 bg-slate-200 px-2 py-1 rounded-full">
-              Total: {Math.floor(totalDuration / 60)}h {totalDuration % 60}m
-            </span>
-          </div>
-
-          {timeline.length === 0 ? (
-            <div className="text-center p-8 bg-white rounded-xl border border-dashed border-slate-300 text-slate-400">
-              <p>Nenhum medicamento adicionado.</p>
-              <p className="text-sm">Use o formulário abaixo para começar.</p>
-            </div>
-          ) : (
-            <div className="relative border-l-2 border-blue-200 ml-3 space-y-6 pl-6 py-2">
-              {timeline.map((item, idx) => (
-                <div key={item.id} className="relative bg-white p-4 rounded-lg shadow-sm border border-slate-100 group animate-in slide-in-from-left-2 duration-300">
-                  {/* Bolinha da timeline */}
-                  <div className="absolute -left-[31px] top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-blue-500 border-4 border-slate-50"></div>
-                  
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-slate-800 text-lg leading-tight">{item.name}</h3>
-                    <button 
-                      onClick={() => removeMedication(item.id)}
-                      className="text-slate-300 hover:text-red-500 transition-colors p-1"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2 text-sm">
-                    <div className="bg-green-50 p-2 rounded border border-green-100">
-                      <span className="block text-[10px] text-green-600 uppercase font-bold">Início</span>
-                      <span className="font-mono text-lg font-semibold text-green-700">{item.calculatedStart}</span>
-                    </div>
-                    
-                    <div className="bg-blue-50 p-2 rounded border border-blue-100 flex flex-col justify-center items-center">
-                      <span className="block text-[10px] text-blue-600 uppercase font-bold mb-1">Duração</span>
-                      <span className="font-medium text-blue-700 flex items-center gap-1">
-                        {item.duration >= 60 ? (
-                          <>{Math.floor(item.duration/60)}h {item.duration%60 > 0 && `${item.duration%60}m`}</>
-                        ) : (
-                          <>{item.duration} min</>
-                        )}
-                      </span>
-                    </div>
-
-                    <div className="bg-red-50 p-2 rounded border border-red-100 text-right">
-                      <span className="block text-[10px] text-red-600 uppercase font-bold">Término</span>
-                      <span className="font-mono text-lg font-semibold text-red-700">{item.calculatedEnd}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-
-        {/* Formulário de Adição */}
-        <section className="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
-          <div className="bg-slate-800 text-white p-3 flex items-center justify-between">
-            <span className="font-semibold flex items-center gap-2">
-              <Plus className="w-4 h-4" /> Adicionar Etapa
-            </span>
-          </div>
-          
-          <form onSubmit={handleAddMedication} className="p-4 space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">Nome do Medicamento/Soro</label>
-              <input
-                type="text"
-                placeholder="Ex: Dipirona, Soro 500ml..."
-                value={newMedName}
-                onChange={(e) => setNewMedName(e.target.value)}
-                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-            </div>
-
-            {/* Opções de Tempo */}
-            <div>
-              <label className="block text-sm font-medium text-slate-600 mb-2">Tempo de Infusão</label>
-              
-              {/* Sugestões Rápidas */}
-              <div className="flex gap-2 mb-3 overflow-x-auto pb-2 scrollbar-hide">
-                {suggestedDurations.map(min => (
-                  <button
-                    key={min}
-                    type="button"
-                    onClick={() => {
-                        setNewMedDuration(min);
-                        setCustomStart('');
-                        setCustomEnd('');
-                    }}
-                    className={`px-3 py-1.5 text-sm rounded-full whitespace-nowrap transition-colors ${
-                      parseInt(newMedDuration) === min 
-                        ? 'bg-blue-600 text-white shadow-md' 
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
-                  >
-                    {min >= 60 ? (min/60)+'h' : min+'min'}
-                  </button>
-                ))}
-              </div>
-
-              {/* Input Manual ou Calculadora */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="relative">
-                   <div className="flex items-center border border-slate-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
-                    <input
-                        type="number"
-                        placeholder="0"
-                        value={newMedDuration}
-                        onChange={(e) => {
-                            setNewMedDuration(e.target.value);
-                            setCustomStart('');
-                            setCustomEnd('');
-                        }}
-                        className="w-full p-3 outline-none"
-                    />
-                    <span className="bg-slate-50 text-slate-500 px-3 py-3 text-sm font-medium border-l">minutos</span>
-                  </div>
-                </div>
-
-                {/* Calculadora de intervalo opcional */}
-                <div className="bg-slate-50 p-2 rounded border border-slate-200 text-sm">
-                  <p className="text-xs text-slate-500 mb-2 font-medium flex items-center gap-1">
-                    <RotateCcw className="w-3 h-3"/> Calcular por horário (Opcional)
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <input 
-                        type="time" 
-                        className="w-full p-1 border rounded text-xs" 
-                        value={customStart}
-                        onChange={(e) => setCustomStart(e.target.value)}
-                    />
-                    <ArrowRight className="w-3 h-3 text-slate-400"/>
-                    <input 
-                        type="time" 
-                        className="w-full p-1 border rounded text-xs"
-                        value={customEnd}
-                        onChange={(e) => setCustomEnd(e.target.value)} 
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={!newMedName || !newMedDuration}
-              className="w-full bg-blue-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white py-3 rounded-lg font-bold shadow-md hover:bg-blue-700 active:scale-95 transition-all flex justify-center items-center gap-2"
-            >
-              <CheckCircle className="w-5 h-5" />
-              Confirmar Medicamento
+            <button onclick="resetAll()" class="text-xs bg-blue-700 hover:bg-blue-800 px-3 py-1 rounded transition-colors uppercase font-bold tracking-wider">
+                Limpar
             </button>
-          </form>
+        </div>
+    </header>
+
+    <main class="max-w-md mx-auto p-4 space-y-6">
+
+        <!-- Configuração Inicial -->
+        <section class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+            <label class="block text-sm font-semibold text-slate-500 mb-1 uppercase tracking-wider">
+                Início do Protocolo
+            </label>
+            <div class="flex items-center gap-4">
+                <div class="relative flex-1">
+                    <input type="time" id="globalStartTime" onchange="renderTimeline()"
+                        class="w-full text-3xl font-bold text-blue-600 bg-slate-50 border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-slate-500">Término Previsto</p>
+                    <p id="globalEndTime" class="text-xl font-bold text-slate-700">--:--</p>
+                </div>
+            </div>
         </section>
 
-        {/* Dicas */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex gap-3 items-start text-sm text-yellow-800">
-            <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-            <p>Os horários são calculados em sequência. Se houver intervalo entre as medicações (ex: pausa para banho), adicione um item "Pausa" com o tempo desejado.</p>
+        <!-- Lista de Medicamentos -->
+        <section class="space-y-4">
+            <div class="flex justify-between items-end">
+                <h2 class="text-lg font-bold flex items-center gap-2">
+                    <!-- Icon Droplet -->
+                    <svg class="w-5 h-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.74 5.74c3.04 3.04 3.04 7.96 0 11a7.8 7.8 0 0 1-11.48 0c-3.04-3.04-3.04-7.96 0-11 0 0 0 .17.17L12 2.69h0z"/><path d="M12 2.69l5.74 5.74c3.04 3.04 3.04 7.96 0 11a7.8 7.8 0 0 1-11.48 0c-3.04-3.04-3.04-7.96 0-11 0 0 0 .17.17L12 2.69h0z"/><path d="M12 17a5 5 0 0 0-5-5"/></svg>
+                    Etapas (<span id="medCount">0</span>)
+                </h2>
+                <span id="totalDurationLabel" class="text-xs font-medium text-slate-500 bg-slate-200 px-2 py-1 rounded-full">
+                    Total: 0h 0m
+                </span>
+            </div>
+
+            <div id="timelineContainer" class="relative border-l-2 border-blue-200 ml-3 space-y-6 pl-6 py-2">
+                <!-- Os itens serão inseridos aqui pelo JavaScript -->
+            </div>
+            
+            <div id="emptyState" class="text-center p-8 bg-white rounded-xl border border-dashed border-slate-300 text-slate-400 hidden">
+                <p>Nenhum medicamento adicionado.</p>
+                <p class="text-sm">Use o formulário abaixo para começar.</p>
+            </div>
+        </section>
+
+        <!-- Formulário de Adição -->
+        <section class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+            <div class="bg-slate-800 text-white p-3 flex items-center justify-between">
+                <span class="font-semibold flex items-center gap-2">
+                    <!-- Icon Plus -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Adicionar Etapa
+                </span>
+            </div>
+            
+            <form id="addForm" onsubmit="addMedication(event)" class="p-4 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 mb-1">Nome do Medicamento/Soro</label>
+                    <input type="text" id="medName" placeholder="Ex: Dipirona, Soro 500ml..." required
+                        class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 mb-2">Tempo de Infusão</label>
+                    
+                    <!-- Sugestões Rápidas -->
+                    <div class="flex gap-2 mb-3 overflow-x-auto pb-2 scrollbar-hide" id="suggestionsContainer">
+                        <button type="button" onclick="setDuration(15)" class="px-3 py-1.5 text-sm rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap">15min</button>
+                        <button type="button" onclick="setDuration(30)" class="px-3 py-1.5 text-sm rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap">30min</button>
+                        <button type="button" onclick="setDuration(60)" class="px-3 py-1.5 text-sm rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap">1h</button>
+                        <button type="button" onclick="setDuration(120)" class="px-3 py-1.5 text-sm rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap">2h</button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-center border border-slate-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 bg-white">
+                            <input type="number" id="medDuration" placeholder="0" required min="1"
+                                class="w-full p-3 outline-none">
+                            <span class="bg-slate-50 text-slate-500 px-3 py-3 text-sm font-medium border-l">minutos</span>
+                        </div>
+
+                        <!-- Calculadora Auxiliar -->
+                        <div class="bg-slate-50 p-2 rounded border border-slate-200 text-sm">
+                            <p class="text-xs text-slate-500 mb-2 font-medium flex items-center gap-1">
+                                <!-- Icon Calculator -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+                                Calcular por horário (Opcional)
+                            </p>
+                            <div class="flex items-center gap-2">
+                                <input type="time" id="calcStart" onchange="calculateDiff()" class="w-full p-1 border rounded text-xs bg-white">
+                                <span class="text-slate-400">➜</span>
+                                <input type="time" id="calcEnd" onchange="calculateDiff()" class="w-full p-1 border rounded text-xs bg-white">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold shadow-md active:scale-95 transition-all flex justify-center items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    Confirmar Medicamento
+                </button>
+            </form>
+        </section>
+
+        <!-- Dica -->
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex gap-3 items-start text-sm text-yellow-800">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <p>Os horários são calculados em cascata. Adicione uma "Pausa" se houver intervalo entre medicações.</p>
         </div>
+    </main>
 
-      </main>
-    </div>
-  );
-};
+    <script>
+        // --- Lógica da Aplicação ---
 
-export default InfusionApp;
+        // Estado inicial
+        let medications = [
+            { id: 1, name: 'Soro Fisiológico (Exemplo)', duration: 15 },
+            { id: 2, name: 'Antibiótico', duration: 60 }
+        ];
+
+        // Inicializa o horário com a hora atual
+        function initTime() {
+            const now = new Date();
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            document.getElementById('globalStartTime').value = timeStr;
+            renderTimeline();
+        }
+
+        // Adiciona minutos a uma hora HH:MM
+        function addMinutes(timeStr, minsToAdd) {
+            if (!timeStr) return '';
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const date = new Date();
+            date.setHours(hours);
+            date.setMinutes(minutes + minsToAdd);
+            return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        }
+
+        // Calcula diferença entre dois horários
+        function calculateDiff() {
+            const start = document.getElementById('calcStart').value;
+            const end = document.getElementById('calcEnd').value;
+            
+            if (start && end) {
+                const [h1, m1] = start.split(':').map(Number);
+                const [h2, m2] = end.split(':').map(Number);
+                
+                let min1 = h1 * 60 + m1;
+                let min2 = h2 * 60 + m2;
+                
+                // Ajuste para virada de dia (ex: 23h as 01h)
+                if (min2 < min1) min2 += 24 * 60;
+                
+                const diff = min2 - min1;
+                document.getElementById('medDuration').value = diff > 0 ? diff : 0;
+            }
+        }
+
+        // Define duração pelos botões rápidos
+        function setDuration(mins) {
+            document.getElementById('medDuration').value = mins;
+            // Limpa calculadora auxiliar
+            document.getElementById('calcStart').value = '';
+            document.getElementById('calcEnd').value = '';
+        }
+
+        // Adicionar novo medicamento
+        function addMedication(e) {
+            e.preventDefault();
+            const name = document.getElementById('medName').value;
+            const duration = parseInt(document.getElementById('medDuration').value);
+
+            if (name && duration) {
+                medications.push({
+                    id: Date.now(),
+                    name: name,
+                    duration: duration
+                });
+                
+                // Reset form
+                document.getElementById('medName').value = '';
+                document.getElementById('medDuration').value = '';
+                document.getElementById('calcStart').value = '';
+                document.getElementById('calcEnd').value = '';
+                
+                renderTimeline();
+            }
+        }
+
+        // Remover medicamento
+        function removeMedication(id) {
+            medications = medications.filter(med => med.id !== id);
+            renderTimeline();
+        }
+
+        // Limpar tudo
+        function resetAll() {
+            if (confirm('Tem certeza que deseja limpar todo o protocolo?')) {
+                medications = [];
+                renderTimeline();
+            }
+        }
+
+        // Renderiza a lista na tela
+        function renderTimeline() {
+            const container = document.getElementById('timelineContainer');
+            const startTime = document.getElementById('globalStartTime').value;
+            const emptyState = document.getElementById('emptyState');
+            const totalDurationLabel = document.getElementById('totalDurationLabel');
+            const medCount = document.getElementById('medCount');
+            const globalEndTime = document.getElementById('globalEndTime');
+
+            container.innerHTML = '';
+            
+            // Controle de estado vazio
+            if (medications.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            medCount.textContent = medications.length;
+
+            let currentStart = startTime;
+            let totalMinutes = 0;
+
+            medications.forEach((med) => {
+                const calculatedEnd = addMinutes(currentStart, med.duration);
+                totalMinutes += med.duration;
+
+                // Formatação da duração (ex: 90min -> 1h 30m)
+                let durationText = `${med.duration} min`;
+                if (med.duration >= 60) {
+                    const h = Math.floor(med.duration / 60);
+                    const m = med.duration % 60;
+                    durationText = m > 0 ? `${h}h ${m}m` : `${h}h`;
+                }
+
+                // Cria o HTML do card
+                const card = document.createElement('div');
+                card.className = "relative bg-white p-4 rounded-lg shadow-sm border border-slate-100 group slide-in";
+                card.innerHTML = `
+                    <div class="absolute -left-[31px] top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-blue-500 border-4 border-slate-50"></div>
+                    
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-bold text-slate-800 text-lg leading-tight">${med.name}</h3>
+                        <button onclick="removeMedication(${med.id})" class="text-slate-300 hover:text-red-500 transition-colors p-1" title="Excluir">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 text-sm">
+                        <div class="bg-green-50 p-2 rounded border border-green-100">
+                            <span class="block text-[10px] text-green-600 uppercase font-bold">Início</span>
+                            <span class="font-mono text-lg font-semibold text-green-700">${currentStart}</span>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-2 rounded border border-blue-100 flex flex-col justify-center items-center">
+                            <span class="block text-[10px] text-blue-600 uppercase font-bold mb-1">Duração</span>
+                            <span class="font-medium text-blue-700 text-center text-xs sm:text-sm">${durationText}</span>
+                        </div>
+
+                        <div class="bg-red-50 p-2 rounded border border-red-100 text-right">
+                            <span class="block text-[10px] text-red-600 uppercase font-bold">Término</span>
+                            <span class="font-mono text-lg font-semibold text-red-700">${calculatedEnd}</span>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+                
+                // Prepara para o próximo loop
+                currentStart = calculatedEnd;
+            });
+
+            // Atualiza totais
+            globalEndTime.textContent = currentStart;
+            const totalH = Math.floor(totalMinutes / 60);
+            const totalM = totalMinutes % 60;
+            totalDurationLabel.textContent = `Total: ${totalH}h ${totalM}m`;
+        }
+
+        // Inicia a app
+        initTime();
+
+    </script>
+</body>
+</html>
 
