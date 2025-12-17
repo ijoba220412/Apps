@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bracelet Pattern Designer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --knot-size: 40px;
+        }
+        body {
+            background-color: var(--bg-color);
+            user-select: none;
+        }
+        .knot-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 40px;
+        }
+        .knot-row {
+            display: flex;
+            gap: 20px;
+        }
+        .knot-row.offset {
+            margin-left: 60px; /* Offset para criar o efeito de diamante */
+        }
+        .knot {
+            width: var(--knot-size);
+            height: var(--knot-size);
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .knot:hover {
+            transform: scale(1.1);
+            border-color: #64748b;
+        }
+        .knot.active {
+            border-width: 3px;
+        }
+        .knot-arrow {
+            width: 70%;
+            height: 70%;
+            pointer-events: none;
+        }
+        .string-line {
+            position: absolute;
+            width: 2px;
+            background: #e2e8f0;
+            z-index: -1;
+        }
+        /* Cores das Cordas na parte superior */
+        .string-header {
+            display: flex;
+            gap: 58px;
+            margin-bottom: 20px;
+            padding-left: 20px;
+        }
+        .string-pill {
+            width: 12px;
+            height: 40px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .string-pill.selected {
+            border-color: #000;
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-80 bg-white border-r border-slate-200 p-6 flex flex-col gap-8 shadow-xl z-10">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800">Loomerly <span class="text-indigo-600">Pro</span></h1>
+                <p class="text-slate-500 text-sm">Designer de Nós (Normal Pattern)</p>
+            </div>
+
+            <!-- Configurações -->
+            <div class="space-y-4">
+                <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Configurações</h3>
+                <div>
+                    <label class="block text-sm text-slate-600 mb-1">Número de Fios: <span id="valStrings">8</span></label>
+                    <input type="range" id="inputStrings" min="4" max="16" step="2" value="8" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-600 mb-1">Linhas: <span id="valRows">12</span></label>
+                    <input type="range" id="inputRows" min="4" max="30" value="12" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                </div>
+            </div>
+
+            <!-- Paleta de Cores -->
+            <div class="space-y-4">
+                <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Paleta de Fios</h3>
+                <div id="palette" class="grid grid-cols-4 gap-2">
+                    <!-- Cores inseridas via JS -->
+                </div>
+                <input type="color" id="customColor" class="w-full h-10 rounded cursor-pointer border-none p-0">
+            </div>
+
+            <div class="mt-auto pt-6 border-t border-slate-100 flex gap-2">
+                <button id="btnReset" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-lg font-medium hover:bg-slate-200 transition">Limpar</button>
+                <button id="btnExport" class="flex-1 bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700 transition">Exportar</button>
+            </div>
+        </aside>
+
+        <!-- Canvas Principal -->
+        <main class="flex-1 overflow-auto bg-slate-50 relative">
+            <div class="knot-grid" id="mainGrid">
+                <!-- Header de Fios -->
+                <div class="string-header" id="stringHeader"></div>
+                
+                <!-- Grelha de Nós -->
+                <div id="gridContainer" class="flex flex-col gap-4"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Tipos de Nós (SVG paths para setas)
+        const KNOT_TYPES = {
+            F: '<svg class="knot-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7l10 10M17 7v10H7"/></svg>',
+            B: '<svg class="knot-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M17 7L7 17M7 7v10h10"/></svg>',
+            FB: '<svg class="knot-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10M17 7L7 17"/></svg>',
+            BF: '<svg class="knot-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M17 7H7v10M7 7l10 10"/></svg>'
+        };
+
+        const KNOT_ORDER = ['F', 'B', 'FB', 'BF'];
+
+        // Estado Global
+        let config = {
+            numStrings: 8,
+            numRows: 12
+        };
+        
+        let stringColors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#64748b', '#000000'];
+        let selectedStringIndex = 0;
+        let knotData = {}; // Guarda o tipo de nó por coordenada "row-col"
+
+        // Elementos DOM
+        const gridContainer = document.getElementById('gridContainer');
+        const stringHeader = document.getElementById('stringHeader');
+        const palette = document.getElementById('palette');
+        const inputStrings = document.getElementById('inputStrings');
+        const inputRows = document.getElementById('inputRows');
+
+        function init() {
+            renderPalette();
+            renderApp();
+            
+            inputStrings.addEventListener('input', (e) => {
+                config.numStrings = parseInt(e.target.value);
+                document.getElementById('valStrings').textContent = config.numStrings;
+                // Ajustar cores se necessário
+                while(stringColors.length < config.numStrings) stringColors.push('#cbd5e1');
+                renderApp();
+            });
+
+            inputRows.addEventListener('input', (e) => {
+                config.numRows = parseInt(e.target.value);
+                document.getElementById('valRows').textContent = config.numRows;
+                renderApp();
+            });
+
+            document.getElementById('btnReset').onclick = () => {
+                knotData = {};
+                renderApp();
+            };
+
+            document.getElementById('customColor').oninput = (e) => {
+                stringColors[selectedStringIndex] = e.target.value;
+                renderPalette();
+                renderApp();
+            };
+        }
+
+        function renderPalette() {
+            palette.innerHTML = '';
+            stringColors.slice(0, config.numStrings).forEach((color, idx) => {
+                const item = document.createElement('div');
+                item.className = `w-10 h-10 rounded-full cursor-pointer border-4 transition-all ${idx === selectedStringIndex ? 'border-indigo-500 scale-110' : 'border-white shadow-sm'}`;
+                item.style.backgroundColor = color;
+                item.onclick = () => {
+                    selectedStringIndex = idx;
+                    renderPalette();
+                };
+                palette.appendChild(item);
+            });
+        }
+
+        function renderApp() {
+            renderStrings();
+            renderGrid();
+        }
+
+        function renderStrings() {
+            stringHeader.innerHTML = '';
+            for(let i = 0; i < config.numStrings; i++) {
+                const pill = document.createElement('div');
+                pill.className = `string-pill ${i === selectedStringIndex ? 'selected' : ''}`;
+                pill.style.backgroundColor = stringColors[i];
+                pill.onclick = () => {
+                    selectedStringIndex = i;
+                    renderPalette();
+                    renderStrings();
+                };
+                stringHeader.appendChild(pill);
+            }
+        }
+
+        function renderGrid() {
+            gridContainer.innerHTML = '';
+            
+            for(let r = 0; r < config.numRows; r++) {
+                const rowDiv = document.createElement('div');
+                const isOffset = r % 2 !== 0;
+                rowDiv.className = `knot-row ${isOffset ? 'offset' : ''}`;
+                
+                // Em linhas normais, temos numStrings/2 nós
+                // Em linhas offset, temos (numStrings/2) - 1 nós
+                const knotsInRow = isOffset ? (config.numStrings / 2) - 1 : (config.numStrings / 2);
+
+                for(let k = 0; k < knotsInRow; k++) {
+                    const knotId = `${r}-${k}`;
+                    const knotType = knotData[knotId] || 'F';
+                    
+                    const knotEl = document.createElement('div');
+                    knotEl.className = 'knot';
+                    knotEl.innerHTML = KNOT_TYPES[knotType];
+                    
+                    // Lógica de cores baseada na posição das cordas (Simplificada para o design)
+                    // Num app real, calcularíamos o percurso de cada fio.
+                    // Aqui, usamos um gradiente ou cor fixa para o visual do diagrama.
+                    knotEl.style.color = '#6366f1'; 
+
+                    knotEl.onclick = () => {
+                        const currentIdx = KNOT_ORDER.indexOf(knotType);
+                        const nextIdx = (currentIdx + 1) % KNOT_ORDER.length;
+                        knotData[knotId] = KNOT_ORDER[nextIdx];
+                        renderGrid();
+                    };
+
+                    rowDiv.appendChild(knotEl);
+                }
+                gridContainer.appendChild(rowDiv);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
+
