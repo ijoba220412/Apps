@@ -3,206 +3,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGP v4 - Inteligência e Equidade (INCA)</title>
+    <title>SGP v5 - Gestão por Setores e Habilidades</title>
     <style>
         :root { --primary: #1a3a5a; --sec: #27ae60; --gray: #f4f7f6; --danger: #c0392b; --accent: #f39c12; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--gray); margin: 10px; }
-        .container { max-width: 1400px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--gray); margin: 10px; font-size: 14px; }
+        .container { max-width: 1450px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         
-        .grid-config { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-        .card { border: 1px solid #ddd; padding: 15px; border-radius: 8px; background: #fff; }
+        .grid-main { display: grid; grid-template-columns: 350px 1fr; gap: 20px; }
+        .card { border: 1px solid #ddd; padding: 15px; border-radius: 8px; background: #fff; margin-bottom: 15px; }
         
-        h2 { color: var(--primary); font-size: 1.1em; border-bottom: 2px solid var(--sec); padding-bottom: 5px; }
+        h2 { color: var(--primary); font-size: 1.1em; border-bottom: 2px solid var(--sec); padding-bottom: 5px; margin-top: 0; }
         
         label { display: block; font-weight: bold; font-size: 0.8em; margin: 8px 0 3px; }
         input, select, button { padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%; box-sizing: border-box; }
         
-        .btn-add { background: var(--sec); color: white; border: none; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        .btn-gen { background: var(--primary); color: white; padding: 12px; cursor: pointer; width: 100%; font-weight: bold; }
-        .btn-backup { background: var(--accent); color: white; border: none; padding: 8px; cursor: pointer; font-size: 0.75em; border-radius: 4px;}
-
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; table-layout: fixed; }
-        th, td { border: 1px solid #bdc3c7; padding: 8px; text-align: center; font-size: 0.85em; vertical-align: top; }
-        th { background: var(--primary); color: white; }
+        .btn-add { background: var(--sec); color: white; border: none; cursor: pointer; font-weight: bold; margin-top: 10px; padding: 10px; }
+        .btn-gen { background: var(--primary); color: white; padding: 12px; cursor: pointer; font-weight: bold; }
         
-        .editable { cursor: text; background: #fffde7; min-height: 40px; border: 1px dashed #fbc02d !important; }
-        .editable:focus { background: #fff; outline: 2px solid var(--sec); }
+        .sector-pill { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 2px 8px; border-radius: 10px; font-size: 0.7em; margin: 2px; border: 1px solid #c8e6c9; }
         
-        .badge-count { background: var(--primary); color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.8em; float: right; }
-        .is-fixed { color: var(--accent); font-weight: bold; font-size: 0.9em; }
-        .weekend { background: #fef1f1; }
+        .list-container { max-height: 250px; overflow-y: auto; border: 1px solid #eee; padding: 8px; margin-top: 5px; border-radius: 4px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #bdc3c7; padding: 6px; text-align: center; vertical-align: top; }
+        th { background: var(--primary); color: white; font-size: 0.8em; }
+        
+        .editable { cursor: text; background: #fffde7; min-height: 30px; border: 1px dashed #fbc02d !important; font-size: 0.85em; }
+        .weekend { background: #fff5f5; }
+        
+        .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; background: #f9f9f9; padding: 8px; border-radius: 4px; }
+        .checkbox-grid label { font-weight: normal; margin: 0; display: flex; align-items: center; gap: 5px; }
+        .checkbox-grid input { width: auto; }
 
-        @media print { .no-print { display: none; } .editable { border: none !important; background: none; } table { width: 100%; } }
+        @media print { .no-print { display: none; } .container { box-shadow: none; padding: 0; } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div style="display:flex; justify-content: space-between; align-items: center;" class="no-print">
-        <h1 style="color: var(--primary); font-size: 1.5em;">SGP v4 - Sistema de Plantões</h1>
-        <div style="display:flex; gap: 5px;">
-            <button class="btn-backup" onclick="exportData()">💾 Backup JSON</button>
-            <button class="btn-backup" style="background:#3498db" onclick="document.getElementById('importFile').click()">📂 Carregar</button>
+    <header style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;" class="no-print">
+        <h1 style="color: var(--primary); margin:0;">SGP v5 | INCA Pilar</h1>
+        <div style="display:flex; gap: 10px;">
+            <button onclick="exportData()" style="width:auto; padding:5px 15px; cursor:pointer;">💾 Exportar JSON</button>
+            <button onclick="document.getElementById('importFile').click()" style="width:auto; padding:5px 15px; cursor:pointer;">📂 Importar</button>
             <input type="file" id="importFile" style="display:none" onchange="importData(event)">
         </div>
+    </header>
+
+    <div class="grid-main no-print">
+        <aside>
+            <div class="card">
+                <h2>1. Gerenciar Setores</h2>
+                <div style="display:flex; gap:5px;">
+                    <input type="text" id="newSectorName" placeholder="Ex: Farmácia Clínica">
+                    <button onclick="addSector()" style="width:40px; background:var(--primary); color:white;">+</button>
+                </div>
+                <div id="sectorsList" class="list-container" style="max-height: 100px;"></div>
+            </div>
+
+            <div class="card">
+                <h2>2. Cadastro de Colaborador</h2>
+                <input type="text" id="workerName" placeholder="Nome do Funcionário" style="margin-bottom:10px;">
+                
+                <label>Pode atuar nos setores:</label>
+                <div id="sectorCheckboxes" class="checkbox-grid">
+                    </div>
+
+                <label>Indisponibilidade Semanal:</label>
+                <div class="checkbox-grid">
+                    <label><input type="checkbox" class="off-day" value="1"> Seg</label>
+                    <label><input type="checkbox" class="off-day" value="2"> Ter</label>
+                    <label><input type="checkbox" class="off-day" value="3"> Qua</label>
+                    <label><input type="checkbox" class="off-day" value="4"> Qui</label>
+                    <label><input type="checkbox" class="off-day" value="5"> Sex</label>
+                </div>
+
+                <button class="btn-add" onclick="saveWorker()">Adicionar Colaborador</button>
+            </div>
+        </aside>
+
+        <main>
+            <div class="card">
+                <h2>3. Equipe Atual e Contagem</h2>
+                <div id="staffList" class="list-container"></div>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:15px; margin-top:15px;">
+                    <div>
+                        <label>Mês da Escala:</label>
+                        <input type="month" id="targetMonth" value="2026-04">
+                    </div>
+                    <div>
+                        <label>Vagas por Setor (Dia Útil):</label>
+                        <input type="number" id="vagasDia" value="2">
+                    </div>
+                    <div>
+                        <label>&nbsp;</label>
+                        <button class="btn-gen" onclick="generateSmartScale()">GERAR ESCALA INTELIGENTE</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="scaleOutput"></div>
+            <button class="btn-add no-print" style="background:#34495e; width:200px;" onclick="window.print()">🖨️ Imprimir PDF</button>
+        </main>
     </div>
-
-    <div class="grid-config no-print">
-        <div class="card">
-            <h2>1. Equipe e Regras</h2>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <input type="text" id="name" placeholder="Nome">
-                <select id="sector">
-                    <option value="QUIM">Quimioterapia</option>
-                    <option value="CENT">Farmácia Central</option>
-                    <option value="ESTO">Estoque/SGI</option>
-                    <option value="APOI">Apoio</option>
-                </select>
-            </div>
-
-            <label>Indisponibilidade (Outros Vínculos):</label>
-            <div style="display:flex; gap: 8px; font-size: 0.75em;">
-                <label><input type="checkbox" class="off-day" value="1"> Seg</label>
-                <label><input type="checkbox" class="off-day" value="2"> Ter</label>
-                <label><input type="checkbox" class="off-day" value="3"> Qua</label>
-                <label><input type="checkbox" class="off-day" value="4"> Qui</label>
-                <label><input type="checkbox" class="off-day" value="5"> Sex</label>
-            </div>
-
-            <label style="color: var(--accent)">📌 Escala Fixa (Obrigatório):</label>
-            <div style="display:flex; gap: 8px; font-size: 0.75em;">
-                <label><input type="checkbox" class="fixed-day" value="1"> Seg</label>
-                <label><input type="checkbox" class="fixed-day" value="2"> Ter</label>
-                <label><input type="checkbox" class="fixed-day" value="3"> Qua</label>
-                <label><input type="checkbox" class="fixed-day" value="4"> Qui</label>
-                <label><input type="checkbox" class="fixed-day" value="5"> Sex</label>
-            </div>
-
-            <button class="btn-add" onclick="saveWorker()">Adicionar Colaborador</button>
-        </div>
-
-        <div class="card">
-            <h2>2. Controle de Carga Mensal</h2>
-            <div id="staffList" style="max-height: 180px; overflow-y: auto; border: 1px solid #eee; padding: 5px;"></div>
-            <div style="margin-top:10px">
-                <input type="month" id="targetMonth" value="2026-04">
-                <button class="btn-gen" onclick="generateScale()">GERAR COM EQUIDADE</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="scaleArea"></div>
-    
-    <button class="btn-add no-print" style="background:#34495e; margin-top:20px; width: auto; padding: 10px 40px;" onclick="window.print()">🖨️ IMPRIMIR / PDF</button>
 </div>
 
 <script>
-    let staff = JSON.parse(localStorage.getItem('inca_staff_v4')) || [];
+    let sectors = JSON.parse(localStorage.getItem('sgp_sectors')) || ["QUIM", "CENT", "ESTO", "APOI"];
+    let staff = JSON.parse(localStorage.getItem('sgp_staff_v5')) || [];
 
-    function saveWorker() {
-        const name = document.getElementById('name').value;
-        const sector = document.getElementById('sector').value;
-        const offDays = Array.from(document.querySelectorAll('.off-day:checked')).map(cb => parseInt(cb.value));
-        const fixedDays = Array.from(document.querySelectorAll('.fixed-day:checked')).map(cb => parseInt(cb.value));
-
-        if(!name) return alert("Nome necessário");
-        staff.push({ name, sector, offDays, fixedDays, monthlyCount: 0 });
-        saveAndRender();
+    function addSector() {
+        const name = document.getElementById('newSectorName').value.toUpperCase().trim();
+        if(name && !sectors.includes(name)) {
+            sectors.push(name);
+            localStorage.setItem('sgp_sectors', JSON.stringify(sectors));
+            renderSectors();
+            document.getElementById('newSectorName').value = "";
+        }
     }
 
-    function saveAndRender() {
-        localStorage.setItem('inca_staff_v4', JSON.stringify(staff));
+    function removeSector(idx) {
+        sectors.splice(idx, 1);
+        localStorage.setItem('sectors', JSON.stringify(sectors));
+        renderSectors();
+    }
+
+    function renderSectors() {
+        const list = document.getElementById('sectorsList');
+        const checks = document.getElementById('sectorCheckboxes');
+        
+        list.innerHTML = sectors.map((s, i) => `
+            <div style="font-size:0.8em; display:flex; justify-content:space-between; margin-bottom:3px;">
+                ${s} <span style="color:red; cursor:pointer" onclick="removeSector(${i})">✕</span>
+            </div>
+        `).join('');
+
+        checks.innerHTML = sectors.map(s => `
+            <label><input type="checkbox" class="worker-skill" value="${s}"> ${s}</label>
+        `).join('');
+    }
+
+    function saveWorker() {
+        const name = document.getElementById('workerName').value.trim();
+        const skills = Array.from(document.querySelectorAll('.worker-skill:checked')).map(cb => cb.value);
+        const offDays = Array.from(document.querySelectorAll('.off-day:checked')).map(cb => parseInt(cb.value));
+
+        if(!name || skills.length === 0) return alert("Preencha o nome e selecione ao menos um setor!");
+        
+        staff.push({ name, skills, offDays, count: 0 });
+        saveData();
+        document.getElementById('workerName').value = "";
+    }
+
+    function saveData() {
+        localStorage.setItem('sgp_staff_v5', JSON.stringify(staff));
+        renderStaff();
+    }
+
+    function renderStaff() {
         const div = document.getElementById('staffList');
         div.innerHTML = staff.map((s, i) => `
-            <div style="font-size:0.85em; margin-bottom:5px; padding:3px; background:#f9f9f9">
-                <b>[${s.sector}]</b> ${s.name} 
-                <span class="badge-count" title="Plantões no mês">${s.monthlyCount || 0}</span>
-                <span style="color:red; cursor:pointer; margin-left:10px" onclick="removeWorker(${i})">✕</span>
+            <div style="font-size:0.85em; border-bottom:1px solid #eee; padding:4px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <b>${s.name}</b> <br>
+                    ${s.skills.map(sk => `<span class="sector-pill">${sk}</span>`).join('')}
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="background:var(--primary); color:white; padding:2px 6px; border-radius:8px; font-size:0.8em;">${s.count || 0}</span>
+                    <span style="color:red; cursor:pointer;" onclick="staff.splice(${i},1); saveData();">✕</span>
+                </div>
             </div>
         `).join('');
     }
 
-    function removeWorker(i) { staff.splice(i, 1); saveAndRender(); }
-
-    function generateScale() {
+    function generateSmartScale() {
         const [year, month] = document.getElementById('targetMonth').value.split('-').map(Number);
         const daysInMonth = new Date(year, month, 0).getDate();
+        const vagas = parseInt(document.getElementById('vagasDia').value);
         
-        // Resetar contador para nova geração
-        staff.forEach(s => s.monthlyCount = 0);
+        staff.forEach(s => s.count = 0);
 
-        let html = `<table><tr><th width="70">Dia</th><th>QUIMIOTERAPIA</th><th>CENTRAL / SGI</th><th>NOTURNO (24h)</th></tr>`;
+        let html = `<table><tr><th width="70">Dia</th>`;
+        sectors.forEach(s => html += `<th>${s}</th>`);
+        html += `<th>NOTURNO (24h)</th></tr>`;
 
         for(let d=1; d<=daysInMonth; d++) {
             const date = new Date(year, month-1, d);
-            const weekDay = date.getDay();
-            const isWeekend = (weekDay === 0 || weekDay === 6);
+            const wkDay = date.getDay();
+            const isWeekend = (wkDay === 0 || wkDay === 6);
             
-            // Lógica de sorteio baseada em: 1. Setor / 2. Disponibilidade / 3. Menor Contagem (Equidade)
-            const getStaffFor = (sec, needed) => {
-                let chosen = [];
-                
-                // Primeiro: Quem é FIXO hoje e deste setor?
-                let fixed = staff.filter(s => s.sector === sec && s.fixedDays.includes(weekDay));
-                chosen = [...fixed];
-
-                // Segundo: Completar com quem está disponível, priorizando quem trabalhou MENOS
-                if(chosen.length < needed) {
-                    let candidates = staff.filter(s => 
-                        s.sector === sec && 
-                        !s.offDays.includes(weekDay) && 
-                        !chosen.includes(s)
-                    ).sort((a, b) => a.monthlyCount - b.monthlyCount); // Prioridade para menor contagem
-
-                    let remaining = candidates.slice(0, needed - chosen.length);
-                    chosen = [...chosen, ...remaining];
-                }
-
-                chosen.forEach(s => s.monthlyCount++);
-                return chosen.map(s => `<div>[${s.sector}] ${s.name}</div>`).join('');
-            };
-
-            // Noturno (Pode ser qualquer um disponível, priorizando quem tem menos plantões)
-            const getNoturno = () => {
-                let candidate = staff.filter(s => !s.offDays.includes(weekDay))
-                                    .sort((a, b) => a.monthlyCount - b.monthlyCount)[0];
-                if(candidate) {
-                    candidate.monthlyCount++;
-                    return `<b>[${candidate.sector}] ${candidate.name}</b>`;
-                }
-                return "---";
-            };
-
             html += `<tr class="${isWeekend ? 'weekend' : ''}">
-                <td><b>${d}/${month}</b><br><small>${date.toLocaleDateString('pt-br',{weekday:'short'})}</small></td>
-                <td contenteditable="true" class="editable">${getStaffFor('QUIM', isWeekend ? 1 : 2)}</td>
-                <td contenteditable="true" class="editable">${getStaffFor('CENT', isWeekend ? 1 : 2)} ${getStaffFor('ESTO', 1)}</td>
-                <td contenteditable="true" class="editable">${getNoturno()}</td>
-            </tr>`;
+                <td><b>${d}/${month}</b><br><small>${date.toLocaleDateString('pt-br',{weekday:'short'})}</small></td>`;
+
+            sectors.forEach(sec => {
+                const limit = isWeekend ? 1 : vagas;
+                const candidates = staff.filter(s => s.skills.includes(sec) && !s.offDays.includes(wkDay))
+                                        .sort((a,b) => a.count - b.count);
+                const chosen = candidates.slice(0, limit);
+                chosen.forEach(c => c.count++);
+                
+                html += `<td contenteditable="true" class="editable">
+                    ${chosen.map(c => `<div>${c.name}</div>`).join('')}
+                </td>`;
+            });
+
+            // Noturno: Qualquer um disponível que tenha menos plantões
+            const noturnoCand = staff.filter(s => !s.offDays.includes(wkDay))
+                                     .sort((a,b) => a.count - b.count)[0];
+            if(noturnoCand) noturnoCand.count++;
+            
+            html += `<td contenteditable="true" class="editable"><b>${noturnoCand ? noturnoCand.name : '---'}</b></td></tr>`;
         }
-        document.getElementById('scaleArea').innerHTML = html + `</table>`;
-        saveAndRender(); // Atualiza os crachás de contagem na lista lateral
+
+        document.getElementById('scaleOutput').innerHTML = html + `</table>`;
+        renderStaff();
     }
 
-    // Backup
     function exportData() {
-        const blob = new Blob([JSON.stringify(staff)], {type: "application/json"});
+        const blob = new Blob([JSON.stringify({staff, sectors})], {type: "application/json"});
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url; a.download = "equipe_inca_v4.json"; a.click();
+        a.href = url; a.download = "backup_inca_v5.json"; a.click();
     }
 
     function importData(e) {
         const reader = new FileReader();
         reader.onload = (event) => {
-            staff = JSON.parse(event.target.result);
-            saveAndRender();
-            alert("Dados importados!");
+            const data = JSON.parse(event.target.result);
+            staff = data.staff;
+            sectors = data.sectors;
+            localStorage.setItem('sgp_sectors', JSON.stringify(sectors));
+            saveData();
+            renderSectors();
         };
         reader.readAsText(e.target.files[0]);
     }
 
-    saveAndRender();
+    renderSectors();
+    renderStaff();
 </script>
 </body>
 </html>
