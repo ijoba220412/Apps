@@ -5,298 +5,272 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Receita Facilitada INCA HC IV</title>
     
-    <!-- Servidores JSDelivr (Furam a maioria dos Firewalls de Hospitais) SEM a trava de crossorigin -->
-    <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.23.9/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-
     <style>
+        /* --- ESTILOS BASE (Substituindo o Tailwind para funcionar offline) --- */
+        :root {
+            --emerald-500: #10b981; --emerald-600: #059669; --emerald-50: #ecfdf5; --emerald-200: #a7f3d0;
+            --slate-50: #f8fafc; --slate-100: #f1f5f9; --slate-200: #e2e8f0; --slate-500: #64748b; --slate-600: #475569; --slate-700: #334155; --slate-800: #1e293b;
+            --blue-50: #eff6ff; --blue-200: #bfdbfe; --blue-600: #2563eb; --blue-800: #1e40af;
+            --orange-50: #fff7ed; --orange-200: #fed7aa; --orange-500: #f97316; --orange-600: #ea580c; --orange-900: #7c2d12;
+            --yellow-50: #fefce8; --yellow-200: #fef08a; --yellow-500: #eab308; --yellow-900: #713f12;
+            --red-50: #fef2f2; --red-500: #ef4444;
+            --cyan-500: #06b6d4;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; }
+        body { background-color: var(--slate-100); padding-bottom: 80px; }
+        
+        /* Utilitários */
+        .flex { display: flex; } .flex-col { flex-direction: column; } .items-center { align-items: center; } .justify-between { justify-content: space-between; } .justify-center { justify-content: center; } .gap-2 { gap: 8px; } .gap-4 { gap: 16px; }
+        .w-full { width: 100%; } .text-center { text-align: center; } .font-bold { font-weight: bold; } .font-black { font-weight: 900; }
+        .uppercase { text-transform: uppercase; } .hidden { display: none !important; }
+        
+        /* Componentes */
+        .header { background-color: var(--slate-800); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1); flex-wrap: wrap; gap: 10px; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+        .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--slate-200); }
+        .card-header { font-size: 18px; font-weight: bold; color: var(--slate-800); margin-bottom: 15px; border-bottom: 1px solid var(--slate-200); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;}
+        
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        @media (min-width: 768px) { .form-grid { grid-template-columns: repeat(4, 1fr); } .col-span-2 { grid-column: span 2; } .col-span-4 { grid-column: span 4; } }
+        
+        label { display: block; font-size: 12px; font-weight: bold; color: var(--slate-600); margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--slate-200); border-radius: 6px; background-color: var(--slate-50); font-size: 14px; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--emerald-500); background-color: white; }
+        
+        .btn { padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; font-size: 14px; }
+        .btn-emerald { background-color: var(--emerald-500); color: white; } .btn-emerald:hover { background-color: var(--emerald-600); }
+        .btn-blue { background-color: var(--blue-600); color: white; } .btn-blue:hover { background-color: var(--blue-800); }
+        .btn-orange { background-color: var(--orange-500); color: white; } .btn-orange:hover { background-color: var(--orange-600); }
+        .btn-red-icon { background: var(--red-50); color: var(--red-500); padding: 8px; border-radius: 50%; } .btn-red-icon:hover { background: var(--red-500); color: white; }
+        
+        .horario-btn { padding: 8px 12px; border-radius: 20px; border: 1px solid var(--slate-200); background: white; color: var(--slate-600); font-weight: bold; font-size: 14px; cursor: pointer; flex: 1; min-width: 60px; text-align: center; }
+        .horario-btn.ativo { background: var(--emerald-500); color: white; border-color: var(--emerald-600); }
+        .horarios-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+        
+        /* Área de Impressão (Visual Lúdico) */
+        .print-container { overflow-x: auto; -webkit-overflow-scrolling: touch; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; border: 1px solid var(--slate-300); margin-bottom: 40px; background: white; }
+        .a4-sheet { min-width: 900px; padding: 30px; background: white; }
+        .print-header { border-bottom: 4px solid var(--slate-800); padding-bottom: 15px; margin-bottom: 20px; }
+        .print-title { font-size: 24px; font-weight: 900; text-align: center; margin-bottom: 15px; letter-spacing: 1px; }
+        .patient-box { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; background: var(--slate-50); padding: 15px; border-radius: 8px; border: 1px solid var(--slate-200); }
+        .patient-field span { display: block; } .patient-field .label { font-size: 10px; color: var(--slate-500); text-transform: uppercase; } .patient-field .value { font-size: 16px; font-weight: bold; text-transform: uppercase; }
+        
+        .section-title { background: var(--emerald-600); color: white; text-align: center; padding: 10px; border-radius: 8px 8px 0 0; font-size: 18px; font-weight: 900; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .section-title.sos { background: var(--orange-500); margin-top: 30px; }
+        
+        .print-table { width: 100%; border-collapse: collapse; border: 2px solid var(--emerald-600); text-align: center; margin-bottom: 20px; }
+        .print-table th, .print-table td { border: 1px solid var(--emerald-200); padding: 8px; vertical-align: middle; }
+        .print-table th { background: var(--emerald-50); border-bottom: 2px solid var(--emerald-600); }
+        .print-table td.med-name { border-right: 2px solid var(--emerald-600); text-align: left; width: 33%; }
+        .med-title { font-size: 16px; font-weight: 900; color: var(--slate-800); text-transform: uppercase; margin-bottom: 4px; }
+        .med-ind { display: inline-block; background: var(--yellow-200); color: var(--yellow-900); border: 1px solid var(--yellow-500); font-weight: 900; font-size: 11px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
+        
+        .print-table.sos-table { border-color: var(--orange-500); text-align: left; }
+        .sos-table th, .sos-table td { border-color: var(--orange-200); }
+        .sos-table td.med-name { border-right: 1px solid var(--orange-200); }
+        
+        .dose-box { background: white; border: 2px solid var(--emerald-500); border-radius: 8px; padding: 4px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-width: 50px;}
+        .dose-box.sos-box { border-color: var(--orange-400); flex-direction: row; gap: 8px; width: auto; padding: 4px 10px; }
+        
+        .footer { margin-top: 30px; padding-top: 15px; border-top: 2px solid var(--slate-300); text-align: center; font-size: 12px; font-weight: bold; color: var(--slate-600); }
+        
+        /* IMPRESSÃO DEFINITIVA */
         @media print {
             @page { size: landscape; margin: 10mm; }
-            body { background-color: white !important; }
+            body { background: white; padding: 0; }
             .nao-imprime { display: none !important; }
-            .shadow-2xl { box-shadow: none !important; border: none !important; }
-            .evitar-quebra { page-break-inside: avoid; }
-            .folha-a4 { min-width: 100% !important; }
+            .print-container { box-shadow: none; border: none; overflow: visible; margin: 0; }
+            .a4-sheet { padding: 0; min-width: 100%; }
+            .dose-box, .section-title, .med-ind { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .page-break { page-break-inside: avoid; }
         }
-        /* Rolagem suave no celular */
-        .scroll-suave { -webkit-overflow-scrolling: touch; }
     </style>
-    
-    <!-- Captura de erros do navegador -->
-    <script>
-        window.onerror = function(msg, url, line) {
-            var erroDiv = document.getElementById('erro-log');
-            if(erroDiv) {
-                erroDiv.innerHTML = "Falha de Rede: O seu Wi-Fi/Internet bloqueou o sistema. Tente usar o 4G do celular.";
-            }
-        };
-    </script>
 </head>
-<body class="bg-slate-100 font-sans">
-    
-    <!-- Tela de carregamento inicial -->
-    <div id="loading" style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; text-align: center; padding: 20px;">
-        <h2 style="color: #059669; font-family: sans-serif; font-size: 24px; font-weight: bold;">Iniciando o sistema...</h2>
-        <p style="color: #64748b; font-family: sans-serif; margin-top: 10px;">Se esta tela não sumir em 5 segundos, desligue o Wi-Fi e teste no 4G.</p>
-        <div id="erro-log" style="color: red; margin-top: 20px; font-weight: bold; font-family: sans-serif;"></div>
+<body>
+
+    <!-- BARRA SUPERIOR -->
+    <div class="header nao-imprime">
+        <div>
+            <h1 style="font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                <span style="background: var(--emerald-500); padding: 4px; border-radius: 4px;">➕</span>
+                Receitas Facilitadas HC IV (Modo Seguro)
+            </h1>
+            <p style="font-size: 12px; color: var(--slate-200); margin-top: 4px;">Preencha os dados e clique em Imprimir. Funciona offline.</p>
+        </div>
+        <button class="btn btn-emerald" onclick="window.print()" style="width: 100%; max-width: 250px;">
+            🖨️ Imprimir / Salvar PDF
+        </button>
     </div>
 
-    <!-- Onde o aplicativo vai aparecer -->
-    <div id="root"></div>
+    <div class="container">
+        
+        <!-- 1. DADOS DO PACIENTE -->
+        <div class="card nao-imprime">
+            <div class="card-header">1. Dados do Paciente e Equipe</div>
+            <div class="form-grid">
+                <div class="col-span-2">
+                    <label>Nome do Paciente</label>
+                    <input type="text" id="inp-nome" oninput="updatePaciente()" placeholder="Ex: Maria da Silva">
+                </div>
+                <div>
+                    <label>Prontuário / Matrícula</label>
+                    <input type="text" id="inp-pront" oninput="updatePaciente()" placeholder="Ex: 5042552">
+                </div>
+                <div>
+                    <label>Data</label>
+                    <input type="date" id="inp-data" onchange="updatePaciente()">
+                </div>
+                <div class="col-span-2">
+                    <label>Médico(a) Solicitante</label>
+                    <input type="text" id="inp-medico" oninput="updatePaciente()" placeholder="Ex: Dra. Ana Costa">
+                </div>
+                <div class="col-span-2">
+                    <label>Farmacêutico(a) Responsável + CRF</label>
+                    <input type="text" id="inp-farm" oninput="updatePaciente()" placeholder="Ex: Márcia Cruz - CRF 7333">
+                </div>
+            </div>
+        </div>
 
-    <!-- O motor da aplicação -->
-    <script type="text/babel" data-presets="react">
-    try {
-        if (typeof window.React === 'undefined') throw new Error("O seu Wi-Fi bloqueou o download do sistema. Tente usar o 4G do celular.");
-        if (typeof window.ReactDOM === 'undefined') throw new Error("A biblioteca ReactDOM foi bloqueada pela rede.");
+        <!-- 2. MEDICAMENTOS FIXOS -->
+        <div class="nao-imprime">
+            <div class="card-header" style="border:none; margin-bottom: 5px;">
+                <span style="color: var(--slate-800);">2. Medicamentos de Horário Fixo</span>
+                <button class="btn btn-blue" onclick="addPrescricao(false)">➕ Adicionar Fixo</button>
+            </div>
+            <div id="lista-fixos"></div>
+        </div>
 
-        const { useState } = React;
+        <!-- 3. MEDICAMENTOS SOS -->
+        <div class="nao-imprime">
+            <div class="card-header" style="border:none; margin-bottom: 5px; margin-top: 20px;">
+                <span style="color: var(--orange-600);">3. Medicamentos S.O.S (Resgate)</span>
+                <button class="btn btn-orange" onclick="addPrescricao(true)">➕ Adicionar S.O.S</button>
+            </div>
+            <div id="lista-sos"></div>
+        </div>
 
-        // --- BANCO DE DADOS MOCK (Baseado nas planilhas do HC IV) ---
-        const MEDICAMENTOS_PADRAO = [
-          { nome: "MORFINA 10 MG", indicacao: "PARA DOR", apresentacao: "comprimido", dosePadrao: "1" },
-          { nome: "MORFINA 10 MG/ML (GOTAS)", indicacao: "PARA DOR", apresentacao: "gotas", dosePadrao: "6" },
-          { nome: "DIPIRONA 500 MG", indicacao: "PARA DOR OU FEBRE", apresentacao: "comprimido", dosePadrao: "1" },
-          { nome: "DIPIRONA 500 MG/ML (GOTAS)", indicacao: "PARA DOR OU FEBRE", apresentacao: "gotas", dosePadrao: "40" },
-          { nome: "OMEPRAZOL 20 MG", indicacao: "PARA PROTEGER O ESTÔMAGO", apresentacao: "comprimido", dosePadrao: "1" },
-          { nome: "LACTULOSE", indicacao: "PARA PRISÃO DE VENTRE", apresentacao: "liquido", dosePadrao: "15" },
-          { nome: "BROMOPRIDA 10 MG", indicacao: "PARA ENJOO OU VÔMITO", apresentacao: "comprimido", dosePadrao: "1" },
-          { nome: "ONDANSETRONA 8 MG", indicacao: "PARA ENJOO OU VÔMITO", apresentacao: "comprimido", dosePadrao: "1" },
-          { nome: "DEXAMETASONA 4 MG", indicacao: "PARA APETITE E CANSAÇO", apresentacao: "comprimido", dosePadrao: "1" },
-          { nome: "GABAPENTINA 300 MG", indicacao: "PARA DOR", apresentacao: "comprimido", dosePadrao: "1" },
-          { nome: "SIMETICONA GOTAS", indicacao: "PARA GASES", apresentacao: "gotas", dosePadrao: "30" },
-          { nome: "LOSARTANA 50 MG", indicacao: "PARA PRESSÃO ALTA", apresentacao: "comprimido", dosePadrao: "1" },
-          { nome: "OUTRO (DIGITAR MANUALMENTE)...", indicacao: "", apresentacao: "comprimido", dosePadrao: "1" }
+        <div class="nao-imprime" style="text-align: center; font-size: 12px; color: var(--slate-500); margin: 20px 0; background: var(--slate-200); padding: 8px; border-radius: 6px; font-weight: bold;">
+            👇 DESLIZE O QUADRO ABAIXO PARA OS LADOS NO CELULAR PARA VER A RECEITA COMPLETA 👇
+        </div>
+
+        <!-- FOLHA A4 (VISUAL FINAL DA RECEITA) -->
+        <div class="print-container">
+            <div class="a4-sheet">
+                
+                <!-- Cabeçalho Impressão -->
+                <div class="print-header">
+                    <div class="print-title">HOSPITAL DO CÂNCER IV – HC IV</div>
+                    <div class="patient-box">
+                        <div class="patient-field col-span-2">
+                            <span class="label">Nome do Paciente</span>
+                            <span class="value" id="out-nome">_________________________________</span>
+                        </div>
+                        <div class="patient-field">
+                            <span class="label">Prontuário</span>
+                            <span class="value" id="out-pront">_________</span>
+                        </div>
+                        <div class="patient-field">
+                            <span class="label">Data</span>
+                            <span class="value" id="out-data">__/__/____</span>
+                        </div>
+                        <div class="patient-field col-span-4" style="border-top: 1px solid #e2e8f0; padding-top: 10px;">
+                            <span class="label">Médico(a) Solicitante</span>
+                            <span class="value" id="out-medico" style="font-size: 14px;">_________________________________</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabela Fixos -->
+                <div class="section-title">ℹ️ Como tomar os seus medicamentos (Uso Contínuo)</div>
+                <table class="print-table" id="tabela-fixos">
+                    <!-- Gerado via JS -->
+                </table>
+
+                <!-- Tabela SOS -->
+                <div id="container-tabela-sos" style="display: none;" class="page-break">
+                    <div class="section-title sos">⚠️ SOS - Usar apenas se sentir incômodo</div>
+                    <table class="print-table sos-table" id="tabela-sos">
+                        <!-- Gerado via JS -->
+                    </table>
+                </div>
+
+                <!-- Rodapé Impressão -->
+                <div class="footer page-break">
+                    <p>Em caso de dúvidas ligue para a Assistência Domiciliar - Farmácia: 3207-3971 ou Emergência: 3207-3872 / 3207-3874</p>
+                    <p style="margin-top: 10px; font-size: 14px;">Farmacêutico(a) Responsável pela elaboração: <span id="out-farm" style="border-bottom: 1px solid var(--slate-500); padding: 0 15px; color: var(--slate-800);">_____________________________________________</span></p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGICA JAVASCRIPT (Totalmente Offline e Pura) -->
+    <script>
+        // --- BANCO DE DADOS ---
+        const MEDICAMENTOS = [
+            { nome: "MORFINA 10 MG", ind: "PARA DOR", apre: "comprimido", dose: "1" },
+            { nome: "MORFINA 10 MG/ML (GOTAS)", ind: "PARA DOR", apre: "gotas", dose: "6" },
+            { nome: "DIPIRONA 500 MG", ind: "PARA DOR OU FEBRE", apre: "comprimido", dose: "1" },
+            { nome: "DIPIRONA 500 MG/ML (GOTAS)", ind: "PARA DOR OU FEBRE", apre: "gotas", dose: "40" },
+            { nome: "OMEPRAZOL 20 MG", ind: "PARA PROTEGER O ESTÔMAGO", apre: "comprimido", dose: "1" },
+            { nome: "LACTULOSE", ind: "PARA PRISÃO DE VENTRE", apre: "liquido", dose: "15" },
+            { nome: "BROMOPRIDA 10 MG", ind: "PARA ENJOO OU VÔMITO", apre: "comprimido", dose: "1" },
+            { nome: "ONDANSETRONA 8 MG", ind: "PARA ENJOO OU VÔMITO", apre: "comprimido", dose: "1" },
+            { nome: "DEXAMETASONA 4 MG", ind: "PARA APETITE E CANSAÇO", apre: "comprimido", dose: "1" },
+            { nome: "GABAPENTINA 300 MG", ind: "PARA DOR", apre: "comprimido", dose: "1" },
+            { nome: "SIMETICONA GOTAS", ind: "PARA GASES", apre: "gotas", dose: "30" },
+            { nome: "LOSARTANA 50 MG", ind: "PARA PRESSÃO ALTA", apre: "comprimido", dose: "1" },
+            { nome: "OUTRO (DIGITAR MANUALMENTE)...", ind: "", apre: "comprimido", dose: "1" }
         ];
 
-        const HORARIOS_PADRAO = ["06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "22:00", "00:00"];
+        const HORARIOS = ["06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "22:00", "00:00"];
 
-        // --- ÍCONES INLINE (SVGs desenhados para não depender de fontes externas) ---
-        const Icons = {
-            Plus: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>,
-            Printer: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
-            Trash2: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>,
-            Clock: ({className}) => <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>,
-            Sun: ({className}) => <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>,
-            Moon: ({className}) => <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>,
-            Info: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>,
-            AlertCircle: ({size=24, className}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-        };
+        // --- ESTADO DO SISTEMA ---
+        let prescricoes = [];
+        let sos = [];
 
-        const IconeDose = ({ tipo, quantidade }) => {
+        // Inicia com a data de hoje
+        document.getElementById('inp-data').valueAsDate = new Date();
+        updatePaciente();
+
+        // --- FUNÇÕES DE ÍCONES (SVG Puro) ---
+        function getMedIcon(tipo, qtde) {
+            let svg = '';
             if (tipo === 'comprimido') {
-                return (
-                <div className="flex flex-col items-center justify-center">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
-                    <path d="M10 5l9 9a4.95 4.95 0 1 1-7 7l-9-9a4.95 4.95 0 0 1 7-7Z" /><path d="m7.5 9.5 7 7" />
-                    </svg>
-                    <span className="text-[10px] font-bold mt-1 leading-tight text-slate-700">{quantidade} comp.</span>
-                </div>
-                );
+                svg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5l9 9a4.95 4.95 0 1 1-7 7l-9-9a4.95 4.95 0 0 1 7-7Z" /><path d="m7.5 9.5 7 7" /></svg>
+                       <span style="font-size:10px; font-weight:bold; color:#334155; line-height:1;">${qtde} comp.</span>`;
+            } else if (tipo === 'meio_comprimido') {
+                svg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5l4.5 4.5" /><path d="m7.5 9.5 7 7" stroke-dasharray="2 2" /><path d="M5 12a4.95 4.95 0 0 0 7 7l4.5-4.5" /></svg>
+                       <span style="font-size:10px; font-weight:bold; color:#ea580c; line-height:1;">Metade(1/2)</span>`;
+            } else if (tipo === 'gotas') {
+                svg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="#06b6d4"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" /></svg>
+                       <span style="font-size:10px; font-weight:bold; color:#334155; line-height:1;">${qtde} gotas</span>`;
+            } else if (tipo === 'liquido') {
+                svg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v4a8 8 0 0 1-16 0V4z" /><path d="M12 12v9" /><path d="M8 21h8" /></svg>
+                       <span style="font-size:10px; font-weight:bold; color:#334155; line-height:1;">${qtde} ml</span>`;
             }
-            if (tipo === 'meio_comprimido') {
-                return (
-                <div className="flex flex-col items-center justify-center">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-orange-500">
-                    <path d="M10 5l4.5 4.5" /><path d="m7.5 9.5 7 7" strokeDasharray="2 2" /><path d="M5 12a4.95 4.95 0 0 0 7 7l4.5-4.5" />
-                    </svg>
-                    <span className="text-[10px] font-bold mt-1 text-orange-600 leading-tight">Metade (1/2)</span>
-                </div>
-                );
+            return svg;
+        }
+
+        function getHoraIcon(horaStr) {
+            const h = parseInt(horaStr.split(':')[0]);
+            if (h >= 6 && h <= 12) return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+            if (h > 12 && h < 18) return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+            return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+        }
+
+        // --- FUNÇÕES DE LÓGICA ---
+        function updatePaciente() {
+            const dataVal = document.getElementById('inp-data').value;
+            let dataFormatada = "__/__/____";
+            if(dataVal) {
+                const d = new Date(dataVal);
+                d.setMinutes(d.getMinutes() + d.getTimezoneOffset()); // Corrige fuso horário
+                dataFormatada = d.toLocaleDateString('pt-BR');
             }
-            if (tipo === 'gotas') {
-                return (
-                <div className="flex flex-col items-center justify-center">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="text-cyan-500">
-                    <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" />
-                    </svg>
-                    <span className="text-[10px] font-bold mt-1 leading-tight text-slate-700">{quantidade} gotas</span>
-                </div>
-                );
-            }
-            if (tipo === 'liquido') {
-                return (
-                <div className="flex flex-col items-center justify-center">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600">
-                    <path d="M4 4h16v4a8 8 0 0 1-16 0V4z" /><path d="M12 12v9" /><path d="M8 21h8" />
-                    </svg>
-                    <span className="text-[10px] font-bold mt-1 leading-tight text-slate-700">{quantidade} ml</span>
-                </div>
-                );
-            }
-            return <span className="text-sm font-bold text-slate-700">{quantidade}</span>;
-        };
 
-        // --- COMPONENTE DO FORMULÁRIO DE CADA MEDICAMENTO ---
-        const PrescricaoRowEditor = ({ item, isSos, updatePrescricao, removePrescricao, toggleHorario }) => (
-            <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200 mb-4 nao-imprime relative">
-                <button onClick={() => removePrescricao(item.id, isSos)} className="absolute top-2 right-2 text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-full md:relative md:top-0 md:right-0 md:bg-transparent" title="Excluir medicamento">
-                    <Icons.Trash2 />
-                </button>
-                
-                <div className="flex flex-col md:flex-row justify-between items-start mb-3 gap-4 pt-6 md:pt-0">
-                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 w-full">
-                        <div className="col-span-1 sm:col-span-2">
-                            <label className="block text-xs font-semibold text-slate-500 mb-1">Qual é o medicamento?</label>
-                            <div className="flex flex-col sm:flex-row gap-2">
-                                <select 
-                                    className="p-3 md:p-2 border rounded-lg md:rounded text-sm flex-1 bg-slate-50 w-full"
-                                    onChange={(e) => updatePrescricao(item.id, 'nome', e.target.value, isSos)}
-                                    value={MEDICAMENTOS_PADRAO.some(m => m.nome === item.nome) ? item.nome : (item.nome ? "OUTRO (DIGITAR MANUALMENTE)..." : "")}
-                                >
-                                    <option value="">Selecione ou digite...</option>
-                                    {MEDICAMENTOS_PADRAO.map(med => (
-                                        <option key={med.nome} value={med.nome}>{med.nome}</option>
-                                    ))}
-                                </select>
-                                {!MEDICAMENTOS_PADRAO.some(m => m.nome === item.nome) && item.nome !== "" && (
-                                    <input 
-                                        type="text" 
-                                        className="p-3 md:p-2 border rounded-lg md:rounded text-sm flex-1 w-full mt-2 sm:mt-0"
-                                        placeholder="Nome livre do remédio"
-                                        value={item.nome}
-                                        onChange={(e) => updatePrescricao(item.id, 'nome', e.target.value, isSos)}
-                                    />
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="w-full">
-                            <label className="block text-xs font-semibold text-slate-500 mb-1">Símbolo (Apresentação)</label>
-                            <select 
-                                className="w-full p-3 md:p-2 border rounded-lg md:rounded text-sm bg-white"
-                                value={item.apresentacao}
-                                onChange={(e) => updatePrescricao(item.id, 'apresentacao', e.target.value, isSos)}
-                            >
-                                <option value="comprimido">Comprimido / Cápsula</option>
-                                <option value="meio_comprimido">Metade (1/2) Comprimido</option>
-                                <option value="gotas">Gotas</option>
-                                <option value="liquido">Líquido (Xarope/ml)</option>
-                            </select>
-                        </div>
-
-                        <div className="w-full">
-                            <label className="block text-xs font-semibold text-slate-500 mb-1">Dose (Número)</label>
-                            <input 
-                                type="text" 
-                                className="w-full p-3 md:p-2 border rounded-lg md:rounded text-sm font-bold bg-white"
-                                value={item.dose}
-                                placeholder="Ex: 1, 40, 15"
-                                onChange={(e) => updatePrescricao(item.id, 'dose', e.target.value, isSos)}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="mb-4">
-                    <label className="block text-xs font-semibold text-slate-500 mb-1">Para que serve? (Ficará em destaque amarelo na receita)</label>
-                    <input 
-                        type="text" 
-                        className="w-full p-3 md:p-2 border rounded-lg md:rounded border-yellow-300 bg-yellow-50 text-yellow-900 font-semibold"
-                        placeholder="Ex: PARA DOR FORTE"
-                        value={item.indicacao}
-                        onChange={(e) => updatePrescricao(item.id, 'indicacao', e.target.value, isSos)}
-                    />
-                </div>
-
-                {!isSos ? (
-                    <div>
-                        <label className="block text-xs font-semibold text-slate-500 mb-2">Clique nos Horários em que o paciente deve tomar (Fixo):</label>
-                        <div className="flex flex-wrap gap-2">
-                            {HORARIOS_PADRAO.map(hora => (
-                                <button
-                                    key={hora} type="button" onClick={() => toggleHorario(item.id, hora)}
-                                    className={`px-4 py-2 md:px-3 md:py-1.5 rounded-full text-sm font-bold border transition-colors flex-1 sm:flex-none text-center ${
-                                        item.horarios[hora] ? 'bg-emerald-500 text-white border-emerald-600 shadow-inner' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-100'
-                                    }`}
-                                >
-                                    {hora}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                ) : (
-                    <div>
-                        <label className="block text-xs font-semibold text-slate-500 mb-1">Instruções de Resgate S.O.S (Como e quando tomar):</label>
-                        <textarea 
-                            className="w-full p-3 md:p-2 border rounded-lg md:rounded text-sm bg-orange-50 border-orange-200 text-orange-900"
-                            rows="2"
-                            placeholder="Ex: Tomar 1 comprimido de 4/4h apenas se a dor não passar com Dipirona."
-                            value={item.instrucaoEspecial}
-                            onChange={(e) => updatePrescricao(item.id, 'instrucaoEspecial', e.target.value, isSos)}
-                        />
-                    </div>
-                )}
-            </div>
-        );
-
-        // --- SISTEMA PRINCIPAL ---
-        function App() {
-            const [paciente, setPaciente] = useState({
-                nome: '', prontuario: '', data: new Date().toISOString().split('T')[0], medico: '', farmaceutico: ''
-            });
-
-            const [prescricoes, setPrescricoes] = useState([]);
-            const [sos, setSos] = useState([]);
-
-            const handlePacienteChange = (e) => {
-                setPaciente({ ...paciente, [e.target.name]: e.target.value });
-            };
-
-            const addPrescricao = (isSos = false) => {
-                const novaPrescricao = {
-                    id: Date.now(), nome: '', apresentacao: 'comprimido', dose: '1', indicacao: '',
-                    horarios: {}, instrucaoEspecial: ''
-                };
-                if (isSos) setSos([...sos, novaPrescricao]);
-                else setPrescricoes([...prescricoes, novaPrescricao]);
-            };
-
-            const updatePrescricao = (id, field, value, isSos = false) => {
-                const list = isSos ? sos : prescricoes;
-                const setList = isSos ? setSos : setPrescricoes;
-                
-                const updatedList = list.map(item => {
-                    if (item.id === id) {
-                        let updatedItem = { ...item, [field]: value };
-                        if (field === 'nome' && value) {
-                            const medDB = MEDICAMENTOS_PADRAO.find(m => m.nome === value);
-                            if (medDB && medDB.nome !== "OUTRO (DIGITAR MANUALMENTE)...") {
-                                updatedItem.indicacao = medDB.indicacao;
-                                updatedItem.apresentacao = medDB.apresentacao;
-                                updatedItem.dose = medDB.dosePadrao;
-                            } else if (value === "OUTRO (DIGITAR MANUALMENTE)...") {
-                                updatedItem.nome = "";
-                            }
-                        }
-                        return updatedItem;
-                    }
-                    return item;
-                });
-                setList(updatedList);
-            };
-
-            const toggleHorario = (id, horario) => {
-                const updatedList = prescricoes.map(item => {
-                    if (item.id === id) {
-                        const novosHorarios = { ...item.horarios };
-                        novosHorarios[horario] = !novosHorarios[horario];
-                        return { ...item, horarios: novosHorarios };
-                    }
-                    return item;
-                });
-                setPrescricoes(updatedList);
-            };
-
-            const removePrescricao = (id, isSos = false) => {
-                if (isSos) setSos(sos.filter(item => item.id !== id));
-                else setPrescricoes(prescricoes.filter(item => item.id !== id));
-            };
-
-            const handlePrint = () => window.print();
-
-            return (
-                <div className="pb-20">
-                 
+            document.getElementById('out-nome').innerText = document.getElementById('inp-nome').value || '_________________________________';
+            document.getElementById('out-pront').innerText = document.getElementById('inp-pront').value || '_________';
+            document.getElementById('out-data').innerText = dataFormatada;
+            document.getElementById('out-medico').innerText = document.getElementById('inp-medico').value || '_________________________________
