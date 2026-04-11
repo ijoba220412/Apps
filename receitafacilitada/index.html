@@ -6,12 +6,14 @@
     <title>Receita Facilitada INCA HC IV</title>
     
     <style>
-        /* --- ESTILOS BASE (Substituindo o Tailwind para funcionar offline) --- */
+        /* =================================================================
+           ESTILOS BASE (Tudo embutido para funcionar 100% sem internet)
+           ================================================================= */
         :root {
             --emerald-500: #10b981; --emerald-600: #059669; --emerald-50: #ecfdf5; --emerald-200: #a7f3d0;
-            --slate-50: #f8fafc; --slate-100: #f1f5f9; --slate-200: #e2e8f0; --slate-500: #64748b; --slate-600: #475569; --slate-700: #334155; --slate-800: #1e293b;
-            --blue-50: #eff6ff; --blue-200: #bfdbfe; --blue-600: #2563eb; --blue-800: #1e40af;
-            --orange-50: #fff7ed; --orange-200: #fed7aa; --orange-500: #f97316; --orange-600: #ea580c; --orange-900: #7c2d12;
+            --slate-50: #f8fafc; --slate-100: #f1f5f9; --slate-200: #e2e8f0; --slate-300: #cbd5e1; --slate-500: #64748b; --slate-600: #475569; --slate-700: #334155; --slate-800: #1e293b;
+            --blue-50: #eff6ff; --blue-600: #2563eb; --blue-800: #1e40af;
+            --orange-50: #fff7ed; --orange-200: #fed7aa; --orange-400: #fb923c; --orange-500: #f97316; --orange-600: #ea580c;
             --yellow-50: #fefce8; --yellow-200: #fef08a; --yellow-500: #eab308; --yellow-900: #713f12;
             --red-50: #fef2f2; --red-500: #ef4444;
             --cyan-500: #06b6d4;
@@ -20,62 +22,65 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; }
         body { background-color: var(--slate-100); padding-bottom: 80px; }
         
-        /* Utilitários */
-        .flex { display: flex; } .flex-col { flex-direction: column; } .items-center { align-items: center; } .justify-between { justify-content: space-between; } .justify-center { justify-content: center; } .gap-2 { gap: 8px; } .gap-4 { gap: 16px; }
-        .w-full { width: 100%; } .text-center { text-align: center; } .font-bold { font-weight: bold; } .font-black { font-weight: 900; }
-        .uppercase { text-transform: uppercase; } .hidden { display: none !important; }
+        /* Utilitários Flexíveis */
+        .flex { display: flex; } .flex-col { flex-direction: column; } .items-center { align-items: center; } .gap-2 { gap: 8px; } .gap-4 { gap: 16px; }
         
-        /* Componentes */
+        /* Componentes de Tela (Não imprimem) */
         .header { background-color: var(--slate-800); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1); flex-wrap: wrap; gap: 10px; }
         .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
-        .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--slate-200); }
+        .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--slate-200); position: relative; }
         .card-header { font-size: 18px; font-weight: bold; color: var(--slate-800); margin-bottom: 15px; border-bottom: 1px solid var(--slate-200); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;}
         
         .form-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
         @media (min-width: 768px) { .form-grid { grid-template-columns: repeat(4, 1fr); } .col-span-2 { grid-column: span 2; } .col-span-4 { grid-column: span 4; } }
         
         label { display: block; font-size: 12px; font-weight: bold; color: var(--slate-600); margin-bottom: 5px; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--slate-200); border-radius: 6px; background-color: var(--slate-50); font-size: 14px; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--emerald-500); background-color: white; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--slate-300); border-radius: 8px; background-color: var(--slate-50); font-size: 14px; color: var(--slate-800); }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--emerald-500); background-color: white; box-shadow: 0 0 0 2px var(--emerald-200); }
         
-        .btn { padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; font-size: 14px; }
+        /* Botões */
+        .btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; font-size: 14px; }
         .btn-emerald { background-color: var(--emerald-500); color: white; } .btn-emerald:hover { background-color: var(--emerald-600); }
-        .btn-blue { background-color: var(--blue-600); color: white; } .btn-blue:hover { background-color: var(--blue-800); }
-        .btn-orange { background-color: var(--orange-500); color: white; } .btn-orange:hover { background-color: var(--orange-600); }
-        .btn-red-icon { background: var(--red-50); color: var(--red-500); padding: 8px; border-radius: 50%; } .btn-red-icon:hover { background: var(--red-500); color: white; }
+        .btn-blue { background-color: var(--blue-600); color: white; width: 100%; } .btn-blue:hover { background-color: var(--blue-800); }
+        @media (min-width: 768px) { .btn-blue, .btn-orange { width: auto; } }
+        .btn-orange { background-color: var(--orange-500); color: white; width: 100%; } .btn-orange:hover { background-color: var(--orange-600); }
+        .btn-red-icon { background: var(--red-50); color: var(--red-500); padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; } .btn-red-icon:hover { background: var(--red-500); color: white; }
         
-        .horario-btn { padding: 8px 12px; border-radius: 20px; border: 1px solid var(--slate-200); background: white; color: var(--slate-600); font-weight: bold; font-size: 14px; cursor: pointer; flex: 1; min-width: 60px; text-align: center; }
-        .horario-btn.ativo { background: var(--emerald-500); color: white; border-color: var(--emerald-600); }
+        /* Botões de Horário Fixo */
+        .horario-btn { padding: 10px 14px; border-radius: 20px; border: 1px solid var(--slate-300); background: white; color: var(--slate-600); font-weight: bold; font-size: 14px; cursor: pointer; flex: 1; min-width: 70px; text-align: center; transition: 0.2s; }
+        .horario-btn.ativo { background: var(--emerald-500); color: white; border-color: var(--emerald-600); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
         .horarios-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
         
-        /* Área de Impressão (Visual Lúdico) */
+        /* =================================================================
+           ÁREA DE IMPRESSÃO DA RECEITA (FOLHA A4)
+           ================================================================= */
         .print-container { overflow-x: auto; -webkit-overflow-scrolling: touch; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; border: 1px solid var(--slate-300); margin-bottom: 40px; background: white; }
         .a4-sheet { min-width: 900px; padding: 30px; background: white; }
         .print-header { border-bottom: 4px solid var(--slate-800); padding-bottom: 15px; margin-bottom: 20px; }
-        .print-title { font-size: 24px; font-weight: 900; text-align: center; margin-bottom: 15px; letter-spacing: 1px; }
+        .print-title { font-size: 24px; font-weight: 900; text-align: center; margin-bottom: 15px; letter-spacing: 1px; color: var(--slate-800); }
         .patient-box { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; background: var(--slate-50); padding: 15px; border-radius: 8px; border: 1px solid var(--slate-200); }
-        .patient-field span { display: block; } .patient-field .label { font-size: 10px; color: var(--slate-500); text-transform: uppercase; } .patient-field .value { font-size: 16px; font-weight: bold; text-transform: uppercase; }
+        .patient-field span { display: block; } .patient-field .label { font-size: 10px; color: var(--slate-500); text-transform: uppercase; font-weight: bold; } .patient-field .value { font-size: 16px; font-weight: bold; text-transform: uppercase; color: var(--slate-800); }
         
-        .section-title { background: var(--emerald-600); color: white; text-align: center; padding: 10px; border-radius: 8px 8px 0 0; font-size: 18px; font-weight: 900; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .section-title { background: var(--emerald-600); color: white; text-align: center; padding: 10px; border-radius: 8px 8px 0 0; font-size: 16px; font-weight: 900; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 8px; }
         .section-title.sos { background: var(--orange-500); margin-top: 30px; }
         
         .print-table { width: 100%; border-collapse: collapse; border: 2px solid var(--emerald-600); text-align: center; margin-bottom: 20px; }
         .print-table th, .print-table td { border: 1px solid var(--emerald-200); padding: 8px; vertical-align: middle; }
         .print-table th { background: var(--emerald-50); border-bottom: 2px solid var(--emerald-600); }
         .print-table td.med-name { border-right: 2px solid var(--emerald-600); text-align: left; width: 33%; }
-        .med-title { font-size: 16px; font-weight: 900; color: var(--slate-800); text-transform: uppercase; margin-bottom: 4px; }
-        .med-ind { display: inline-block; background: var(--yellow-200); color: var(--yellow-900); border: 1px solid var(--yellow-500); font-weight: 900; font-size: 11px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
+        .med-title { font-size: 16px; font-weight: 900; color: var(--slate-800); text-transform: uppercase; margin-bottom: 4px; line-height: 1.2; }
+        .med-ind { display: inline-block; background: var(--yellow-200); color: var(--yellow-900); font-weight: 900; font-size: 11px; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         
         .print-table.sos-table { border-color: var(--orange-500); text-align: left; }
         .sos-table th, .sos-table td { border-color: var(--orange-200); }
         .sos-table td.med-name { border-right: 1px solid var(--orange-200); }
         
-        .dose-box { background: white; border: 2px solid var(--emerald-500); border-radius: 8px; padding: 4px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-width: 50px;}
-        .dose-box.sos-box { border-color: var(--orange-400); flex-direction: row; gap: 8px; width: auto; padding: 4px 10px; }
+        .dose-box { background: white; border: 2px solid var(--emerald-500); border-radius: 8px; padding: 6px 4px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-width: 55px;}
+        .dose-box.sos-box { border-color: var(--orange-400); flex-direction: row; gap: 10px; width: auto; padding: 6px 12px; }
         
         .footer { margin-top: 30px; padding-top: 15px; border-top: 2px solid var(--slate-300); text-align: center; font-size: 12px; font-weight: bold; color: var(--slate-600); }
         
-        /* IMPRESSÃO DEFINITIVA */
+        /* Esconder tudo que for edição na hora de imprimir */
         @media print {
             @page { size: landscape; margin: 10mm; }
             body { background: white; padding: 0; }
@@ -89,23 +94,23 @@
 </head>
 <body>
 
-    <!-- BARRA SUPERIOR -->
+    <!-- BARRA SUPERIOR E BOTÃO DE IMPRIMIR -->
     <div class="header nao-imprime">
         <div>
-            <h1 style="font-size: 18px; display: flex; align-items: center; gap: 8px;">
+            <h1 style="font-size: 18px; display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
                 <span style="background: var(--emerald-500); padding: 4px; border-radius: 4px;">➕</span>
-                Receitas Facilitadas HC IV (Modo Seguro)
+                Receitas Facilitadas HC IV (Versão Offline)
             </h1>
-            <p style="font-size: 12px; color: var(--slate-200); margin-top: 4px;">Preencha os dados e clique em Imprimir. Funciona offline.</p>
+            <p style="font-size: 12px; color: var(--slate-300);">Preencha os dados e clique em Imprimir. Seu teclado não vai mais sumir.</p>
         </div>
-        <button class="btn btn-emerald" onclick="window.print()" style="width: 100%; max-width: 250px;">
+        <button type="button" class="btn btn-emerald" onclick="window.print()" style="width: 100%; max-width: 250px; font-size: 16px; padding: 12px;">
             🖨️ Imprimir / Salvar PDF
         </button>
     </div>
 
     <div class="container">
         
-        <!-- 1. DADOS DO PACIENTE -->
+        <!-- 1. DADOS DO PACIENTE (EDITOR) -->
         <div class="card nao-imprime">
             <div class="card-header">1. Dados do Paciente e Equipe</div>
             <div class="form-grid">
@@ -118,7 +123,7 @@
                     <input type="text" id="inp-pront" oninput="updatePaciente()" placeholder="Ex: 5042552">
                 </div>
                 <div>
-                    <label>Data</label>
+                    <label>Data da Consulta</label>
                     <input type="date" id="inp-data" onchange="updatePaciente()">
                 </div>
                 <div class="col-span-2">
@@ -132,33 +137,36 @@
             </div>
         </div>
 
-        <!-- 2. MEDICAMENTOS FIXOS -->
+        <!-- 2. MEDICAMENTOS DE HORÁRIO FIXO (EDITOR) -->
         <div class="nao-imprime">
             <div class="card-header" style="border:none; margin-bottom: 5px;">
                 <span style="color: var(--slate-800);">2. Medicamentos de Horário Fixo</span>
-                <button class="btn btn-blue" onclick="addPrescricao(false)">➕ Adicionar Fixo</button>
+                <button type="button" class="btn btn-blue" onclick="addPrescricao(false)">➕ Adicionar Fixo</button>
             </div>
             <div id="lista-fixos"></div>
         </div>
 
-        <!-- 3. MEDICAMENTOS SOS -->
+        <!-- 3. MEDICAMENTOS DE RESGATE / S.O.S (EDITOR) -->
         <div class="nao-imprime">
             <div class="card-header" style="border:none; margin-bottom: 5px; margin-top: 20px;">
                 <span style="color: var(--orange-600);">3. Medicamentos S.O.S (Resgate)</span>
-                <button class="btn btn-orange" onclick="addPrescricao(true)">➕ Adicionar S.O.S</button>
+                <button type="button" class="btn btn-orange" onclick="addPrescricao(true)">➕ Adicionar S.O.S</button>
             </div>
             <div id="lista-sos"></div>
         </div>
 
-        <div class="nao-imprime" style="text-align: center; font-size: 12px; color: var(--slate-500); margin: 20px 0; background: var(--slate-200); padding: 8px; border-radius: 6px; font-weight: bold;">
-            👇 DESLIZE O QUADRO ABAIXO PARA OS LADOS NO CELULAR PARA VER A RECEITA COMPLETA 👇
+        <!-- AVISO DE VISUALIZAÇÃO NO CELULAR -->
+        <div class="nao-imprime" style="text-align: center; font-size: 12px; color: var(--slate-600); margin: 25px 0; background: var(--slate-200); padding: 10px; border-radius: 8px; font-weight: bold;">
+            👇 DESLIZE A RECEITA ABAIXO PARA OS LADOS PARA VISUALIZAR TUDO NO CELULAR 👇
         </div>
 
-        <!-- FOLHA A4 (VISUAL FINAL DA RECEITA) -->
+        <!-- =========================================================
+             A RECEITA FINAL LÚDICA (SÓ ISSO SERÁ IMPRESSO)
+             ========================================================= -->
         <div class="print-container">
             <div class="a4-sheet">
                 
-                <!-- Cabeçalho Impressão -->
+                <!-- Cabeçalho -->
                 <div class="print-header">
                     <div class="print-title">HOSPITAL DO CÂNCER IV – HC IV</div>
                     <div class="patient-box">
@@ -174,40 +182,48 @@
                             <span class="label">Data</span>
                             <span class="value" id="out-data">__/__/____</span>
                         </div>
-                        <div class="patient-field col-span-4" style="border-top: 1px solid #e2e8f0; padding-top: 10px;">
+                        <div class="patient-field col-span-4" style="border-top: 1px solid #e2e8f0; padding-top: 12px; margin-top: 5px;">
                             <span class="label">Médico(a) Solicitante</span>
-                            <span class="value" id="out-medico" style="font-size: 14px;">_________________________________</span>
+                            <span class="value" id="out-medico" style="font-size: 15px;">_________________________________</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tabela Fixos -->
-                <div class="section-title">ℹ️ Como tomar os seus medicamentos (Uso Contínuo)</div>
+                <!-- Tabela de Fixos -->
+                <div class="section-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    Como tomar os seus medicamentos (Uso Contínuo)
+                </div>
                 <table class="print-table" id="tabela-fixos">
-                    <!-- Gerado via JS -->
+                    <!-- Javascript vai preencher aqui -->
                 </table>
 
-                <!-- Tabela SOS -->
+                <!-- Tabela de S.O.S (Só aparece se adicionar) -->
                 <div id="container-tabela-sos" style="display: none;" class="page-break">
-                    <div class="section-title sos">⚠️ SOS - Usar apenas se sentir incômodo</div>
+                    <div class="section-title sos">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        SOS - Usar apenas se sentir incômodo
+                    </div>
                     <table class="print-table sos-table" id="tabela-sos">
-                        <!-- Gerado via JS -->
+                        <!-- Javascript vai preencher aqui -->
                     </table>
                 </div>
 
-                <!-- Rodapé Impressão -->
+                <!-- Rodapé / Assinatura -->
                 <div class="footer page-break">
                     <p>Em caso de dúvidas ligue para a Assistência Domiciliar - Farmácia: 3207-3971 ou Emergência: 3207-3872 / 3207-3874</p>
-                    <p style="margin-top: 10px; font-size: 14px;">Farmacêutico(a) Responsável pela elaboração: <span id="out-farm" style="border-bottom: 1px solid var(--slate-500); padding: 0 15px; color: var(--slate-800);">_____________________________________________</span></p>
+                    <p style="margin-top: 15px; font-size: 14px;">Farmacêutico(a) Responsável pela elaboração: <span id="out-farm" style="border-bottom: 1px solid var(--slate-500); padding: 0 20px; color: var(--slate-800);">_____________________________________________</span></p>
                 </div>
 
             </div>
         </div>
     </div>
 
-    <!-- LOGICA JAVASCRIPT (Totalmente Offline e Pura) -->
+    <!-- =================================================================
+         LÓGICA JAVASCRIPT (SEPARADA PARA EVITAR BUG DE TECLADO NO CELULAR)
+         ================================================================= -->
     <script>
-        // --- BANCO DE DADOS ---
+        // 1. BANCO DE DADOS (Baseado nas planilhas)
         const MEDICAMENTOS = [
             { nome: "MORFINA 10 MG", ind: "PARA DOR", apre: "comprimido", dose: "1" },
             { nome: "MORFINA 10 MG/ML (GOTAS)", ind: "PARA DOR", apre: "gotas", dose: "6" },
@@ -220,57 +236,40 @@
             { nome: "DEXAMETASONA 4 MG", ind: "PARA APETITE E CANSAÇO", apre: "comprimido", dose: "1" },
             { nome: "GABAPENTINA 300 MG", ind: "PARA DOR", apre: "comprimido", dose: "1" },
             { nome: "SIMETICONA GOTAS", ind: "PARA GASES", apre: "gotas", dose: "30" },
-            { nome: "LOSARTANA 50 MG", ind: "PARA PRESSÃO ALTA", apre: "comprimido", dose: "1" },
-            { nome: "OUTRO (DIGITAR MANUALMENTE)...", ind: "", apre: "comprimido", dose: "1" }
+            { nome: "LOSARTANA 50 MG", ind: "PARA PRESSÃO ALTA", apre: "comprimido", dose: "1" }
         ];
 
         const HORARIOS = ["06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "22:00", "00:00"];
 
-        // --- ESTADO DO SISTEMA ---
+        // 2. MEMÓRIA DO SISTEMA
         let prescricoes = [];
         let sos = [];
 
-        // Inicia com a data de hoje
-        document.getElementById('inp-data').valueAsDate = new Date();
-        updatePaciente();
+        // 3. INICIALIZAÇÃO
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('inp-data').valueAsDate = new Date();
+            updatePaciente();
+            renderTodosOsEditores();
+            renderReceita();
+        });
 
-        // --- FUNÇÕES DE ÍCONES (SVG Puro) ---
+        // 4. DESENHO DOS ÍCONES (SVGs para funcionar sem internet)
         function getMedIcon(tipo, qtde) {
-            let svg = '';
-            if (tipo === 'comprimido') {
-                svg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5l9 9a4.95 4.95 0 1 1-7 7l-9-9a4.95 4.95 0 0 1 7-7Z" /><path d="m7.5 9.5 7 7" /></svg>
-                       <span style="font-size:10px; font-weight:bold; color:#334155; line-height:1;">${qtde} comp.</span>`;
-            } else if (tipo === 'meio_comprimido') {
-                svg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5l4.5 4.5" /><path d="m7.5 9.5 7 7" stroke-dasharray="2 2" /><path d="M5 12a4.95 4.95 0 0 0 7 7l4.5-4.5" /></svg>
-                       <span style="font-size:10px; font-weight:bold; color:#ea580c; line-height:1;">Metade(1/2)</span>`;
-            } else if (tipo === 'gotas') {
-                svg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="#06b6d4"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" /></svg>
-                       <span style="font-size:10px; font-weight:bold; color:#334155; line-height:1;">${qtde} gotas</span>`;
-            } else if (tipo === 'liquido') {
-                svg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v4a8 8 0 0 1-16 0V4z" /><path d="M12 12v9" /><path d="M8 21h8" /></svg>
-                       <span style="font-size:10px; font-weight:bold; color:#334155; line-height:1;">${qtde} ml</span>`;
-            }
-            return svg;
+            if (tipo === 'comprimido') return `
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5l9 9a4.95 4.95 0 1 1-7 7l-9-9a4.95 4.95 0 0 1 7-7Z" /><path d="m7.5 9.5 7 7" /></svg>
+                <span style="font-size:10px; font-weight:bold; color:#334155; line-height:1.2; margin-top:2px;">${qtde} comp.</span>`;
+            if (tipo === 'meio_comprimido') return `
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5l4.5 4.5" /><path d="m7.5 9.5 7 7" stroke-dasharray="2 2" /><path d="M5 12a4.95 4.95 0 0 0 7 7l4.5-4.5" /></svg>
+                <span style="font-size:10px; font-weight:bold; color:#ea580c; line-height:1.2; margin-top:2px;">Metade (1/2)</span>`;
+            if (tipo === 'gotas') return `
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="#06b6d4"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" /></svg>
+                <span style="font-size:10px; font-weight:bold; color:#334155; line-height:1.2; margin-top:2px;">${qtde} gotas</span>`;
+            if (tipo === 'liquido') return `
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v4a8 8 0 0 1-16 0V4z" /><path d="M12 12v9" /><path d="M8 21h8" /></svg>
+                <span style="font-size:10px; font-weight:bold; color:#334155; line-height:1.2; margin-top:2px;">${qtde} ml</span>`;
+            return `<span style="font-size:12px; font-weight:bold; color:#334155;">${qtde}</span>`;
         }
 
         function getHoraIcon(horaStr) {
             const h = parseInt(horaStr.split(':')[0]);
-            if (h >= 6 && h <= 12) return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
-            if (h > 12 && h < 18) return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
-            return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
-        }
-
-        // --- FUNÇÕES DE LÓGICA ---
-        function updatePaciente() {
-            const dataVal = document.getElementById('inp-data').value;
-            let dataFormatada = "__/__/____";
-            if(dataVal) {
-                const d = new Date(dataVal);
-                d.setMinutes(d.getMinutes() + d.getTimezoneOffset()); // Corrige fuso horário
-                dataFormatada = d.toLocaleDateString('pt-BR');
-            }
-
-            document.getElementById('out-nome').innerText = document.getElementById('inp-nome').value || '_________________________________';
-            document.getElementById('out-pront').innerText = document.getElementById('inp-pront').value || '_________';
-            document.getElementById('out-data').innerText = dataFormatada;
-            document.getElementById('out-medico').innerText = document.getElementById('inp-medico').value || '_________________________________
+            if (h >= 6 && h <= 12) return `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.
