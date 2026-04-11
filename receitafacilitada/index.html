@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Receita Facilitada INCA HC IV</title>
     
-    <!-- Servidores confiáveis com permissão anônima (evita o erro da Linha 0) -->
-    <script src="https://cdn.tailwindcss.com" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.3/babel.min.js" crossorigin="anonymous"></script>
+    <!-- Servidores JSDelivr (Furam a maioria dos Firewalls de Hospitais) SEM a trava de crossorigin -->
+    <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.23.9/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
         @media print {
@@ -24,12 +24,12 @@
         .scroll-suave { -webkit-overflow-scrolling: touch; }
     </style>
     
-    <!-- Captura de erros do navegador (caso os servidores externos falhem) -->
+    <!-- Captura de erros do navegador -->
     <script>
         window.onerror = function(msg, url, line) {
             var erroDiv = document.getElementById('erro-log');
             if(erroDiv) {
-                erroDiv.innerHTML = "Falha externa: " + msg + " (Linha: " + line + "). Tente usar uma Aba Anônima ou verifique o Wi-Fi.";
+                erroDiv.innerHTML = "Falha de Rede: O seu Wi-Fi/Internet bloqueou o sistema. Tente usar o 4G do celular.";
             }
         };
     </script>
@@ -39,7 +39,7 @@
     <!-- Tela de carregamento inicial -->
     <div id="loading" style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; text-align: center; padding: 20px;">
         <h2 style="color: #059669; font-family: sans-serif; font-size: 24px; font-weight: bold;">Iniciando o sistema...</h2>
-        <p style="color: #64748b; font-family: sans-serif; margin-top: 10px;">Montando a estrutura visual. Se esta tela não sumir em 5 segundos, recarregue a página.</p>
+        <p style="color: #64748b; font-family: sans-serif; margin-top: 10px;">Se esta tela não sumir em 5 segundos, desligue o Wi-Fi e teste no 4G.</p>
         <div id="erro-log" style="color: red; margin-top: 20px; font-weight: bold; font-family: sans-serif;"></div>
     </div>
 
@@ -47,10 +47,10 @@
     <div id="root"></div>
 
     <!-- O motor da aplicação -->
-    <script type="text/babel" data-presets="react,env">
+    <script type="text/babel" data-presets="react">
     try {
-        if (typeof React === 'undefined') throw new Error("A biblioteca React não carregou. Verifique a internet.");
-        if (typeof ReactDOM === 'undefined') throw new Error("A biblioteca ReactDOM não carregou.");
+        if (typeof window.React === 'undefined') throw new Error("O seu Wi-Fi bloqueou o download do sistema. Tente usar o 4G do celular.");
+        if (typeof window.ReactDOM === 'undefined') throw new Error("A biblioteca ReactDOM foi bloqueada pela rede.");
 
         const { useState } = React;
 
@@ -155,7 +155,7 @@
                                     <input 
                                         type="text" 
                                         className="p-3 md:p-2 border rounded-lg md:rounded text-sm flex-1 w-full mt-2 sm:mt-0"
-                                        placeholder="Digite o nome livremente..."
+                                        placeholder="Nome livre do remédio"
                                         value={item.nome}
                                         onChange={(e) => updatePrescricao(item.id, 'nome', e.target.value, isSos)}
                                     />
@@ -293,4 +293,10 @@
             const removePrescricao = (id, isSos = false) => {
                 if (isSos) setSos(sos.filter(item => item.id !== id));
                 else setPrescricoes(prescricoes.filter(item => item.id !== id));
-        
+            };
+
+            const handlePrint = () => window.print();
+
+            return (
+                <div className="pb-20">
+                 
