@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Receita Facilitada INCA HC IV</title>
-    
+
     <style>
         /* =================================================================
-           ESTILOS BASE (Nativo, sem precisar de internet)
+           ESTILOS BASE (Universal - Funciona Offline)
            ================================================================= */
         :root {
             --emerald-500: #10b981; --emerald-600: #059669; --emerald-50: #ecfdf5; --emerald-200: #a7f3d0;
@@ -24,7 +24,7 @@
         .flex { display: flex; } .flex-col { flex-direction: column; } .items-center { align-items: center; } .gap-2 { gap: 8px; }
         
         .header { background-color: var(--slate-800); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1); flex-wrap: wrap; gap: 10px; }
-        .status-badge { background-color: var(--red-500); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-top: 5px; display: inline-block; }
+        .status-badge { background-color: #10b981; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-top: 5px; display: inline-block; }
         .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
         .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--slate-200); position: relative; }
         .card-header { font-size: 18px; font-weight: bold; color: var(--slate-800); margin-bottom: 15px; border-bottom: 1px solid var(--slate-200); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;}
@@ -41,13 +41,13 @@
         .btn-blue { background-color: var(--blue-600); color: white; width: 100%; } 
         @media (min-width: 768px) { .btn-blue, .btn-orange { width: auto; } }
         .btn-orange { background-color: var(--orange-500); color: white; width: 100%; } 
-        .btn-red-icon { background: var(--red-50); color: var(--red-500); padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; } 
+        .btn-red-icon { background: var(--red-50); color: var(--red-500); padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight:bold; } 
         
         .horario-btn { padding: 10px 14px; border-radius: 20px; border: 1px solid var(--slate-300); background: white; color: var(--slate-600); font-weight: bold; font-size: 14px; cursor: pointer; flex: 1; min-width: 70px; text-align: center; }
         .horario-btn.ativo { background: var(--emerald-500); color: white; border-color: var(--emerald-600); }
         .horarios-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
         
-        /* IMPRESSÃO (O LÚDICO) */
+        /* IMPRESSÃO E RECEITA */
         .print-container { overflow-x: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; border: 1px solid var(--slate-300); margin-bottom: 40px; background: white; }
         .a4-sheet { min-width: 900px; padding: 30px; background: white; }
         .print-header { border-bottom: 4px solid var(--slate-800); padding-bottom: 15px; margin-bottom: 20px; }
@@ -88,24 +88,20 @@
 </head>
 <body>
 
-    <!-- BARRA SUPERIOR -->
     <div class="header nao-imprime">
         <div>
             <h1 style="font-size: 18px; display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                <span style="background: var(--emerald-500); padding: 4px; border-radius: 4px;">➕</span>
+                <span style="background: var(--emerald-500); padding: 4px; border-radius: 4px;">+</span>
                 Receitas Facilitadas HC IV
             </h1>
-            <span id="badge-status" class="status-badge">🔴 Iniciando Sistema...</span>
+            <span class="status-badge">🟢 PRONTO PARA USO</span>
         </div>
-        <button type="button" class="btn btn-emerald" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+        <button type="button" class="btn btn-emerald" onclick="window.print()">Imprimir / PDF</button>
     </div>
 
     <div class="container">
         
-        <!-- ==============================================
-             1. DADOS DO PACIENTE
-             (Eventos oninput disparam na hora que digita)
-             ============================================== -->
+        <!-- 1. DADOS DO PACIENTE -->
         <div class="card nao-imprime">
             <div class="card-header">1. Dados do Paciente e Equipe</div>
             <div class="form-grid">
@@ -119,7 +115,7 @@
                 </div>
                 <div>
                     <label>Data da Consulta</label>
-                    <input type="date" id="inp-data" oninput="sincronizarPaciente()" onchange="sincronizarPaciente()">
+                    <input type="date" id="inp-data" onchange="sincronizarPaciente()">
                 </div>
                 <div class="col-span-2">
                     <label>Médico(a) Solicitante</label>
@@ -132,23 +128,22 @@
             </div>
         </div>
 
-        <!-- ==============================================
-             2. MEDICAMENTOS FIXOS E S.O.S
-             ============================================== -->
+        <!-- 2. FIXOS -->
         <div class="nao-imprime">
             <div class="card-header" style="border:none; margin-bottom: 5px;">
                 <span style="color: var(--slate-800);">2. Medicamentos de Horário Fixo</span>
-                <button type="button" class="btn btn-blue" onclick="addMed('fixo')">➕ Adicionar Fixo</button>
+                <button type="button" class="btn btn-blue" onclick="addMed('fixo')">+ Adicionar Fixo</button>
             </div>
             <div id="lista-fixos">
                 <div id="aviso-vazio-fixo" style="border:2px dashed var(--slate-300); padding:30px; text-align:center; color:var(--slate-500); border-radius:12px; margin-bottom:20px; font-weight:bold;">Nenhum medicamento fixo. Clique no botão azul.</div>
             </div>
         </div>
 
+        <!-- 3. SOS -->
         <div class="nao-imprime">
             <div class="card-header" style="border:none; margin-bottom: 5px; margin-top: 20px;">
                 <span style="color: var(--orange-600);">3. Medicamentos S.O.S (Resgate)</span>
-                <button type="button" class="btn btn-orange" onclick="addMed('sos')">➕ Adicionar S.O.S</button>
+                <button type="button" class="btn btn-orange" onclick="addMed('sos')">+ Adicionar S.O.S</button>
             </div>
             <div id="lista-sos">
                 <div id="aviso-vazio-sos" style="border:2px dashed var(--orange-200); padding:30px; text-align:center; color:var(--orange-600); border-radius:12px; margin-bottom:20px; font-weight:bold;">Nenhum SOS adicionado. Clique no botão laranja.</div>
@@ -159,12 +154,9 @@
             👇 DESLIZE A RECEITA ABAIXO PARA OS LADOS NO CELULAR PARA VER TUDO 👇
         </div>
 
-        <!-- ==============================================
-             4. A RECEITA LÚDICA (FOLHA A4 FINAL)
-             ============================================== -->
+        <!-- RECEITA LÚDICA (A4) -->
         <div class="print-container">
             <div class="a4-sheet">
-                
                 <!-- Cabeçalho A4 -->
                 <div class="print-header">
                     <div class="print-title">HOSPITAL DO CÂNCER IV – HC IV</div>
@@ -188,11 +180,8 @@
                     </div>
                 </div>
 
-                <!-- Tabela de Fixos A4 -->
-                <div class="section-title">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                    Como tomar os seus medicamentos (Uso Contínuo)
-                </div>
+                <!-- Tabela Fixos A4 -->
+                <div class="section-title">Como tomar os seus medicamentos (Uso Contínuo)</div>
                 <table class="print-table">
                     <thead id="thead-fixos"></thead>
                     <tbody id="tbody-fixos">
@@ -200,12 +189,9 @@
                     </tbody>
                 </table>
 
-                <!-- Tabela de S.O.S A4 -->
+                <!-- Tabela S.O.S A4 -->
                 <div id="container-tabela-sos" style="display: none;" class="page-break">
-                    <div class="section-title sos">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                        SOS - Usar apenas se sentir incômodo
-                    </div>
+                    <div class="section-title sos">SOS - Usar apenas se sentir incômodo</div>
                     <table class="print-table sos-table">
                         <tbody id="tbody-sos"></tbody>
                     </table>
@@ -221,13 +207,11 @@
     </div>
 
     <!-- =================================================================
-         LÓGICA E BANCO DE DADOS (Execução Imediata!)
+         LÓGICA E BANCO DE DADOS (Javacript Antigo - Funciona em qualquer celular)
          ================================================================= -->
     <script>
-        // ESTA ÁREA EXECUTA DE CIMA PARA BAIXO SEM ESPERAR O CELULAR
-
         // 1. BANCO DE DADOS (Você pode editar e adicionar mais aqui no futuro)
-        const MEDICAMENTOS = [
+        var MEDICAMENTOS = [
             { nome: "MORFINA 10 MG", ind: "PARA DOR", apre: "comprimido", dose: "1" },
             { nome: "MORFINA 10 MG/ML (GOTAS)", ind: "PARA DOR", apre: "gotas", dose: "6" },
             { nome: "DIPIRONA 500 MG", ind: "PARA DOR OU FEBRE", apre: "comprimido", dose: "1" },
@@ -241,41 +225,85 @@
             { nome: "SIMETICONA GOTAS", ind: "PARA GASES", apre: "gotas", dose: "30" },
             { nome: "LOSARTANA 50 MG", ind: "PARA PRESSÃO ALTA", apre: "comprimido", dose: "1" }
         ];
-        const HORARIOS = ["06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "22:00", "00:00"];
+        
+        var HORARIOS = ["06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "22:00", "00:00"];
 
-        // 2. MEMÓRIA DOS REMÉDIOS ADICIONADOS
-        let appFixos = [];
-        let appSos = [];
-        let contadorId = 1;
+        // 2. MEMÓRIA
+        var appFixos = [];
+        var appSos = [];
+        var contadorId = 1;
 
-        // 3. FUNÇÃO QUE DESENHA OS SÍMBOLOS LÚDICOS
-        function getSvgLindo(tipo) {
-            if (tipo === 'comprimido') return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M10 5l9 9a4.95 4.95 0 1 1-7 7l-9-9a4.95 4.95 0 0 1 7-7Z" /><path d="m7.5 9.5 7 7" /></svg>`;
-            if (tipo === 'meio_comprimido') return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><path d="M10 5l4.5 4.5" /><path d="m7.5 9.5 7 7" stroke-dasharray="2 2" /><path d="M5 12a4.95 4.95 0 0 0 7 7l4.5-4.5" /></svg>`;
-            if (tipo === 'gotas') return `<svg width="24" height="24" viewBox="0 0 24 24" fill="#06b6d4"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" /></svg>`;
-            if (tipo === 'liquido') return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M4 4h16v4a8 8 0 0 1-16 0V4z" /><path d="M12 12v9" /><path d="M8 21h8" /></svg>`;
-            return ``;
-        }
-        function getTextoAbaixo(tipo, qtde) {
-            if (tipo === 'comprimido') return `${qtde} comp.`;
-            if (tipo === 'meio_comprimido') return `Metade(1/2)`;
-            if (tipo === 'gotas') return `${qtde} gotas`;
-            if (tipo === 'liquido') return `${qtde} ml`;
-            return qtde;
-        }
+        // 3. INICIALIZAÇÃO
+        var hoje = new Date();
+        var mes = (hoje.getMonth() + 1).toString(); 
+        if (mes.length === 1) mes = '0' + mes;
+        var dia = hoje.getDate().toString(); 
+        if (dia.length === 1) dia = '0' + dia;
+        document.getElementById('inp-data').value = hoje.getFullYear() + '-' + mes + '-' + dia;
+        
+        sincronizarPaciente();
+        desenhaCabecalhoHora();
 
-        // =========================================================
-        // AÇÕES DISPARADAS PELO HTML (Conectadas nos botões/inputs)
-        // =========================================================
-
+        // 4. FUNÇÕES DO PACIENTE
         function sincronizarPaciente() {
-            document.getElementById('out-nome').innerText = document.getElementById('inp-nome').value || '_________________________________';
-            document.getElementById('out-pront').innerText = document.getElementById('inp-pront').value || '_________';
-            document.getElementById('out-medico').innerText = document.getElementById('inp-medico').value || '_________________________________';
-            document.getElementById('out-farm').innerText = document.getElementById('inp-farm').value || '_____________________________________________';
+            var nome = document.getElementById('inp-nome').value || '_________________________________';
+            var pront = document.getElementById('inp-pront').value || '_________';
+            var medico = document.getElementById('inp-medico').value || '_________________________________';
+            var farm = document.getElementById('inp-farm').value || '_____________________________________________';
             
-            const rawData = document.getElementById('inp-data').value;
-            if (rawData) {
-                const partes = rawData.split('-');
-                if(partes.length === 3) {
-                    document.getElementById('out-data').innerText = partes
+            var dataStr = "__/__/____";
+            var inpData = document.getElementById('inp-data').value;
+            if (inpData) {
+                var partes = inpData.split('-');
+                if(partes.length === 3) dataStr = partes[2] + '/' + partes[1] + '/' + partes[0];
+            }
+
+            document.getElementById('out-nome').innerText = nome;
+            document.getElementById('out-pront').innerText = pront;
+            document.getElementById('out-medico').innerText = medico;
+            document.getElementById('out-farm').innerText = farm;
+            document.getElementById('out-data').innerText = dataStr;
+        }
+
+        // 5. FUNÇÕES DE MEDICAMENTO
+        function getLista(tipo) {
+            if (tipo === 'fixo') return appFixos;
+            return appSos;
+        }
+
+        function getItem(tipo, id) {
+            var lista = getLista(tipo);
+            for(var i=0; i<lista.length; i++) {
+                if(lista[i].id === id) return lista[i];
+            }
+            return null;
+        }
+
+        function addMed(tipo) {
+            var id = contadorId++;
+            var item = { id: id, nome: '', apre: 'comprimido', dose: '1', ind: '', horarios: {}, instrucoes: '' };
+            var container;
+            var formHtml = '';
+            
+            var opts = '';
+            for(var o=0; o<MEDICAMENTOS.length; o++){
+                opts += '<option value="' + MEDICAMENTOS[o].nome + '">' + MEDICAMENTOS[o].nome + '</option>';
+            }
+
+            if (tipo === 'fixo') {
+                appFixos.push(item);
+                container = document.getElementById('lista-fixos');
+                document.getElementById('aviso-vazio-fixo').style.display = 'none';
+                
+                var horasBtn = '';
+                for(var h=0; h<HORARIOS.length; h++) {
+                    var hr = HORARIOS[h];
+                    var hFormat = hr.replace(':', '');
+                    horasBtn += '<button type="button" id="btn-hora-' + id + '-' + hFormat + '" class="horario-btn" onclick="marcaHora(' + id + ', \'' + hr + '\')">' + hr + '</button>';
+                }
+
+                formHtml = '<div class="card" id="card-fixo-' + id + '" style="border-left: 4px solid var(--blue-600);">' +
+                    '<button type="button" onclick="removeMed(' + id + ', \'fixo\')" class="btn-red-icon" style="position:absolute; top:15px; right:15px;">X Excluir</button>' +
+                    '<div class="form-grid" style="margin-bottom:15px; padding-top: 10px;">' +
+                        '<div class="col-span-2"><label>Medicamento Fixo</label>' +
+                        '<select onchange="escolheMed(' + id + ', \'fixo\', this.value)" style="margin-bottom: 8px;"><option value="">Selecione na lista...</option>' + opts + '<option value="OU
