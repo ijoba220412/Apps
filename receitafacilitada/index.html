@@ -5,15 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Receita Facilitada INCA HC IV</title>
     
-    <script>
-        // Sistema de captura visual de erros críticos
-        window.onerror = function(msg, url, line) {
-            alert("Erro identificado: " + msg + " (Linha: " + line + "). Tire um print desta tela.");
-        };
-    </script>
-
     <style>
-        /* ESTILOS (100% Offline e Seguros) */
+        /* =================================================================
+           ESTILOS BASE (Nativo, sem precisar de internet)
+           ================================================================= */
         :root {
             --emerald-500: #10b981; --emerald-600: #059669; --emerald-50: #ecfdf5; --emerald-200: #a7f3d0;
             --slate-50: #f8fafc; --slate-100: #f1f5f9; --slate-200: #e2e8f0; --slate-300: #cbd5e1; --slate-500: #64748b; --slate-600: #475569; --slate-700: #334155; --slate-800: #1e293b;
@@ -21,15 +16,15 @@
             --orange-50: #fff7ed; --orange-200: #fed7aa; --orange-400: #fb923c; --orange-500: #f97316; --orange-600: #ea580c;
             --yellow-50: #fefce8; --yellow-200: #fef08a; --yellow-500: #eab308; --yellow-900: #713f12;
             --red-50: #fef2f2; --red-500: #ef4444;
-            --cyan-500: #06b6d4;
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; }
         body { background-color: var(--slate-100); padding-bottom: 80px; }
         
-        .flex { display: flex; } .flex-col { flex-direction: column; } .items-center { align-items: center; } .gap-2 { gap: 8px; } .gap-4 { gap: 16px; }
+        .flex { display: flex; } .flex-col { flex-direction: column; } .items-center { align-items: center; } .gap-2 { gap: 8px; }
         
         .header { background-color: var(--slate-800); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1); flex-wrap: wrap; gap: 10px; }
+        .status-badge { background-color: var(--red-500); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-top: 5px; display: inline-block; }
         .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
         .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--slate-200); position: relative; }
         .card-header { font-size: 18px; font-weight: bold; color: var(--slate-800); margin-bottom: 15px; border-bottom: 1px solid var(--slate-200); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;}
@@ -38,22 +33,22 @@
         @media (min-width: 768px) { .form-grid { grid-template-columns: repeat(4, 1fr); } .col-span-2 { grid-column: span 2; } .col-span-4 { grid-column: span 4; } }
         
         label { display: block; font-size: 12px; font-weight: bold; color: var(--slate-600); margin-bottom: 5px; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--slate-300); border-radius: 8px; background-color: var(--slate-50); font-size: 14px; color: var(--slate-800); transition: border-color 0.2s; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--slate-300); border-radius: 8px; background-color: var(--slate-50); font-size: 14px; color: var(--slate-800); }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--emerald-500); background-color: white; }
         
-        .btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; font-size: 14px; }
-        .btn-emerald { background-color: var(--emerald-500); color: white; } .btn-emerald:hover { background-color: var(--emerald-600); }
-        .btn-blue { background-color: var(--blue-600); color: white; width: 100%; } .btn-blue:hover { background-color: var(--blue-800); }
+        .btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; }
+        .btn-emerald { background-color: var(--emerald-500); color: white; width: 100%; max-width: 250px; font-size: 16px; padding: 12px;} 
+        .btn-blue { background-color: var(--blue-600); color: white; width: 100%; } 
         @media (min-width: 768px) { .btn-blue, .btn-orange { width: auto; } }
-        .btn-orange { background-color: var(--orange-500); color: white; width: 100%; } .btn-orange:hover { background-color: var(--orange-600); }
-        .btn-red-icon { background: var(--red-50); color: var(--red-500); padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; } .btn-red-icon:hover { background: var(--red-500); color: white; }
+        .btn-orange { background-color: var(--orange-500); color: white; width: 100%; } 
+        .btn-red-icon { background: var(--red-50); color: var(--red-500); padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; } 
         
-        .horario-btn { padding: 10px 14px; border-radius: 20px; border: 1px solid var(--slate-300); background: white; color: var(--slate-600); font-weight: bold; font-size: 14px; cursor: pointer; flex: 1; min-width: 70px; text-align: center; transition: 0.2s; }
-        .horario-btn.ativo { background: var(--emerald-500); color: white; border-color: var(--emerald-600); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
+        .horario-btn { padding: 10px 14px; border-radius: 20px; border: 1px solid var(--slate-300); background: white; color: var(--slate-600); font-weight: bold; font-size: 14px; cursor: pointer; flex: 1; min-width: 70px; text-align: center; }
+        .horario-btn.ativo { background: var(--emerald-500); color: white; border-color: var(--emerald-600); }
         .horarios-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
         
-        /* IMPRESSÃO E VISUALIZAÇÃO A4 */
-        .print-container { overflow-x: auto; -webkit-overflow-scrolling: touch; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; border: 1px solid var(--slate-300); margin-bottom: 40px; background: white; }
+        /* IMPRESSÃO (O LÚDICO) */
+        .print-container { overflow-x: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; border: 1px solid var(--slate-300); margin-bottom: 40px; background: white; }
         .a4-sheet { min-width: 900px; padding: 30px; background: white; }
         .print-header { border-bottom: 4px solid var(--slate-800); padding-bottom: 15px; margin-bottom: 20px; }
         .print-title { font-size: 24px; font-weight: 900; text-align: center; margin-bottom: 15px; letter-spacing: 1px; color: var(--slate-800); }
@@ -68,7 +63,7 @@
         .print-table th { background: var(--emerald-50); border-bottom: 2px solid var(--emerald-600); }
         .print-table td.med-name { border-right: 2px solid var(--emerald-600); text-align: left; width: 33%; }
         .med-title { font-size: 16px; font-weight: 900; color: var(--slate-800); text-transform: uppercase; margin-bottom: 4px; line-height: 1.2; }
-        .med-ind { display: inline-block; background: var(--yellow-200); color: var(--yellow-900); font-weight: 900; font-size: 11px; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .med-ind { display: inline-block; background: var(--yellow-200); color: var(--yellow-900); font-weight: 900; font-size: 11px; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; }
         
         .print-table.sos-table { border-color: var(--orange-500); text-align: left; }
         .sos-table th, .sos-table td { border-color: var(--orange-200); }
@@ -79,7 +74,7 @@
         
         .footer { margin-top: 30px; padding-top: 15px; border-top: 2px solid var(--slate-300); text-align: center; font-size: 12px; font-weight: bold; color: var(--slate-600); }
         
-        /* IMPRESSÃO DE FATO */
+        /* IMPRESSÃO FÍSICA */
         @media print {
             @page { size: landscape; margin: 10mm; }
             body { background: white; padding: 0; }
@@ -98,75 +93,79 @@
         <div>
             <h1 style="font-size: 18px; display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
                 <span style="background: var(--emerald-500); padding: 4px; border-radius: 4px;">➕</span>
-                Receitas Facilitadas HC IV (Segura)
+                Receitas Facilitadas HC IV
             </h1>
-            <p style="font-size: 12px; color: var(--slate-300);">Sistema 100% blindado contra falhas no celular.</p>
+            <span id="badge-status" class="status-badge">🔴 Iniciando Sistema...</span>
         </div>
-        <button type="button" class="btn btn-emerald" onclick="window.print()" style="width: 100%; max-width: 250px; font-size: 16px; padding: 12px;">
-            🖨️ Imprimir / Salvar PDF
-        </button>
+        <button type="button" class="btn btn-emerald" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
     </div>
 
     <div class="container">
         
-        <!-- 1. DADOS DO PACIENTE -->
+        <!-- ==============================================
+             1. DADOS DO PACIENTE
+             (Eventos oninput disparam na hora que digita)
+             ============================================== -->
         <div class="card nao-imprime">
             <div class="card-header">1. Dados do Paciente e Equipe</div>
             <div class="form-grid">
                 <div class="col-span-2">
                     <label>Nome do Paciente</label>
-                    <input type="text" id="inp-nome" placeholder="Ex: Maria da Silva">
+                    <input type="text" id="inp-nome" oninput="sincronizarPaciente()" placeholder="Ex: Maria da Silva">
                 </div>
                 <div>
                     <label>Prontuário / Matrícula</label>
-                    <input type="text" id="inp-pront" placeholder="Ex: 5042552">
+                    <input type="text" id="inp-pront" oninput="sincronizarPaciente()" placeholder="Ex: 5042552">
                 </div>
                 <div>
                     <label>Data da Consulta</label>
-                    <input type="date" id="inp-data">
+                    <input type="date" id="inp-data" oninput="sincronizarPaciente()" onchange="sincronizarPaciente()">
                 </div>
                 <div class="col-span-2">
                     <label>Médico(a) Solicitante</label>
-                    <input type="text" id="inp-medico" placeholder="Ex: Dra. Ana Costa">
+                    <input type="text" id="inp-medico" oninput="sincronizarPaciente()" placeholder="Ex: Dra. Ana Costa">
                 </div>
                 <div class="col-span-2">
                     <label>Farmacêutico(a) Responsável + CRF</label>
-                    <input type="text" id="inp-farm" placeholder="Ex: Márcia Cruz - CRF 7333">
+                    <input type="text" id="inp-farm" oninput="sincronizarPaciente()" placeholder="Ex: Márcia Cruz - CRF 7333">
                 </div>
             </div>
         </div>
 
-        <!-- 2. MEDICAMENTOS FIXOS -->
+        <!-- ==============================================
+             2. MEDICAMENTOS FIXOS E S.O.S
+             ============================================== -->
         <div class="nao-imprime">
             <div class="card-header" style="border:none; margin-bottom: 5px;">
                 <span style="color: var(--slate-800);">2. Medicamentos de Horário Fixo</span>
-                <button type="button" class="btn btn-blue" onclick="addMedicamento('fixo')">➕ Adicionar Fixo</button>
+                <button type="button" class="btn btn-blue" onclick="addMed('fixo')">➕ Adicionar Fixo</button>
             </div>
             <div id="lista-fixos">
-                <div id="aviso-vazio-fixo" style="border:2px dashed #cbd5e1; padding:30px; text-align:center; color:#64748b; border-radius:12px; margin-bottom:20px; font-weight:bold;">Nenhum medicamento fixo. Clique no botão azul.</div>
+                <div id="aviso-vazio-fixo" style="border:2px dashed var(--slate-300); padding:30px; text-align:center; color:var(--slate-500); border-radius:12px; margin-bottom:20px; font-weight:bold;">Nenhum medicamento fixo. Clique no botão azul.</div>
             </div>
         </div>
 
-        <!-- 3. MEDICAMENTOS SOS -->
         <div class="nao-imprime">
             <div class="card-header" style="border:none; margin-bottom: 5px; margin-top: 20px;">
                 <span style="color: var(--orange-600);">3. Medicamentos S.O.S (Resgate)</span>
-                <button type="button" class="btn btn-orange" onclick="addMedicamento('sos')">➕ Adicionar S.O.S</button>
+                <button type="button" class="btn btn-orange" onclick="addMed('sos')">➕ Adicionar S.O.S</button>
             </div>
             <div id="lista-sos">
-                <div id="aviso-vazio-sos" style="border:2px dashed #fed7aa; padding:30px; text-align:center; color:#ea580c; border-radius:12px; margin-bottom:20px; font-weight:bold;">Nenhum SOS adicionado. Clique no botão laranja.</div>
+                <div id="aviso-vazio-sos" style="border:2px dashed var(--orange-200); padding:30px; text-align:center; color:var(--orange-600); border-radius:12px; margin-bottom:20px; font-weight:bold;">Nenhum SOS adicionado. Clique no botão laranja.</div>
             </div>
         </div>
 
-        <!-- AVISO CELULAR -->
         <div class="nao-imprime" style="text-align: center; font-size: 12px; color: var(--slate-600); margin: 25px 0; background: var(--slate-200); padding: 10px; border-radius: 8px; font-weight: bold;">
-            👇 DESLIZE A RECEITA ABAIXO PARA OS LADOS PARA VISUALIZAR TUDO NO CELULAR 👇
+            👇 DESLIZE A RECEITA ABAIXO PARA OS LADOS NO CELULAR PARA VER TUDO 👇
         </div>
 
-        <!-- A RECEITA FINAL LÚDICA (A4) -->
+        <!-- ==============================================
+             4. A RECEITA LÚDICA (FOLHA A4 FINAL)
+             ============================================== -->
         <div class="print-container">
             <div class="a4-sheet">
-                <!-- Cabeçalho -->
+                
+                <!-- Cabeçalho A4 -->
                 <div class="print-header">
                     <div class="print-title">HOSPITAL DO CÂNCER IV – HC IV</div>
                     <div class="patient-box">
@@ -189,7 +188,7 @@
                     </div>
                 </div>
 
-                <!-- Tabela Fixos -->
+                <!-- Tabela de Fixos A4 -->
                 <div class="section-title">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     Como tomar os seus medicamentos (Uso Contínuo)
@@ -201,7 +200,7 @@
                     </tbody>
                 </table>
 
-                <!-- Tabela S.O.S -->
+                <!-- Tabela de S.O.S A4 -->
                 <div id="container-tabela-sos" style="display: none;" class="page-break">
                     <div class="section-title sos">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
@@ -212,20 +211,22 @@
                     </table>
                 </div>
 
-                <!-- Rodapé -->
+                <!-- Rodapé A4 -->
                 <div class="footer page-break">
                     <p>Em caso de dúvidas ligue para a Assistência Domiciliar - Farmácia: 3207-3971 ou Emergência: 3207-3872 / 3207-3874</p>
-                    <p style="margin-top: 15px; font-size: 14px;">Farmacêutico(a) Responsável pela elaboração: <span id="out-farm" style="border-bottom: 1px solid var(--slate-500); padding: 0 20px; color: var(--slate-800);">_____________________________________________</span></p>
+                    <p style="margin-top: 15px; font-size: 14px;">Farmacêutico(a) Responsável: <span id="out-farm" style="border-bottom: 1px solid var(--slate-500); padding: 0 20px; color: var(--slate-800);">_____________________________________________</span></p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- =================================================================
-         LÓGICA JAVASCRIPT (BLINDADA CONTRA ERROS DE CELULAR)
+         LÓGICA E BANCO DE DADOS (Execução Imediata!)
          ================================================================= -->
     <script>
-        // 1. BANCO DE DADOS
+        // ESTA ÁREA EXECUTA DE CIMA PARA BAIXO SEM ESPERAR O CELULAR
+
+        // 1. BANCO DE DADOS (Você pode editar e adicionar mais aqui no futuro)
         const MEDICAMENTOS = [
             { nome: "MORFINA 10 MG", ind: "PARA DOR", apre: "comprimido", dose: "1" },
             { nome: "MORFINA 10 MG/ML (GOTAS)", ind: "PARA DOR", apre: "gotas", dose: "6" },
@@ -240,65 +241,41 @@
             { nome: "SIMETICONA GOTAS", ind: "PARA GASES", apre: "gotas", dose: "30" },
             { nome: "LOSARTANA 50 MG", ind: "PARA PRESSÃO ALTA", apre: "comprimido", dose: "1" }
         ];
-
         const HORARIOS = ["06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "22:00", "00:00"];
 
-        // 2. ESTADO DA APLICAÇÃO
-        const appState = {
-            fixos: [],
-            sos: [],
-            nextId: 1
-        };
+        // 2. MEMÓRIA DOS REMÉDIOS ADICIONADOS
+        let appFixos = [];
+        let appSos = [];
+        let contadorId = 1;
 
-        // 3. INICIALIZAÇÃO SEGURA
-        window.onload = function() {
-            try {
-                // Definir Data Atual de forma que não trave o celular
-                const hoje = new Date();
-                const ano = hoje.getFullYear();
-                const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-                const dia = String(hoje.getDate()).padStart(2, '0');
-                document.getElementById('inp-data').value = ano + '-' + mes + '-' + dia;
-                
-                // Eventos do Paciente
-                document.getElementById('inp-nome').addEventListener('input', updatePaciente);
-                document.getElementById('inp-pront').addEventListener('input', updatePaciente);
-                document.getElementById('inp-data').addEventListener('change', updatePaciente);
-                document.getElementById('inp-medico').addEventListener('input', updatePaciente);
-                document.getElementById('inp-farm').addEventListener('input', updatePaciente);
-                
-                updatePaciente();
-                gerarCabecalhoHorarios();
-                renderA4();
-            } catch (err) {
-                alert("Erro ao carregar a página: " + err.message);
-            }
-        };
-
-        function updatePaciente() {
-            try {
-                const nome = document.getElementById('inp-nome').value || '_________________________________';
-                const pront = document.getElementById('inp-pront').value || '_________';
-                const medico = document.getElementById('inp-medico').value || '_________________________________';
-                const farm = document.getElementById('inp-farm').value || '_____________________________________________';
-                
-                let dataStr = "__/__/____";
-                const inpData = document.getElementById('inp-data').value;
-                if (inpData) {
-                    const partes = inpData.split('-');
-                    if (partes.length === 3) dataStr = partes[2] + '/' + partes[1] + '/' + partes[0];
-                }
-
-                document.getElementById('out-nome').innerText = nome;
-                document.getElementById('out-pront').innerText = pront;
-                document.getElementById('out-medico').innerText = medico;
-                document.getElementById('out-farm').innerText = farm;
-                document.getElementById('out-data').innerText = dataStr;
-            } catch(e) {}
+        // 3. FUNÇÃO QUE DESENHA OS SÍMBOLOS LÚDICOS
+        function getSvgLindo(tipo) {
+            if (tipo === 'comprimido') return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M10 5l9 9a4.95 4.95 0 1 1-7 7l-9-9a4.95 4.95 0 0 1 7-7Z" /><path d="m7.5 9.5 7 7" /></svg>`;
+            if (tipo === 'meio_comprimido') return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><path d="M10 5l4.5 4.5" /><path d="m7.5 9.5 7 7" stroke-dasharray="2 2" /><path d="M5 12a4.95 4.95 0 0 0 7 7l4.5-4.5" /></svg>`;
+            if (tipo === 'gotas') return `<svg width="24" height="24" viewBox="0 0 24 24" fill="#06b6d4"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" /></svg>`;
+            if (tipo === 'liquido') return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M4 4h16v4a8 8 0 0 1-16 0V4z" /><path d="M12 12v9" /><path d="M8 21h8" /></svg>`;
+            return ``;
+        }
+        function getTextoAbaixo(tipo, qtde) {
+            if (tipo === 'comprimido') return `${qtde} comp.`;
+            if (tipo === 'meio_comprimido') return `Metade(1/2)`;
+            if (tipo === 'gotas') return `${qtde} gotas`;
+            if (tipo === 'liquido') return `${qtde} ml`;
+            return qtde;
         }
 
-        // 4. LÓGICA DE INCLUSÃO DE MEDICAMENTOS (Onde as caixas são criadas)
-        function addMedicamento(tipo) {
-            try {
-                const id = appState.nextId++;
-                const item = { id: id, nome: '', apre: 'comprimido', dose: '1
+        // =========================================================
+        // AÇÕES DISPARADAS PELO HTML (Conectadas nos botões/inputs)
+        // =========================================================
+
+        function sincronizarPaciente() {
+            document.getElementById('out-nome').innerText = document.getElementById('inp-nome').value || '_________________________________';
+            document.getElementById('out-pront').innerText = document.getElementById('inp-pront').value || '_________';
+            document.getElementById('out-medico').innerText = document.getElementById('inp-medico').value || '_________________________________';
+            document.getElementById('out-farm').innerText = document.getElementById('inp-farm').value || '_____________________________________________';
+            
+            const rawData = document.getElementById('inp-data').value;
+            if (rawData) {
+                const partes = rawData.split('-');
+                if(partes.length === 3) {
+                    document.getElementById('out-data').innerText = partes
