@@ -3,39 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-  <title>Receita Facilitada · HC IV</title>
-  <!-- Bootstrap 5 + Ícones -->
+  <title>Receita Visual · HC IV</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <!-- jsPDF + html2canvas para PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    body { background: #f4f7fb; font-family: 'Segoe UI', system-ui, sans-serif; padding-bottom: 30px; }
-    .navbar-brand i { font-size: 1.5rem; margin-right: 8px; }
-    .card { border-radius: 20px; border: none; box-shadow: 0 6px 14px rgba(0,0,0,0.03); margin-bottom: 20px; }
-    .card-header { background: white; border-bottom: 1px solid rgba(0,0,0,0.05); font-weight: 600; padding: 16px 20px; border-radius: 20px 20px 0 0 !important; }
-    .prescription-grid { overflow-x: auto; }
-    .prescription-table { min-width: 800px; border-collapse: collapse; background: white; border-radius: 16px; }
-    .prescription-table th { background: #1e3a5f; color: white; font-weight: 500; padding: 12px 8px; text-align: center; border: 1px solid #2b4a6e; }
-    .prescription-table td { border: 1px solid #dee2e6; padding: 10px 6px; vertical-align: middle; background-color: #fff; }
-    .prescription-table .med-name { font-weight: 600; color: #0b2a41; background: #f9fcff; }
-    .prescription-table .dose-cell { text-align: center; min-width: 80px; }
-    .hour-header { font-size: 0.9rem; white-space: nowrap; }
-    .sos-badge { background: #f0ad4e; color: #212529; padding: 3px 8px; border-radius: 30px; font-size: 0.7rem; font-weight: bold; }
-    .legend-icon { font-size: 1.4rem; margin-right: 5px; vertical-align: middle; }
+    body { background: #f0f4f8; font-family: 'Segoe UI', system-ui, sans-serif; padding-bottom: 30px; }
+    .navbar-brand i { font-size: 1.8rem; margin-right: 8px; color: #1e5f6e; }
+    .card { border-radius: 24px; border: none; box-shadow: 0 8px 20px rgba(0,0,0,0.04); margin-bottom: 20px; background: white; }
+    .card-header { background: white; border-bottom: 1px solid #e2e8f0; font-weight: 600; padding: 18px 24px; border-radius: 24px 24px 0 0 !important; }
+    .prescription-grid { overflow-x: auto; border-radius: 20px; }
+    .prescription-table { min-width: 900px; border-collapse: separate; border-spacing: 0; background: white; border-radius: 16px; }
+    .prescription-table th { background: #0b3954; color: white; font-weight: 500; padding: 14px 8px; text-align: center; border: none; }
+    .prescription-table td { border: 1px solid #e9ecef; padding: 12px 6px; vertical-align: middle; background-color: #fff; }
+    .prescription-table .med-name { font-weight: 700; color: #0b3954; background: #f9fbfd; }
+    .dose-cell { text-align: center; min-width: 90px; background: #fefcf3; }
+    .icon-meal { font-size: 1.8rem; display: block; margin-bottom: 2px; }
+    .meal-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
+    .sos-icon { color: #d9534f; font-size: 1.4rem; }
+    .med-form-icon { font-size: 1.5rem; margin-right: 6px; vertical-align: middle; }
+    .symptom-icon { font-size: 1.3rem; margin-right: 5px; }
+    .btn-soft { border-radius: 40px; padding: 6px 18px; }
     .print-only { display: none; }
     @media print {
       body { background: white; padding: 0.2in; }
-      .no-print, .navbar, .btn, .card-header .btn, footer, .tab-content > .tab-pane > .d-flex { display: none !important; }
+      .no-print, .navbar, .btn, .card-header .btn, footer, .tab-content > .tab-pane > .d-flex, .modal { display: none !important; }
       .print-only { display: block; }
       .card { box-shadow: none; border: 1px solid #ccc; }
-      .prescription-table th { background: #1e3a5f !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .prescription-table td { background: white !important; }
+      .prescription-table th { background: #0b3954 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
-    .hour-pill { background: #e9ecef; border-radius: 40px; padding: 4px 10px; font-size: 0.8rem; display: inline-block; margin: 2px; }
-    .clickable-icon { cursor: pointer; font-size: 1.8rem; color: #0d6efd; }
-    .footer-print { margin-top: 20px; border-top: 2px dashed #aaa; padding-top: 15px; }
+    .clickable-icon { cursor: pointer; }
+    .form-select, .form-control { border-radius: 30px; border: 1px solid #ced4da; padding: 10px 16px; }
   </style>
 </head>
 <body>
@@ -43,149 +42,164 @@
 <!-- Barra superior -->
 <nav class="navbar navbar-expand-lg bg-white shadow-sm py-2 px-3 mb-3 no-print">
   <div class="container-fluid">
-    <span class="navbar-brand fw-bold text-primary"><i class="bi bi-file-earmark-medical"></i> Receita Facilitada · HC IV</span>
-    <div class="d-flex gap-2">
-      <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalMedicamentos"><i class="bi bi-capsule"></i> Medicamentos</button>
-      <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalPacientes"><i class="bi bi-people"></i> Pacientes</button>
-      <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalFarmaceuticos"><i class="bi bi-person-badge"></i> Farmacêuticos</button>
+    <span class="navbar-brand fw-bold text-primary"><i class="bi bi-journal-medical"></i> Receita Visual · HC IV</span>
+    <div class="d-flex gap-2 flex-wrap">
+      <button class="btn btn-outline-primary btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#modalMedicamentos"><i class="bi bi-capsule"></i> Medicamentos</button>
+      <button class="btn btn-outline-secondary btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#modalPacientes"><i class="bi bi-people"></i> Pacientes</button>
+      <button class="btn btn-outline-success btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#modalFarmaceuticos"><i class="bi bi-person-badge"></i> Farmacêuticos</button>
+      <button class="btn btn-outline-info btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#modalMedicos"><i class="bi bi-heart-pulse"></i> Médicos</button>
     </div>
   </div>
 </nav>
 
 <div class="container-fluid px-3 px-md-4">
-  <!-- Área principal: criação e visualização -->
   <div class="row g-4">
     <div class="col-12">
       <div class="card">
         <div class="card-header d-flex flex-wrap align-items-center justify-content-between">
-          <span><i class="bi bi-pencil-square me-2"></i>Nova Receita Facilitada</span>
+          <span><i class="bi bi-pencil-square me-2"></i>Montar Receita Visual</span>
           <div class="d-flex gap-2 mt-2 mt-sm-0">
-            <button class="btn btn-sm btn-outline-secondary" id="clearAllBtn"><i class="bi bi-arrow-repeat"></i> Limpar</button>
-            <button class="btn btn-sm btn-primary" id="previewBtn"><i class="bi bi-eye"></i> Visualizar</button>
-            <button class="btn btn-sm btn-success" id="printBtn"><i class="bi bi-printer"></i> Imprimir / PDF</button>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" id="clearAllBtn"><i class="bi bi-arrow-repeat"></i> Limpar</button>
+            <button class="btn btn-sm btn-primary rounded-pill" id="previewBtn"><i class="bi bi-eye"></i> Visualizar</button>
+            <button class="btn btn-sm btn-success rounded-pill" id="printBtn"><i class="bi bi-printer"></i> PDF / Imprimir</button>
           </div>
         </div>
         <div class="card-body">
-          <!-- Formulário de cabeçalho -->
+          <!-- Cabeçalho -->
           <div class="row g-3 mb-4">
             <div class="col-md-4">
-              <label class="form-label fw-semibold">Paciente</label>
+              <label class="form-label fw-semibold"><i class="bi bi-person"></i> Paciente</label>
               <select class="form-select" id="selectPaciente"></select>
             </div>
             <div class="col-md-3">
-              <label class="form-label fw-semibold">Médico(a)</label>
-              <input type="text" class="form-control" id="inputMedico" placeholder="Nome do médico" value="PAULA DE ALMEIDA RAMOS">
+              <label class="form-label fw-semibold"><i class="bi bi-heart"></i> Médico(a)</label>
+              <select class="form-select" id="selectMedico"></select>
             </div>
             <div class="col-md-2">
-              <label class="form-label fw-semibold">Data</label>
+              <label class="form-label fw-semibold"><i class="bi bi-calendar"></i> Data</label>
               <input type="date" class="form-control" id="inputData">
             </div>
             <div class="col-md-3">
-              <label class="form-label fw-semibold">Farmacêutico(a) responsável</label>
+              <label class="form-label fw-semibold"><i class="bi bi-file-person"></i> Farmacêutico</label>
               <select class="form-select" id="selectFarmaceutico"></select>
             </div>
           </div>
 
-          <!-- Seletor de medicamentos e adição rápida -->
-          <div class="row g-2 mb-3 align-items-end">
-            <div class="col-md-5">
-              <label class="form-label">Adicionar medicamento</label>
+          <!-- Adicionar medicamento visual -->
+          <div class="row g-2 mb-4 align-items-end">
+            <div class="col-md-4">
+              <label>Medicamento</label>
               <select class="form-select" id="selectMedicamento"></select>
             </div>
-            <div class="col-md-3">
-              <label class="form-label">Posologia / Dose</label>
-              <input type="text" class="form-control" id="inputDosePadrao" placeholder="Ex: 40 gotas, 1 cp, 10 mL">
+            <div class="col-md-2">
+              <label>Forma / Dose</label>
+              <select class="form-select" id="selectForma">
+                <option value="💊 1 comprimido">💊 1 comprimido</option>
+                <option value="💊½ meio comprimido">💊½ meio comprimido</option>
+                <option value="💧 10 gotas">💧 10 gotas</option>
+                <option value="💧 20 gotas">💧 20 gotas</option>
+                <option value="💧 30 gotas">💧 30 gotas</option>
+                <option value="💧 40 gotas">💧 40 gotas</option>
+                <option value="🥄 5 mL">🥄 5 mL</option>
+                <option value="🥄 10 mL">🥄 10 mL</option>
+                <option value="🥄 15 mL">🥄 15 mL</option>
+                <option value="🧴 1 frasco">🧴 1 frasco</option>
+                <option value="💉 1 ampola">💉 1 ampola</option>
+              </select>
             </div>
             <div class="col-md-2">
-              <label class="form-label">Indicação (simples)</label>
-              <input type="text" class="form-control" id="inputIndicacao" placeholder="PARA DOR">
+              <label>Sintoma / Indicação</label>
+              <select class="form-select" id="selectSintoma">
+                <option value="🤕 DOR">🤕 DOR</option>
+                <option value="🤒 FEBRE">🤒 FEBRE</option>
+                <option value="🤢 NÁUSEA">🤢 NÁUSEA</option>
+                <option value="🤮 VÔMITO">🤮 VÔMITO</option>
+                <option value="💩 PRISÃO DE VENTRE">💩 PRISÃO DE VENTRE</option>
+                <option value="💨 DIARREIA">💨 DIARREIA</option>
+                <option value="🫁 FALTA DE AR">🫁 FALTA DE AR</option>
+                <option value="😴 INSÔNIA">😴 INSÔNIA</option>
+                <option value="😟 ANSIEDADE">😟 ANSIEDADE</option>
+                <option value="🩸 SANGRAMENTO">🩸 SANGRAMENTO</option>
+                <option value="❤️ PRESSÃO ALTA">❤️ PRESSÃO ALTA</option>
+                <option value="🩺 OUTRO">🩺 OUTRO</option>
+              </select>
             </div>
-            <div class="col-md-2 d-flex align-items-center gap-2">
-              <div class="form-check">
+            <div class="col-md-2">
+              <div class="form-check mt-3">
                 <input class="form-check-input" type="checkbox" id="checkSOS">
-                <label class="form-check-label">SOS</label>
+                <label class="form-check-label fw-bold text-danger"><i class="bi bi-exclamation-triangle"></i> SOS</label>
               </div>
-              <button class="btn btn-primary" id="addMedBtn"><i class="bi bi-plus-circle"></i> Adicionar</button>
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-primary w-100 rounded-pill" id="addMedBtn"><i class="bi bi-plus-circle"></i> Adicionar</button>
             </div>
           </div>
 
-          <!-- Horários padrão + customizados -->
+          <!-- Períodos do dia (refeições) - fixos com ícones -->
           <div class="mb-3">
-            <label class="form-label fw-semibold">Horários da prescrição <i class="bi bi-clock"></i></label>
-            <div class="d-flex flex-wrap gap-2 align-items-center" id="horariosContainer">
-              <!-- gerado via js -->
-            </div>
-            <div class="mt-2 d-flex gap-2">
-              <input type="time" class="form-control form-control-sm w-auto" id="customHourInput" step="3600">
-              <button class="btn btn-sm btn-outline-secondary" id="addCustomHour"><i class="bi bi-plus"></i> Adicionar horário</button>
+            <label class="form-label fw-semibold"><i class="bi bi-sun"></i> Momentos do dia</label>
+            <div class="d-flex flex-wrap gap-3" id="periodosContainer">
+              <!-- Ícones grandes de refeição serão renderizados via js -->
             </div>
           </div>
 
-          <!-- Tabela interativa (edição inline) -->
+          <!-- Tabela visual -->
           <div class="prescription-grid mt-4">
             <table class="table prescription-table" id="dynamicPrescriptionTable">
-              <thead id="tableHeader">
-                <!-- cabeçalho dinâmico -->
-              </thead>
-              <tbody id="tableBody">
-                <!-- linhas dinâmicas -->
-              </tbody>
+              <thead id="tableHeader"></thead>
+              <tbody id="tableBody"></tbody>
             </table>
           </div>
-          <small class="text-muted"><i class="bi bi-info-circle"></i> Clique nas células de dose para editar. Use ícones para facilitar a compreensão.</small>
+          <small class="text-muted"><i class="bi bi-hand-index"></i> Clique nas células para ajustar a dose.</small>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Área de visualização/impressão (versão final) -->
   <div id="printableArea" class="print-only mt-4"></div>
 </div>
 
-<!-- Modais de cadastro -->
+<!-- ========== MODAIS DE CADASTRO ========== -->
+<!-- Medicamentos -->
 <div class="modal fade" id="modalMedicamentos" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <div class="modal-header"><h5 class="modal-title">📋 Medicamentos padronizados</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-header"><h5>📋 Medicamentos</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
       <div class="modal-body">
-        <div class="row mb-3 g-2">
-          <div class="col-7"><input type="text" class="form-control" id="medNome" placeholder="Nome do medicamento"></div>
-          <div class="col-3"><input type="text" class="form-control" id="medApresentacao" placeholder="Apresentação (ex: 500mg cp)"></div>
-          <div class="col-2"><button class="btn btn-primary w-100" id="addMedDB">Adicionar</button></div>
+        <div class="row g-2 mb-3">
+          <div class="col-5"><input type="text" class="form-control" id="medNome" placeholder="Nome"></div>
+          <div class="col-4"><input type="text" class="form-control" id="medApresentacao" placeholder="Ex: 500mg cp"></div>
+          <div class="col-3"><button class="btn btn-primary w-100" id="addMedDB">Adicionar</button></div>
         </div>
-        <table class="table table-sm" id="medTableList">
-          <thead><tr><th>Nome</th><th>Apresentação</th><th>Ações</th></tr></thead>
-          <tbody></tbody>
-        </table>
+        <table class="table table-sm" id="medTableList"><thead><tr><th>Nome</th><th>Apresentação</th><th></th></tr></thead><tbody></tbody></table>
       </div>
     </div>
   </div>
 </div>
-
+<!-- Pacientes -->
 <div class="modal fade" id="modalPacientes" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header"><h5 class="modal-title">👤 Pacientes</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-header"><h5>👤 Pacientes</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
       <div class="modal-body">
         <div class="row g-2 mb-3">
-          <div class="col-5"><input type="text" class="form-control" id="pacNome" placeholder="Nome completo"></div>
+          <div class="col-5"><input type="text" class="form-control" id="pacNome" placeholder="Nome"></div>
           <div class="col-4"><input type="text" class="form-control" id="pacProntuario" placeholder="Prontuário"></div>
-          <div class="col-3"><button class="btn btn-primary w-100" id="addPacDB">Adicionar</button></div>
+          <div class="col-3"><button class="btn btn-primary" id="addPacDB">Add</button></div>
         </div>
         <table class="table table-sm"><thead><tr><th>Nome</th><th>Prontuário</th></tr></thead><tbody id="pacTableBody"></tbody></table>
       </div>
     </div>
   </div>
 </div>
-
+<!-- Farmacêuticos -->
 <div class="modal fade" id="modalFarmaceuticos" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header"><h5 class="modal-title">💊 Farmacêuticos</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-header"><h5>💊 Farmacêuticos</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
       <div class="modal-body">
         <div class="row g-2 mb-3">
           <div class="col-7"><input type="text" class="form-control" id="farNome" placeholder="Nome"></div>
-          <div class="col-3"><input type="text" class="form-control" id="farCRF" placeholder="CRF-RJ"></div>
+          <div class="col-3"><input type="text" class="form-control" id="farCRF" placeholder="CRF"></div>
           <div class="col-2"><button class="btn btn-primary" id="addFarDB">Add</button></div>
         </div>
         <table class="table table-sm"><thead><tr><th>Nome</th><th>CRF</th></tr></thead><tbody id="farTableBody"></tbody></table>
@@ -193,316 +207,241 @@
     </div>
   </div>
 </div>
+<!-- Médicos -->
+<div class="modal fade" id="modalMedicos" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><h5>🩺 Médicos</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="row g-2 mb-3">
+          <div class="col-8"><input type="text" class="form-control" id="medicoNome" placeholder="Nome"></div>
+          <div class="col-4"><button class="btn btn-primary" id="addMedicoDB">Adicionar</button></div>
+        </div>
+        <table class="table table-sm"><thead><tr><th>Nome</th></tr></thead><tbody id="medicoTableBody"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
   (function(){
-    "use strict";
-
     // ---------- DADOS INICIAIS ----------
     const defaultMedicamentos = [
-      { nome: "DIPIRONA 500 MG", apresentacao: "500mg cp / 500mg/mL gotas" },
-      { nome: "MORFINA 10 MG", apresentacao: "10mg cp / 10mg/mL" },
+      { nome: "DIPIRONA", apresentacao: "500mg/mL gotas / 500mg cp" },
+      { nome: "MORFINA", apresentacao: "10mg cp / 10mg/mL" },
       { nome: "LACTULOSE", apresentacao: "667mg/mL xarope" },
-      { nome: "BROMOPRIDA 10 MG", apresentacao: "10mg cp" },
-      { nome: "OMEPRAZOL 20 MG", apresentacao: "20mg cápsula" },
-      { nome: "ESOMEPRAZOL 20 MG", apresentacao: "20mg cp" },
-      { nome: "ONDANSETRONA 8 MG", apresentacao: "8mg cp" },
-      { nome: "GABAPENTINA 300 MG", apresentacao: "300mg cápsula" },
-      { nome: "DEXAMETASONA 4 MG", apresentacao: "4mg cp" },
-      { nome: "LOSARTANA 50 MG", apresentacao: "50mg cp" },
-      { nome: "IPRATRÓPIO GOTAS", apresentacao: "0,25mg/mL frasco" }
+      { nome: "BROMOPRIDA", apresentacao: "10mg cp" },
+      { nome: "OMEPRAZOL", apresentacao: "20mg cápsula" },
+      { nome: "ONDANSETRONA", apresentacao: "8mg cp" },
+      { nome: "GABAPENTINA", apresentacao: "300mg cápsula" }
     ];
-
     const defaultPacientes = [
       { nome: "ELASIR ZANAZI DA FONSECA", prontuario: "5246029" },
-      { nome: "EUNICE PINHO DA CUNHA", prontuario: "5234305" },
-      { nome: "MARIA LUIZA DE ASSIS TRINDADE", prontuario: "5228829" }
+      { nome: "EUNICE PINHO DA CUNHA", prontuario: "5234305" }
     ];
-
     const defaultFarmaceuticos = [
       { nome: "Paloma Martins", crf: "CRF-RJ 35646" },
-      { nome: "Daniel Alves Cabral", crf: "CRF-RJ 35526" },
-      { nome: "Flávia Barcelos", crf: "CRF-RJ 8778" }
+      { nome: "Daniel Alves Cabral", crf: "CRF-RJ 35526" }
+    ];
+    const defaultMedicos = [
+      { nome: "PAULA DE ALMEIDA RAMOS" },
+      { nome: "RICARDO LUCAS DE SOUZA RODRIGUES" }
     ];
 
-    // Horários padrão da instituição
-    let horariosAtivos = ["06:00", "10:00", "14:00", "18:00", "22:00"];
+    // Períodos fixos com ícones
+    const periodos = [
+      { id: 'cafe', label: 'Café', icon: '☕', hora: '06:00' },
+      { id: 'almoco', label: 'Almoço', icon: '🍽️', hora: '12:00' },
+      { id: 'lanche', label: 'Lanche', icon: '🍎', hora: '15:00' },
+      { id: 'jantar', label: 'Jantar', icon: '🍲', hora: '19:00' },
+      { id: 'ceia', label: 'Ceia', icon: '🌙', hora: '22:00' }
+    ];
 
-    // ---------- STORAGE ----------
-    let medicamentosDB = [];
-    let pacientesDB = [];
-    let farmaceuticosDB = [];
+    // Bancos
+    let medicamentosDB = [], pacientesDB = [], farmaceuticosDB = [], medicosDB = [];
+    // Prescrição atual
+    let prescriptionMeds = []; // { medicamento, formaDose, sintoma, sos, dosesPorPeriodo }
 
-    function loadFromStorage() {
-      const m = localStorage.getItem('medicamentos_rf');
-      if(m) medicamentosDB = JSON.parse(m); else medicamentosDB = [...defaultMedicamentos];
-      const p = localStorage.getItem('pacientes_rf');
-      if(p) pacientesDB = JSON.parse(p); else pacientesDB = [...defaultPacientes];
-      const f = localStorage.getItem('farmaceuticos_rf');
-      if(f) farmaceuticosDB = JSON.parse(f); else farmaceuticosDB = [...defaultFarmaceuticos];
+    // ---------- INICIALIZAÇÃO STORAGE ----------
+    function loadData() {
+      medicamentosDB = JSON.parse(localStorage.getItem('medicamentos_rf')) || defaultMedicamentos;
+      pacientesDB = JSON.parse(localStorage.getItem('pacientes_rf')) || defaultPacientes;
+      farmaceuticosDB = JSON.parse(localStorage.getItem('farmaceuticos_rf')) || defaultFarmaceuticos;
+      medicosDB = JSON.parse(localStorage.getItem('medicos_rf')) || defaultMedicos;
     }
-    function saveMed() { localStorage.setItem('medicamentos_rf', JSON.stringify(medicamentosDB)); }
-    function savePac() { localStorage.setItem('pacientes_rf', JSON.stringify(pacientesDB)); }
-    function saveFar() { localStorage.setItem('farmaceuticos_rf', JSON.stringify(farmaceuticosDB)); }
-
-    loadFromStorage();
-
-    // ---------- PRESCRIÇÃO ATUAL (array de objetos) ----------
-    let prescriptionMeds = []; // cada item: { medicamento, dosePadrao, indicacao, sos, dosesPorHorario: {} }
+    function saveAll() {
+      localStorage.setItem('medicamentos_rf', JSON.stringify(medicamentosDB));
+      localStorage.setItem('pacientes_rf', JSON.stringify(pacientesDB));
+      localStorage.setItem('farmaceuticos_rf', JSON.stringify(farmaceuticosDB));
+      localStorage.setItem('medicos_rf', JSON.stringify(medicosDB));
+    }
+    loadData();
 
     // ---------- RENDER SELECTS E TABELAS ----------
     function populateSelects() {
       const selPac = document.getElementById('selectPaciente');
-      selPac.innerHTML = '<option value="">Selecione o paciente</option>';
-      pacientesDB.forEach((p,i) => { selPac.innerHTML += `<option value="${i}">${p.nome} (${p.prontuario})</option>`; });
+      selPac.innerHTML = '<option value="">Selecione paciente</option>';
+      pacientesDB.forEach((p,i)=> selPac.innerHTML += `<option value="${i}">${p.nome} (${p.prontuario})</option>`);
       
       const selMed = document.getElementById('selectMedicamento');
       selMed.innerHTML = '<option value="">Escolha medicamento</option>';
-      medicamentosDB.forEach((m,i) => { selMed.innerHTML += `<option value="${i}">${m.nome} (${m.apresentacao})</option>`; });
+      medicamentosDB.forEach((m,i)=> selMed.innerHTML += `<option value="${i}">${m.nome} (${m.apresentacao})</option>`);
       
       const selFar = document.getElementById('selectFarmaceutico');
-      selFar.innerHTML = '<option value="">Selecione</option>';
-      farmaceuticosDB.forEach((f,i) => { selFar.innerHTML += `<option value="${i}">${f.nome} (${f.crf})</option>`; });
+      selFar.innerHTML = '<option value="">Farmacêutico</option>';
+      farmaceuticosDB.forEach((f,i)=> selFar.innerHTML += `<option value="${i}">${f.nome} (${f.crf})</option>`);
+      
+      const selMedico = document.getElementById('selectMedico');
+      selMedico.innerHTML = '<option value="">Médico(a)</option>';
+      medicosDB.forEach((m,i)=> selMedico.innerHTML += `<option value="${i}">${m.nome}</option>`);
     }
 
-    function renderHorariosUI() {
-      const container = document.getElementById('horariosContainer');
-      container.innerHTML = '';
-      horariosAtivos.forEach((h, idx) => {
-        const div = document.createElement('div'); div.className = 'hour-pill bg-white border';
-        div.innerHTML = `${h} <i class="bi bi-x-circle-fill text-danger ms-1" style="cursor:pointer" data-hour="${h}"></i>`;
-        container.appendChild(div);
-      });
-      document.querySelectorAll('[data-hour]').forEach(el => {
-        el.addEventListener('click', (e) => {
-          const hour = e.target.dataset.hour;
-          horariosAtivos = horariosAtivos.filter(h => h !== hour);
-          renderHorariosUI();
-          rebuildTable();
-        });
+    // Renderizar ícones de período
+    function renderPeriodos() {
+      const cont = document.getElementById('periodosContainer');
+      cont.innerHTML = '';
+      periodos.forEach(p => {
+        cont.innerHTML += `<div class="text-center"><span class="icon-meal">${p.icon}</span><span class="meal-label">${p.label}</span><br><small class="text-muted">${p.hora}</small></div>`;
       });
     }
 
-    // Renderizar tabela principal
+    // Tabela principal
     function rebuildTable() {
       const thead = document.getElementById('tableHeader');
       const tbody = document.getElementById('tableBody');
       let htmlHead = '<tr><th>MEDICAMENTO</th>';
-      horariosAtivos.forEach(h => { htmlHead += `<th class="hour-header">${h}</th>`; });
-      htmlHead += '<th>PRA QUE SERVE?</th><th style="width:40px"></th></tr>';
+      periodos.forEach(p => htmlHead += `<th><span class="icon-meal">${p.icon}</span>${p.label}</th>`);
+      htmlHead += '<th>SINTOMA</th><th style="width:40px"></th></tr>';
       thead.innerHTML = htmlHead;
 
       let htmlBody = '';
-      prescriptionMeds.forEach((item, index) => {
+      prescriptionMeds.forEach((item, idx) => {
         const med = item.medicamento;
         htmlBody += `<tr>`;
-        htmlBody += `<td class="med-name"><span class="fw-bold">${med.nome}</span>${item.sos ? ' <span class="sos-badge ms-1"><i class="bi bi-exclamation-triangle"></i> SOS</span>' : ''}</td>`;
-        horariosAtivos.forEach(h => {
-          let doseVal = item.dosesPorHorario[h] || '';
-          htmlBody += `<td class="dose-cell" contenteditable="true" data-med-index="${index}" data-hour="${h}" onblur="updateDoseCell(this)">${doseVal}</td>`;
+        htmlBody += `<td class="med-name"><span class="med-form-icon">${item.formaDose.split(' ')[0]}</span> ${med.nome}${item.sos?' <span class="sos-icon"><i class="bi bi-exclamation-triangle-fill"></i></span>':''}</td>`;
+        periodos.forEach(p => {
+          const dose = item.dosesPorPeriodo[p.id] || item.formaDose;
+          htmlBody += `<td class="dose-cell" contenteditable="true" data-med-index="${idx}" data-period="${p.id}" onblur="updateDoseCell(this)">${dose}</td>`;
         });
-        htmlBody += `<td contenteditable="true" data-med-index="${index}" data-field="indicacao" onblur="updateFieldCell(this)">${item.indicacao || ''}</td>`;
-        htmlBody += `<td class="text-center"><i class="bi bi-trash3 text-danger clickable-icon" style="font-size:1.2rem" onclick="removeMedRow(${index})"></i></td>`;
+        htmlBody += `<td><span class="symptom-icon">${item.sintoma.split(' ')[0]}</span>${item.sintoma.split(' ').slice(1).join(' ')}</td>`;
+        htmlBody += `<td class="text-center"><i class="bi bi-trash3 text-danger clickable-icon" onclick="removeMedRow(${idx})"></i></td>`;
         htmlBody += `</tr>`;
       });
-      tbody.innerHTML = htmlBody || '<tr><td colspan="10" class="text-center text-muted py-4">Adicione medicamentos acima</td></tr>';
+      tbody.innerHTML = htmlBody || `<tr><td colspan="${periodos.length+3}" class="text-center py-4 text-muted">Adicione medicamentos</td></tr>`;
     }
 
     window.updateDoseCell = function(cell) {
-      const idx = cell.dataset.medIndex;
-      const hour = cell.dataset.hour;
-      if (idx !== undefined && prescriptionMeds[idx]) {
-        prescriptionMeds[idx].dosesPorHorario[hour] = cell.innerText.trim();
-      }
+      const idx = cell.dataset.medIndex, period = cell.dataset.period;
+      if(idx!==undefined && prescriptionMeds[idx]) prescriptionMeds[idx].dosesPorPeriodo[period] = cell.innerText.trim();
     };
-    window.updateFieldCell = function(cell) {
-      const idx = cell.dataset.medIndex;
-      const field = cell.dataset.field;
-      if (idx !== undefined && prescriptionMeds[idx] && field) {
-        prescriptionMeds[idx][field] = cell.innerText.trim();
-      }
-    };
-    window.removeMedRow = function(index) {
-      prescriptionMeds.splice(index,1);
-      rebuildTable();
-    };
+    window.removeMedRow = function(i) { prescriptionMeds.splice(i,1); rebuildTable(); };
 
-    // Adicionar medicamento à prescrição
-    document.getElementById('addMedBtn').addEventListener('click', function(){
-      const sel = document.getElementById('selectMedicamento');
-      const idx = sel.value;
-      if(idx === '') { alert('Selecione um medicamento'); return; }
-      const med = medicamentosDB[idx];
-      const dose = document.getElementById('inputDosePadrao').value.trim() || '1 cp';
-      const indicacao = document.getElementById('inputIndicacao').value.trim() || '';
+    // Adicionar medicamento
+    document.getElementById('addMedBtn').addEventListener('click', ()=>{
+      const medIdx = document.getElementById('selectMedicamento').value;
+      if(medIdx==='') { alert('Selecione um medicamento'); return; }
+      const medicamento = medicamentosDB[medIdx];
+      const formaDose = document.getElementById('selectForma').value;
+      const sintoma = document.getElementById('selectSintoma').value;
       const sos = document.getElementById('checkSOS').checked;
-
-      const dosesObj = {};
-      horariosAtivos.forEach(h => { dosesObj[h] = dose; });
-
-      prescriptionMeds.push({
-        medicamento: med,
-        dosePadrao: dose,
-        indicacao: indicacao,
-        sos: sos,
-        dosesPorHorario: dosesObj
-      });
+      const doses = {};
+      periodos.forEach(p => doses[p.id] = formaDose);
+      prescriptionMeds.push({ medicamento, formaDose, sintoma, sos, dosesPorPeriodo: doses });
       rebuildTable();
-      document.getElementById('inputDosePadrao').value = '';
-      document.getElementById('inputIndicacao').value = '';
-      document.getElementById('checkSOS').checked = false;
-      sel.value = '';
+      document.getElementById('selectMedicamento').value='';
+      document.getElementById('checkSOS').checked=false;
     });
 
-    document.getElementById('addCustomHour').addEventListener('click', function(){
-      const inp = document.getElementById('customHourInput');
-      let val = inp.value;
-      if(!val) return;
-      val = val.substring(0,5); // hh:mm
-      if(!horariosAtivos.includes(val)) {
-        horariosAtivos.push(val);
-        horariosAtivos.sort((a,b)=> a.localeCompare(b));
-        renderHorariosUI();
-        // Atualizar objetos
-        prescriptionMeds.forEach(item => { if(!item.dosesPorHorario[val]) item.dosesPorHorario[val] = item.dosePadrao || ''; });
-        rebuildTable();
-      }
-      inp.value = '';
-    });
+    document.getElementById('clearAllBtn').addEventListener('click',()=>{ prescriptionMeds=[]; rebuildTable(); });
+    document.getElementById('inputData').valueAsDate = new Date();
 
-    // Limpar tudo
-    document.getElementById('clearAllBtn').addEventListener('click', ()=>{
-      if(confirm('Limpar a prescrição atual?')) {
-        prescriptionMeds = [];
-        rebuildTable();
-      }
-    });
-
-    // Visualizar / gerar impressão
+    // PDF / Impressão visual
     function gerarHTMLImpressao() {
-      const pacIdx = document.getElementById('selectPaciente').value;
-      const paciente = pacIdx !== '' ? pacientesDB[pacIdx] : { nome: '________________________', prontuario: '' };
-      const medico = document.getElementById('inputMedico').value || '____________________';
+      const pac = pacientesDB[document.getElementById('selectPaciente').value] || { nome:'________', prontuario:'' };
+      const medSel = medicosDB[document.getElementById('selectMedico').value] || { nome:'________' };
+      const far = farmaceuticosDB[document.getElementById('selectFarmaceutico').value] || { nome:'', crf:'' };
       const data = document.getElementById('inputData').value || new Date().toLocaleDateString('pt-BR');
-      const farIdx = document.getElementById('selectFarmaceutico').value;
-      const farmaceutico = farIdx !== '' ? farmaceuticosDB[farIdx] : { nome: '', crf: '' };
-
-      let html = `<div style="font-family: Arial; max-width:1200px; margin:auto; background:white; padding:20px">`;
-      html += `<div style="display:flex; justify-content:space-between; border-bottom:2px solid #1e3a5f; padding-bottom:8px"><h3>HOSPITAL DO CÂNCER IV – HC IV</h3><span>📞 3207-3971</span></div>`;
-      html += `<p style="margin:8px 0"><strong>Nome:</strong> ${paciente.nome} &nbsp;&nbsp; <strong>Prontuário:</strong> ${paciente.prontuario || ''}</p>`;
-      html += `<p><strong>Data:</strong> ${data} &nbsp;&nbsp; <strong>Médico(a):</strong> ${medico}</p>`;
-      
+      let html = `<div style="font-family:Arial; max-width:1200px; margin:auto; background:white; padding:20px">`;
+      html += `<h2>🏥 HOSPITAL DO CÂNCER IV – HC IV</h2><hr>`;
+      html += `<p><strong>👤 ${pac.nome}</strong>  |  Prontuário: ${pac.prontuario}  |  Data: ${data}  |  Dr(a). ${medSel.nome}</p>`;
       html += `<table style="width:100%; border-collapse:collapse; margin-top:20px; border:1px solid #ccc">`;
-      html += `<tr style="background:#1e3a5f; color:white"><th>HORÁRIO</th>`;
-      horariosAtivos.forEach(h => html += `<th>${h}</th>`);
-      html += `<th>PRA QUE SERVE?</th></tr>`;
-      
-      prescriptionMeds.forEach(item => {
-        html += `<tr><td style="font-weight:bold; background:#f1f5f9">${item.medicamento.nome}${item.sos?' 🔔 SOS':''}</td>`;
-        horariosAtivos.forEach(h => {
-          let dose = item.dosesPorHorario[h] || '—';
-          html += `<td style="text-align:center; border:1px solid #ddd; padding:6px">${dose}</td>`;
-        });
-        html += `<td style="border:1px solid #ddd; padding:6px">${item.indicacao || ''}</td></tr>`;
+      html += `<tr style="background:#0b3954; color:white"><th>Medicamento</th>`;
+      periodos.forEach(p=> html += `<th style="padding:10px">${p.icon} ${p.label}</th>`);
+      html += `<th>Para que serve?</th></tr>`;
+      prescriptionMeds.forEach(item=>{
+        html += `<tr><td style="font-weight:bold; padding:8px">${item.formaDose.split(' ')[0]} ${item.medicamento.nome}${item.sos?' 🔔':''}</td>`;
+        periodos.forEach(p=> html += `<td style="text-align:center; border:1px solid #ddd;">${item.dosesPorPeriodo[p.id]}</td>`);
+        html += `<td>${item.sintoma}</td></tr>`;
       });
-      
-      html += `<tr><td colspan="${horariosAtivos.length+2}" style="padding:12px 0; border:none"></td></tr>`;
-      html += `<tr><td colspan="${horariosAtivos.length+2}" style="border-top:2px dashed #aaa; padding-top:16px"><strong>FARMACÊUTICA RESPONSÁVEL:</strong> ${farmaceutico.nome} ${farmaceutico.crf}</td></tr>`;
-      html += `<tr><td colspan="${horariosAtivos.length+2}"><strong>HC IV – Telefone 3207-3971</strong></td></tr>`;
       html += `</table>`;
-      html += `<div style="margin-top:30px; display:flex; gap:20px; justify-content:center; font-size:1.5rem">🕒 ☀️ 🌙 💊 🩺</div>`;
+      html += `<p style="margin-top:30px"><strong>💊 Farmacêutico:</strong> ${far.nome} ${far.crf}  📞 HC IV: 3207-3971</p>`;
       html += `</div>`;
       return html;
     }
 
-    document.getElementById('previewBtn').addEventListener('click', ()=>{
-      const printArea = document.getElementById('printableArea');
-      printArea.innerHTML = gerarHTMLImpressao();
-      printArea.style.display = 'block';
-      window.scrollTo({ top: printArea.offsetTop, behavior: 'smooth' });
+    document.getElementById('previewBtn').addEventListener('click',()=>{
+      const area = document.getElementById('printableArea');
+      area.innerHTML = gerarHTMLImpressao();
+      area.style.display='block';
     });
-
-    document.getElementById('printBtn').addEventListener('click', async function(){
-      const printArea = document.getElementById('printableArea');
-      printArea.innerHTML = gerarHTMLImpressao();
-      printArea.style.display = 'block';
-      
-      // opção de imprimir diretamente
-      const originalTitle = document.title;
-      document.title = "Receita_Facilitada_HCIV";
-      
-      const opt = { scale: 2, backgroundColor: '#ffffff', logging: false };
-      const canvas = await html2canvas(printArea, opt);
-      const imgData = canvas.toDataURL('image/png');
+    document.getElementById('printBtn').addEventListener('click', async ()=>{
+      const area = document.getElementById('printableArea');
+      area.innerHTML = gerarHTMLImpressao();
+      area.style.display='block';
+      const canvas = await html2canvas(area, { scale: 2, backgroundColor: '#fff' });
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      const w = pdf.internal.pageSize.getWidth();
+      const h = (canvas.height * w) / canvas.width;
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, w, h);
       pdf.save(`Receita_${pacientesDB[document.getElementById('selectPaciente').value]?.nome || 'paciente'}.pdf`);
-      
-      document.title = originalTitle;
-      printArea.style.display = 'none';
+      area.style.display='none';
     });
 
-    // ---------- CRUD MODAIS ----------
-    // Medicamentos
-    function refreshMedTable() {
-      const tbody = document.querySelector('#medTableList tbody');
-      tbody.innerHTML = '';
-      medicamentosDB.forEach((m,i)=>{
-        tbody.innerHTML += `<tr><td>${m.nome}</td><td>${m.apresentacao}</td><td><i class="bi bi-trash text-danger" style="cursor:pointer" onclick="deleteMed(${i})"></i></td></tr>`;
-      });
+    // CRUDs
+    function refreshMedTable(){ 
+      const t=document.querySelector('#medTableList tbody'); t.innerHTML='';
+      medicamentosDB.forEach((m,i)=> t.innerHTML+=`<tr><td>${m.nome}</td><td>${m.apresentacao}</td><td><i class="bi bi-trash text-danger" onclick="deleteMed(${i})"></i></td></tr>`);
     }
-    window.deleteMed = (i) => { medicamentosDB.splice(i,1); saveMed(); refreshMedTable(); populateSelects(); };
-    document.getElementById('addMedDB').addEventListener('click', ()=>{
-      const nome = document.getElementById('medNome').value.trim();
-      const apr = document.getElementById('medApresentacao').value.trim();
-      if(!nome) return;
-      medicamentosDB.push({ nome, apresentacao: apr });
-      saveMed(); refreshMedTable(); populateSelects();
-      document.getElementById('medNome').value = ''; document.getElementById('medApresentacao').value = '';
+    window.deleteMed = (i)=>{ medicamentosDB.splice(i,1); saveAll(); refreshMedTable(); populateSelects(); };
+    document.getElementById('addMedDB').addEventListener('click',()=>{
+      const n=document.getElementById('medNome').value.trim(), a=document.getElementById('medApresentacao').value.trim();
+      if(!n)return; medicamentosDB.push({nome:n, apresentacao:a}); saveAll(); refreshMedTable(); populateSelects();
     });
-
-    // Pacientes
-    function refreshPacTable() {
-      const tb = document.getElementById('pacTableBody'); tb.innerHTML = '';
-      pacientesDB.forEach(p => { tb.innerHTML += `<tr><td>${p.nome}</td><td>${p.prontuario}</td></tr>`; });
+    function refreshPacTable(){ 
+      const t=document.getElementById('pacTableBody'); t.innerHTML='';
+      pacientesDB.forEach(p=> t.innerHTML+=`<tr><td>${p.nome}</td><td>${p.prontuario}</td></tr>`);
     }
-    document.getElementById('addPacDB').addEventListener('click', ()=>{
-      const n = document.getElementById('pacNome').value.trim();
-      const pr = document.getElementById('pacProntuario').value.trim();
-      if(!n) return;
-      pacientesDB.push({ nome: n, prontuario: pr });
-      savePac(); refreshPacTable(); populateSelects();
-      document.getElementById('pacNome').value = ''; document.getElementById('pacProntuario').value = '';
+    document.getElementById('addPacDB').addEventListener('click',()=>{
+      const n=document.getElementById('pacNome').value.trim(), p=document.getElementById('pacProntuario').value.trim();
+      if(!n)return; pacientesDB.push({nome:n, prontuario:p}); saveAll(); refreshPacTable(); populateSelects();
     });
-
-    // Farmaceuticos
-    function refreshFarTable() {
-      const tb = document.getElementById('farTableBody'); tb.innerHTML = '';
-      farmaceuticosDB.forEach(f => { tb.innerHTML += `<tr><td>${f.nome}</td><td>${f.crf}</td></tr>`; });
+    function refreshFarTable(){ 
+      const t=document.getElementById('farTableBody'); t.innerHTML='';
+      farmaceuticosDB.forEach(f=> t.innerHTML+=`<tr><td>${f.nome}</td><td>${f.crf}</td></tr>`);
     }
-    document.getElementById('addFarDB').addEventListener('click', ()=>{
-      const n = document.getElementById('farNome').value.trim();
-      const c = document.getElementById('farCRF').value.trim();
-      if(!n) return;
-      farmaceuticosDB.push({ nome: n, crf: c });
-      saveFar(); refreshFarTable(); populateSelects();
-      document.getElementById('farNome').value = ''; document.getElementById('farCRF').value = '';
+    document.getElementById('addFarDB').addEventListener('click',()=>{
+      const n=document.getElementById('farNome').value.trim(), c=document.getElementById('farCRF').value.trim();
+      if(!n)return; farmaceuticosDB.push({nome:n, crf:c}); saveAll(); refreshFarTable(); populateSelects();
+    });
+    function refreshMedicoTable(){ 
+      const t=document.getElementById('medicoTableBody'); t.innerHTML='';
+      medicosDB.forEach(m=> t.innerHTML+=`<tr><td>${m.nome}</td></tr>`);
+    }
+    document.getElementById('addMedicoDB').addEventListener('click',()=>{
+      const n=document.getElementById('medicoNome').value.trim();
+      if(!n)return; medicosDB.push({nome:n}); saveAll(); refreshMedicoTable(); populateSelects();
     });
 
-    // Inicializações
-    function init() {
+    // Inicialização
+    function init(){
+      loadData(); saveAll(); // garantir defaults
       populateSelects();
-      renderHorariosUI();
-      refreshMedTable(); refreshPacTable(); refreshFarTable();
+      renderPeriodos();
+      refreshMedTable(); refreshPacTable(); refreshFarTable(); refreshMedicoTable();
       rebuildTable();
-      document.getElementById('inputData').valueAsDate = new Date();
     }
     init();
-
-    // Expor funções globais necessárias
     window.rebuildTable = rebuildTable;
   })();
 </script>
