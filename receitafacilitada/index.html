@@ -4,125 +4,213 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
   <title>Receita Visual · HC IV</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    body { background: #f4f7fb; font-family: 'Segoe UI', system-ui, sans-serif; padding-bottom: 30px; }
-    .navbar-brand i { font-size: 1.8rem; margin-right: 8px; color: #1e5f6e; }
-    .card { border-radius: 24px; border: none; box-shadow: 0 8px 20px rgba(0,0,0,0.04); margin-bottom: 20px; background: white; }
-    .card-header { background: white; border-bottom: 1px solid #e2e8f0; font-weight: 600; padding: 18px 24px; border-radius: 24px 24px 0 0 !important; }
-    .btn-soft { border-radius: 40px; padding: 6px 18px; }
-    .prescription-grid { overflow-x: auto; }
-    .prescription-table { min-width: 1000px; border-collapse: separate; border-spacing: 0; background: white; border-radius: 16px; }
-    .prescription-table th { background: #0b3954; color: white; font-weight: 500; padding: 14px 8px; text-align: center; border: none; }
-    .prescription-table td { border: 1px solid #e9ecef; padding: 12px 8px; vertical-align: middle; background-color: #fff; }
-    .prescription-table .med-name { font-weight: 700; color: #0b3954; background: #f9fbfd; }
-    .dose-cell { text-align: center; min-width: 100px; background: #fefcf3; }
-    .icon-meal { font-size: 2rem; display: block; margin-bottom: 4px; }
-    .meal-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
-    .med-icon { font-size: 1.8rem; margin-right: 4px; }
-    .symptom-icon { font-size: 1.6rem; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    :root {
+      --primary-color: #0d47a1;
+      --secondary-color: #1976d2;
+      --accent-color: #e3f2fd;
+      --bg-color: #f0f4f8;
+      --text-main: #2b3a4a;
+    }
+
+    body { 
+      background-color: var(--bg-color); 
+      font-family: 'Inter', sans-serif; 
+      color: var(--text-main);
+      padding-bottom: 40px; 
+    }
+
+    /* Navbar */
+    .navbar {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .navbar-brand { color: white !important; font-weight: 600; letter-spacing: 0.5px; }
+    
+    /* Tabs */
+    .nav-tabs { border-bottom: 2px solid #dee2e6; margin-bottom: 20px; }
+    .nav-tabs .nav-link { color: #6c757d; font-weight: 500; border: none; padding: 12px 20px; border-bottom: 3px solid transparent; transition: 0.3s; }
+    .nav-tabs .nav-link:hover { color: var(--secondary-color); border-bottom-color: #bbdefb; }
+    .nav-tabs .nav-link.active { color: var(--primary-color); border-bottom-color: var(--primary-color); background: transparent; }
+
+    /* Cards */
+    .app-card {
+      background: white;
+      border-radius: 16px;
+      border: 1px solid #e9ecef;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.03);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .app-card-header {
+      background: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
+      padding: 16px 24px;
+      font-weight: 600;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .app-card-body { padding: 24px; }
+
+    /* Inputs & Selects */
+    .form-label { font-weight: 500; color: #495057; font-size: 0.9rem; margin-bottom: 6px; }
+    .form-control, .form-select { border-radius: 10px; border: 1px solid #ced4da; padding: 10px 14px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02); transition: 0.2s; }
+    .form-control:focus, .form-select:focus { border-color: var(--secondary-color); box-shadow: 0 0 0 0.25rem rgba(25, 118, 210, 0.15); }
+
+    /* Period Toggle Buttons */
+    .period-selector { display: flex; flex-wrap: wrap; gap: 10px; }
+    .period-btn-label {
+      background: white;
+      border: 2px solid #dee2e6;
+      border-radius: 12px;
+      padding: 10px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: #6c757d;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .period-btn-label:hover { border-color: #adb5bd; background: #f8f9fa; }
+    .btn-check:checked + .period-btn-label {
+      background: var(--accent-color);
+      border-color: var(--secondary-color);
+      color: var(--primary-color);
+      box-shadow: 0 4px 8px rgba(25, 118, 210, 0.15);
+    }
+    .period-icon { font-size: 1.2rem; }
+
+    /* Table */
+    .prescription-grid { overflow-x: auto; border-radius: 12px; border: 1px solid #e9ecef; }
+    .prescription-table { min-width: 1000px; margin-bottom: 0; background: white; }
+    .prescription-table th { background: var(--primary-color); color: white; font-weight: 500; padding: 16px 12px; text-align: center; border: none; white-space: nowrap; }
+    .prescription-table td { border: 1px solid #e9ecef; padding: 14px 8px; vertical-align: middle; }
+    .prescription-table .med-name { font-weight: 600; color: var(--primary-color); background: #fdfdfe; width: 250px; }
+    .dose-cell { text-align: center; min-width: 110px; background: #fafbfc; cursor: pointer; transition: 0.2s; border-radius: 8px; }
+    .dose-cell:hover { background: #fff3cd; box-shadow: inset 0 0 0 2px #ffc107; }
+    
+    .med-icon { margin-right: 8px; vertical-align: middle; }
+    .symptom-icon { font-size: 1.4rem; margin-right: 6px; }
+
+    /* Action Buttons */
+    .btn-action { border-radius: 10px; font-weight: 500; padding: 10px 20px; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
+    
     .print-only { display: none; }
+    
     @media print {
       body { background: white; padding: 0.2in; }
-      .no-print, .navbar, .btn, .card-header .btn, footer, .tab-content > .tab-pane > .d-flex, .modal { display: none !important; }
+      .no-print, .navbar, .nav-tabs, .app-card-header, .add-med-panel, footer, .modal { display: none !important; }
       .print-only { display: block; }
-      .card { box-shadow: none; border: 1px solid #ccc; }
-      .prescription-table th { background: #0b3954 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .app-card { box-shadow: none; border: none; margin-bottom: 0; }
+      .app-card-body { padding: 0; }
+      .prescription-table th { background: #0b3954 !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      svg { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .dose-cell { background: transparent; border: 1px solid #ccc; }
     }
-    .clickable-icon { cursor: pointer; }
-    .form-select, .form-control { border-radius: 30px; border: 1px solid #ced4da; padding: 10px 16px; }
-    .quantity-icon { font-size: 1.8rem; display: inline-block; margin: 0 2px; }
-    .half-pill { opacity: 0.7; }
   </style>
 </head>
 <body>
 
-<!-- Barra superior -->
-<nav class="navbar navbar-expand-lg bg-white shadow-sm py-2 px-3 mb-3 no-print">
-  <div class="container-fluid">
-    <span class="navbar-brand fw-bold text-primary"><i class="bi bi-journal-medical"></i> Receita Visual · HC IV</span>
-    <div class="d-flex gap-2 flex-wrap">
-      <button class="btn btn-outline-primary btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#modalMedicamentos"><i class="bi bi-capsule"></i> Medicamentos</button>
-      <button class="btn btn-outline-secondary btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#modalPacientes"><i class="bi bi-people"></i> Pacientes</button>
-      <button class="btn btn-outline-success btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#modalFarmaceuticos"><i class="bi bi-person-badge"></i> Farmacêuticos</button>
-      <button class="btn btn-outline-info btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#modalMedicos"><i class="bi bi-heart-pulse"></i> Médicos</button>
-    </div>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg sticky-top no-print mb-4">
+  <div class="container-fluid px-4">
+    <span class="navbar-brand d-flex align-items-center gap-2">
+      <i class="bi bi-journal-medical fs-4"></i>
+      Receita Visual · HC IV
+    </span>
   </div>
 </nav>
 
 <div class="container-fluid px-3 px-md-4">
-  <!-- Abas principais -->
-  <ul class="nav nav-tabs mb-4 no-print" id="mainTab" role="tablist">
+  <!-- Tabs -->
+  <ul class="nav nav-tabs no-print" id="mainTab" role="tablist">
     <li class="nav-item" role="presentation">
-      <button class="nav-link active" id="prescricao-tab" data-bs-toggle="tab" data-bs-target="#prescricao" type="button" role="tab"><i class="bi bi-pencil-square"></i> Montar Receita</button>
+      <button class="nav-link active" id="prescricao-tab" data-bs-toggle="tab" data-bs-target="#prescricao" type="button" role="tab">
+        <i class="bi bi-pencil-square me-1"></i> Montar Receita
+      </button>
     </li>
     <li class="nav-item" role="presentation">
-      <button class="nav-link" id="cadastros-tab" data-bs-toggle="tab" data-bs-target="#cadastros" type="button" role="tab"><i class="bi bi-database"></i> Cadastros</button>
+      <button class="nav-link" id="cadastros-tab" data-bs-toggle="tab" data-bs-target="#cadastros" type="button" role="tab">
+        <i class="bi bi-database-gear me-1"></i> Cadastros Base
+      </button>
     </li>
   </ul>
 
   <div class="tab-content" id="mainTabContent">
-    <!-- Aba de prescrição -->
+    
+    <!-- ABA: MONTAR RECEITA -->
     <div class="tab-pane fade show active" id="prescricao" role="tabpanel">
-      <div class="card">
-        <div class="card-header d-flex flex-wrap align-items-center justify-content-between">
-          <span><i class="bi bi-pencil-square me-2"></i>Montar Receita Visual</span>
-          <div class="d-flex gap-2 mt-2 mt-sm-0">
-            <button class="btn btn-sm btn-outline-secondary rounded-pill" id="clearAllBtn"><i class="bi bi-arrow-repeat"></i> Limpar</button>
-            <button class="btn btn-sm btn-primary rounded-pill" id="previewBtn"><i class="bi bi-eye"></i> Visualizar</button>
-            <button class="btn btn-sm btn-success rounded-pill" id="printBtn"><i class="bi bi-printer"></i> PDF / Imprimir</button>
-          </div>
+      
+      <!-- Card 1: Dados Gerais -->
+      <div class="app-card no-print">
+        <div class="app-card-header">
+          <i class="bi bi-person-vcard fs-5"></i> Cabeçalho da Receita
         </div>
-        <div class="card-body">
-          <!-- Cabeçalho -->
-          <div class="row g-3 mb-4">
+        <div class="app-card-body">
+          <div class="row g-3">
             <div class="col-md-4">
-              <label class="form-label fw-semibold"><i class="bi bi-person"></i> Paciente</label>
+              <label class="form-label">Paciente</label>
               <select class="form-select" id="selectPaciente"></select>
             </div>
             <div class="col-md-3">
-              <label class="form-label fw-semibold"><i class="bi bi-heart"></i> Médico(a)</label>
+              <label class="form-label">Médico(a)</label>
               <select class="form-select" id="selectMedico"></select>
             </div>
             <div class="col-md-2">
-              <label class="form-label fw-semibold"><i class="bi bi-calendar"></i> Data</label>
+              <label class="form-label">Data</label>
               <input type="date" class="form-control" id="inputData">
             </div>
             <div class="col-md-3">
-              <label class="form-label fw-semibold"><i class="bi bi-file-person"></i> Farmacêutico</label>
+              <label class="form-label">Farmacêutico(a)</label>
               <select class="form-select" id="selectFarmaceutico"></select>
             </div>
           </div>
+        </div>
+      </div>
 
-          <!-- Adicionar medicamento visual -->
-          <div class="row g-2 mb-4 align-items-end">
-            <div class="col-md-3">
-              <label>Medicamento</label>
-              <select class="form-select" id="selectMedicamento"></select>
+      <!-- Card 2: Adicionar Medicamento -->
+      <div class="app-card add-med-panel no-print border-primary border-opacity-25">
+        <div class="app-card-header bg-primary bg-opacity-10 text-primary">
+          <i class="bi bi-capsule fs-5"></i> Incluir Novo Medicamento
+        </div>
+        <div class="app-card-body">
+          <div class="row g-3">
+            <!-- Linha 1: Dados do remédio -->
+            <div class="col-md-4">
+              <label class="form-label">Medicamento</label>
+              <select class="form-select border-primary" id="selectMedicamento" style="border-width: 2px;"></select>
             </div>
-            <div class="col-md-2">
-              <label>Forma / Quantidade</label>
+            <div class="col-md-3">
+              <label class="form-label">Forma / Dose Padrão</label>
               <select class="form-select" id="selectForma">
-                <option value="💊 1">💊 1 comprimido</option>
-                <option value="💊 2">💊💊 2 comprimidos</option>
-                <option value="💊½ 1">💊½ meio comprimido</option>
-                <option value="💊 3">💊💊💊 3 comprimidos</option>
-                <option value="💧 10">💧 10 gotas</option>
-                <option value="💧 20">💧 20 gotas</option>
-                <option value="💧 30">💧 30 gotas</option>
-                <option value="💧 40">💧 40 gotas</option>
-                <option value="🥄 5">🥄 5 mL</option>
-                <option value="🥄 10">🥄 10 mL</option>
-                <option value="🥄 15">🥄 15 mL</option>
-                <option value="🧴 1">🧴 1 frasco</option>
-                <option value="💉 1">💉 1 ampola</option>
+                <option value="1 comp">1 comprimido</option>
+                <option value="2 comp">2 comprimidos</option>
+                <option value="meio comp">Metade comprimido</option>
+                <option value="1 caps">1 cápsula</option>
+                <option value="2 caps">2 cápsulas</option>
+                <option value="10 gotas">10 gotas</option>
+                <option value="20 gotas">20 gotas</option>
+                <option value="30 gotas">30 gotas</option>
+                <option value="40 gotas">40 gotas</option>
+                <option value="5 ml">5 mL</option>
+                <option value="10 ml">10 mL</option>
+                <option value="15 ml">15 mL</option>
+                <option value="1 frasco">1 frasco</option>
+                <option value="1 amp">1 ampola</option>
               </select>
             </div>
-            <div class="col-md-2">
-              <label>Sintoma</label>
+            <div class="col-md-3">
+              <label class="form-label">Para que serve? (Sintoma)</label>
               <select class="form-select" id="selectSintoma">
                 <option value="🤕 DOR">🤕 DOR</option>
                 <option value="🤒 FEBRE">🤒 FEBRE</option>
@@ -137,354 +225,169 @@
                 <option value="❤️ PRESSÃO ALTA">❤️ PRESSÃO ALTA</option>
               </select>
             </div>
-            <div class="col-md-2">
-              <div class="form-check mt-3">
-                <input class="form-check-input" type="checkbox" id="checkSOS">
-                <label class="form-check-label fw-bold text-danger"><i class="bi bi-exclamation-triangle"></i> SOS</label>
+            <div class="col-md-2 d-flex align-items-end">
+              <div class="form-check mb-2">
+                <input class="form-check-input border-danger" type="checkbox" id="checkSOS" style="transform: scale(1.3); margin-right: 10px;">
+                <label class="form-check-label fw-bold text-danger">Marcar como SOS</label>
               </div>
             </div>
-            <div class="col-md-3">
-              <button class="btn btn-primary w-100 rounded-pill" id="addMedBtn"><i class="bi bi-plus-circle"></i> Adicionar</button>
+          </div>
+
+          <!-- Linha 2: Seletor de Horários -->
+          <div class="mt-4">
+            <label class="form-label d-block text-primary fw-bold"><i class="bi bi-clock-history"></i> Marque os horários para este medicamento:</label>
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 bg-light p-3 rounded-3 border">
+              
+              <div class="period-selector" id="periodCheckboxesContainer">
+                <!-- Checkboxes gerados dinamicamente via JS -->
+              </div>
+              
+              <div>
+                <button class="btn btn-primary btn-action shadow-sm" id="addMedBtn">
+                  <i class="bi bi-plus-circle-fill"></i> Adicionar à Receita
+                </button>
+              </div>
+
             </div>
           </div>
+        </div>
+      </div>
 
-          <!-- Períodos do dia -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold"><i class="bi bi-sun"></i> Momentos do dia</label>
-            <div class="d-flex flex-wrap gap-3" id="periodosContainer"></div>
+      <!-- Card 3: Tabela Visual e Ações -->
+      <div class="app-card">
+        <div class="app-card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <span><i class="bi bi-grid-3x3-gap-fill fs-5"></i> Tabela da Receita Visual</span>
+          <div class="d-flex gap-2 no-print">
+            <button class="btn btn-outline-danger btn-sm btn-action" id="clearAllBtn"><i class="bi bi-trash3"></i> Limpar Tudo</button>
+            <button class="btn btn-outline-primary btn-sm btn-action" id="previewBtn"><i class="bi bi-eye"></i> Pré-visualizar</button>
+            <button class="btn btn-success btn-sm btn-action" id="printBtn"><i class="bi bi-printer-fill"></i> Gerar PDF / Imprimir</button>
           </div>
-
-          <!-- Tabela visual -->
-          <div class="prescription-grid mt-4">
+        </div>
+        <div class="app-card-body p-0 p-md-3">
+          <div class="prescription-grid">
             <table class="table prescription-table" id="dynamicPrescriptionTable">
               <thead id="tableHeader"></thead>
               <tbody id="tableBody"></tbody>
             </table>
           </div>
-          <small class="text-muted"><i class="bi bi-hand-index"></i> Clique nas células para editar a dose.</small>
+          <div class="p-3 text-muted no-print" style="font-size: 0.9rem;">
+            <i class="bi bi-info-circle-fill text-primary"></i> <strong>Dica de uso:</strong> Após adicionar à tabela, você pode clicar em qualquer quadrado em branco (ou preenchido) para alterar manualmente a dose de um horário específico.
+          </div>
         </div>
+      </div>
+
+    </div>
+
+    <!-- ABA: CADASTROS -->
+    <div class="tab-pane fade" id="cadastros" role="tabpanel">
+      <div class="row g-4">
+        
+        <!-- Cadastro de Medicamentos -->
+        <div class="col-md-6">
+          <div class="app-card h-100">
+            <div class="app-card-header"><i class="bi bi-capsule"></i> Base de Medicamentos</div>
+            <div class="app-card-body p-3">
+              <form id="formAddMedDB" class="row g-2 mb-3">
+                <div class="col-sm-4"><input type="text" class="form-control" id="medNome" placeholder="Nome (ex: DIPIRONA)"></div>
+                <div class="col-sm-4"><input type="text" class="form-control" id="medApresentacao" placeholder="Apr. (ex: 500mg)"></div>
+                <div class="col-sm-3">
+                  <select class="form-select" id="medFormaPadrao">
+                    <option value="comp">Comprimido</option>
+                    <option value="caps">Cápsula</option>
+                    <option value="gotas">Gotas</option>
+                    <option value="xarope">Xarope</option>
+                    <option value="frasco">Frasco</option>
+                    <option value="ampola">Ampola</option>
+                  </select>
+                </div>
+                <div class="col-sm-1"><button type="button" class="btn btn-primary w-100 p-2" id="addMedDB"><i class="bi bi-plus-lg"></i></button></div>
+              </form>
+              <div class="table-responsive" style="max-height: 250px;">
+                <table class="table table-hover align-middle border" id="medTableList">
+                  <thead class="table-light sticky-top"><tr><th>Nome</th><th>Apresentação</th><th>Ícone</th><th class="text-center">Excluir</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cadastro de Pacientes -->
+        <div class="col-md-6">
+          <div class="app-card h-100">
+            <div class="app-card-header"><i class="bi bi-people"></i> Base de Pacientes</div>
+            <div class="app-card-body p-3">
+              <form class="row g-2 mb-3">
+                <div class="col-sm-6"><input type="text" class="form-control" id="pacNome" placeholder="Nome Completo"></div>
+                <div class="col-sm-4"><input type="text" class="form-control" id="pacProntuario" placeholder="Prontuário"></div>
+                <div class="col-sm-2"><button type="button" class="btn btn-primary w-100 p-2" id="addPacDB"><i class="bi bi-plus-lg"></i></button></div>
+              </form>
+              <div class="table-responsive" style="max-height: 250px;">
+                <table class="table table-hover align-middle border" id="pacTableList">
+                  <thead class="table-light sticky-top"><tr><th>Nome</th><th>Prontuário</th><th class="text-center">Excluir</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cadastro de Médicos -->
+        <div class="col-md-6">
+          <div class="app-card h-100 mb-0">
+            <div class="app-card-header"><i class="bi bi-heart-pulse"></i> Base de Médicos</div>
+            <div class="app-card-body p-3">
+              <form class="row g-2 mb-3">
+                <div class="col-sm-10"><input type="text" class="form-control" id="medicoNome" placeholder="Nome do(a) Médico(a) (ex: PAULA RAMOS)"></div>
+                <div class="col-sm-2"><button type="button" class="btn btn-primary w-100 p-2" id="addMedicoDB"><i class="bi bi-plus-lg"></i></button></div>
+              </form>
+              <div class="table-responsive" style="max-height: 250px;">
+                <table class="table table-hover align-middle border" id="medicoTableList">
+                  <thead class="table-light sticky-top"><tr><th>Nome do Médico</th><th class="text-center">Excluir</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cadastro de Farmacêuticos -->
+        <div class="col-md-6">
+          <div class="app-card h-100 mb-0">
+            <div class="app-card-header"><i class="bi bi-person-badge"></i> Base de Farmacêuticos</div>
+            <div class="app-card-body p-3">
+              <form class="row g-2 mb-3">
+                <div class="col-sm-6"><input type="text" class="form-control" id="farNome" placeholder="Nome do Farmacêutico"></div>
+                <div class="col-sm-4"><input type="text" class="form-control" id="farCRF" placeholder="CRF (ex: CRF-RJ 1234)"></div>
+                <div class="col-sm-2"><button type="button" class="btn btn-primary w-100 p-2" id="addFarDB"><i class="bi bi-plus-lg"></i></button></div>
+              </form>
+              <div class="table-responsive" style="max-height: 250px;">
+                <table class="table table-hover align-middle border" id="farTableList">
+                  <thead class="table-light sticky-top"><tr><th>Nome</th><th>CRF</th><th class="text-center">Excluir</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
-    <!-- Aba de cadastros -->
-    <div class="tab-pane fade" id="cadastros" role="tabpanel">
-      <div class="row g-4">
-        <!-- Medicamentos -->
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header"><i class="bi bi-capsule"></i> Medicamentos</div>
-            <div class="card-body">
-              <div class="row g-2 mb-3">
-                <div class="col-5"><input type="text" class="form-control" id="medNome" placeholder="Nome"></div>
-                <div class="col-4"><input type="text" class="form-control" id="medApresentacao" placeholder="Apresentação"></div>
-                <div class="col-3"><button class="btn btn-primary w-100" id="addMedDB">Add</button></div>
-              </div>
-              <div style="max-height:300px; overflow-y:auto;">
-                <table class="table table-sm" id="medTableList"><thead><tr><th>Nome</th><th>Apresentação</th><th></th></tr></thead><tbody></tbody></table>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Pacientes -->
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header"><i class="bi bi-people"></i> Pacientes</div>
-            <div class="card-body">
-              <div class="row g-2 mb-3">
-                <div class="col-5"><input type="text" class="form-control" id="pacNome" placeholder="Nome"></div>
-                <div class="col-4"><input type="text" class="form-control" id="pacProntuario" placeholder="Prontuário"></div>
-                <div class="col-3"><button class="btn btn-primary" id="addPacDB">Add</button></div>
-              </div>
-              <div style="max-height:300px; overflow-y:auto;">
-                <table class="table table-sm"><thead><tr><th>Nome</th><th>Prontuário</th></tr></thead><tbody id="pacTableBody"></tbody></table>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Farmacêuticos -->
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header"><i class="bi bi-person-badge"></i> Farmacêuticos</div>
-            <div class="card-body">
-              <div class="row g-2 mb-3">
-                <div class="col-6"><input type="text" class="form-control" id="farNome" placeholder="Nome"></div>
-                <div class="col-3"><input type="text" class="form-control" id="farCRF" placeholder="CRF"></div>
-                <div class="col-3"><button class="btn btn-primary" id="addFarDB">Add</button></div>
-              </div>
-              <div style="max-height:300px; overflow-y:auto;">
-                <table class="table table-sm"><thead><tr><th>Nome</th><th>CRF</th></tr></thead><tbody id="farTableBody"></tbody></table>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Médicos -->
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header"><i class="bi bi-heart-pulse"></i> Médicos</div>
-            <div class="card-body">
-              <div class="row g-2 mb-3">
-                <div class="col-9"><input type="text" class="form-control" id="medicoNome" placeholder="Nome completo"></div>
-                <div class="col-3"><button class="btn btn-primary" id="addMedicoDB">Add</button></div>
-              </div>
-              <div style="max-height:300px; overflow-y:auto;">
-                <table class="table table-sm"><thead><tr><th>Nome</th></tr></thead><tbody id="medicoTableBody"></tbody></table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
-  <div id="printableArea" class="print-only mt-4"></div>
+  
+  <!-- Área oculta usada para construir o layout de impressão -->
+  <div id="printableArea" class="print-only"></div>
 </div>
 
 <script>
   (function(){
-    // ---------- DADOS INICIAIS ----------
-    const defaultMedicamentos = [
-      { nome: "DIPIRONA", apresentacao: "500mg/mL gotas / 500mg cp" },
-      { nome: "MORFINA", apresentacao: "10mg cp / 10mg/mL" },
-      { nome: "LACTULOSE", apresentacao: "667mg/mL xarope" },
-      { nome: "BROMOPRIDA", apresentacao: "10mg cp" },
-      { nome: "OMEPRAZOL", apresentacao: "20mg cápsula" },
-      { nome: "ONDANSETRONA", apresentacao: "8mg cp" },
-      { nome: "GABAPENTINA", apresentacao: "300mg cápsula" }
-    ];
-    const defaultPacientes = [
-      { nome: "ELASIR ZANAZI DA FONSECA", prontuario: "5246029" },
-      { nome: "EUNICE PINHO DA CUNHA", prontuario: "5234305" }
-    ];
-    const defaultFarmaceuticos = [
-      { nome: "Paloma Martins", crf: "CRF-RJ 35646" },
-      { nome: "Daniel Alves Cabral", crf: "CRF-RJ 35526" }
-    ];
-    const defaultMedicos = [
-      { nome: "PAULA DE ALMEIDA RAMOS" },
-      { nome: "RICARDO LUCAS DE SOUZA RODRIGUES" }
-    ];
-
-    const periodos = [
-      { id: 'cafe', label: 'Café', icon: '☕', hora: '06:00' },
-      { id: 'almoco', label: 'Almoço', icon: '🍽️', hora: '12:00' },
-      { id: 'lanche', label: 'Lanche', icon: '🍎', hora: '15:00' },
-      { id: 'jantar', label: 'Jantar', icon: '🍲', hora: '19:00' },
-      { id: 'ceia', label: 'Ceia', icon: '🌙', hora: '22:00' }
-    ];
-
-    // Bancos
-    let medicamentosDB = [], pacientesDB = [], farmaceuticosDB = [], medicosDB = [];
-    let prescriptionMeds = []; // { medicamento, formaDose, sintoma, sos, dosesPorPeriodo }
-
-    // ---------- STORAGE ----------
-    function loadData() {
-      medicamentosDB = JSON.parse(localStorage.getItem('medicamentos_rf')) || defaultMedicamentos;
-      pacientesDB = JSON.parse(localStorage.getItem('pacientes_rf')) || defaultPacientes;
-      farmaceuticosDB = JSON.parse(localStorage.getItem('farmaceuticos_rf')) || defaultFarmaceuticos;
-      medicosDB = JSON.parse(localStorage.getItem('medicos_rf')) || defaultMedicos;
-    }
-    function saveAll() {
-      localStorage.setItem('medicamentos_rf', JSON.stringify(medicamentosDB));
-      localStorage.setItem('pacientes_rf', JSON.stringify(pacientesDB));
-      localStorage.setItem('farmaceuticos_rf', JSON.stringify(farmaceuticosDB));
-      localStorage.setItem('medicos_rf', JSON.stringify(medicosDB));
-    }
-    loadData();
-
-    // ---------- RENDER ----------
-    function populateSelects() {
-      const selPac = document.getElementById('selectPaciente');
-      selPac.innerHTML = '<option value="">Selecione paciente</option>';
-      pacientesDB.forEach((p,i)=> selPac.innerHTML += `<option value="${i}">${p.nome} (${p.prontuario})</option>`);
-      
-      const selMed = document.getElementById('selectMedicamento');
-      selMed.innerHTML = '<option value="">Escolha medicamento</option>';
-      medicamentosDB.forEach((m,i)=> selMed.innerHTML += `<option value="${i}">${m.nome} (${m.apresentacao})</option>`);
-      
-      const selFar = document.getElementById('selectFarmaceutico');
-      selFar.innerHTML = '<option value="">Farmacêutico</option>';
-      farmaceuticosDB.forEach((f,i)=> selFar.innerHTML += `<option value="${i}">${f.nome} (${f.crf})</option>`);
-      
-      const selMedico = document.getElementById('selectMedico');
-      selMedico.innerHTML = '<option value="">Médico(a)</option>';
-      medicosDB.forEach((m,i)=> selMedico.innerHTML += `<option value="${i}">${m.nome}</option>`);
-    }
-
-    function renderPeriodos() {
-      const cont = document.getElementById('periodosContainer');
-      cont.innerHTML = '';
-      periodos.forEach(p => {
-        cont.innerHTML += `<div class="text-center"><span class="icon-meal">${p.icon}</span><span class="meal-label">${p.label}</span><br><small class="text-muted">${p.hora}</small></div>`;
-      });
-    }
-
-    // Função para transformar string de dose em ícones repetidos
-    function formatDoseIcons(doseStr) {
-      if (!doseStr) return '';
-      // Ex: "💊 2" -> dois ícones de comprimido
-      const parts = doseStr.split(' ');
-      if (parts.length >= 2) {
-        const icon = parts[0];
-        const qty = parseInt(parts[1]) || 1;
-        if (icon.includes('½')) {
-          return icon + '½'; // meio comprimido especial
-        }
-        return Array(qty).fill(icon).join(' ');
-      }
-      return doseStr;
-    }
-
-    function rebuildTable() {
-      const thead = document.getElementById('tableHeader');
-      const tbody = document.getElementById('tableBody');
-      let htmlHead = '<tr><th>MEDICAMENTO</th>';
-      periodos.forEach(p => htmlHead += `<th><span class="icon-meal">${p.icon}</span>${p.label}<br><small>${p.hora}</small></th>`);
-      htmlHead += '<th>SINTOMA</th><th style="width:40px"></th></tr>';
-      thead.innerHTML = htmlHead;
-
-      let htmlBody = '';
-      prescriptionMeds.forEach((item, idx) => {
-        const med = item.medicamento;
-        const formaIcon = item.formaDose.split(' ')[0];
-        htmlBody += `<tr>`;
-        htmlBody += `<td class="med-name"><span class="med-icon">${formaIcon}</span> ${med.nome}${item.sos?' <span class="text-danger"><i class="bi bi-exclamation-triangle-fill"></i></span>':''}</td>`;
-        periodos.forEach(p => {
-          const doseRaw = item.dosesPorPeriodo[p.id] || item.formaDose;
-          const displayDose = formatDoseIcons(doseRaw);
-          htmlBody += `<td class="dose-cell" contenteditable="true" data-med-index="${idx}" data-period="${p.id}" onblur="updateDoseCell(this)">${displayDose}</td>`;
-        });
-        htmlBody += `<td><span class="symptom-icon">${item.sintoma.split(' ')[0]}</span> ${item.sintoma.split(' ').slice(1).join(' ')}</td>`;
-        htmlBody += `<td class="text-center"><i class="bi bi-trash3 text-danger clickable-icon" onclick="removeMedRow(${idx})"></i></td>`;
-        htmlBody += `</tr>`;
-      });
-      tbody.innerHTML = htmlBody || `<tr><td colspan="${periodos.length+3}" class="text-center py-4 text-muted">Adicione medicamentos</td></tr>`;
-    }
-
-    window.updateDoseCell = function(cell) {
-      const idx = cell.dataset.medIndex, period = cell.dataset.period;
-      if(idx!==undefined && prescriptionMeds[idx]) {
-        // Armazenar o valor bruto (pode ser editado pelo usuário)
-        prescriptionMeds[idx].dosesPorPeriodo[period] = cell.innerText.trim();
-        // Re-renderizar para aplicar formatação de ícones? Vamos apenas manter
-        // Mas podemos forçar a formatação na próxima rebuild.
-      }
-    };
-    window.removeMedRow = function(i) { prescriptionMeds.splice(i,1); rebuildTable(); };
-
-    document.getElementById('addMedBtn').addEventListener('click', ()=>{
-      const medIdx = document.getElementById('selectMedicamento').value;
-      if(medIdx==='') { alert('Selecione um medicamento'); return; }
-      const medicamento = medicamentosDB[medIdx];
-      const formaDose = document.getElementById('selectForma').value;
-      const sintoma = document.getElementById('selectSintoma').value;
-      const sos = document.getElementById('checkSOS').checked;
-      const doses = {};
-      periodos.forEach(p => doses[p.id] = formaDose);
-      prescriptionMeds.push({ medicamento, formaDose, sintoma, sos, dosesPorPeriodo: doses });
-      rebuildTable();
-      document.getElementById('selectMedicamento').value='';
-      document.getElementById('checkSOS').checked=false;
-    });
-
-    document.getElementById('clearAllBtn').addEventListener('click',()=>{ prescriptionMeds=[]; rebuildTable(); });
-    document.getElementById('inputData').valueAsDate = new Date();
-
-    // PDF / Impressão
-    function gerarHTMLImpressao() {
-      const pac = pacientesDB[document.getElementById('selectPaciente').value] || { nome:'________', prontuario:'' };
-      const medSel = medicosDB[document.getElementById('selectMedico').value] || { nome:'________' };
-      const far = farmaceuticosDB[document.getElementById('selectFarmaceutico').value] || { nome:'', crf:'' };
-      const data = document.getElementById('inputData').value || new Date().toLocaleDateString('pt-BR');
-      let html = `<div style="font-family:Arial; max-width:1200px; margin:auto; background:white; padding:20px">`;
-      html += `<h2>🏥 HOSPITAL DO CÂNCER IV – HC IV</h2><hr>`;
-      html += `<p><strong>👤 ${pac.nome}</strong>  |  Prontuário: ${pac.prontuario}  |  Data: ${data}  |  Dr(a). ${medSel.nome}</p>`;
-      html += `<table style="width:100%; border-collapse:collapse; margin-top:20px; border:1px solid #ccc">`;
-      html += `<tr style="background:#0b3954; color:white"><th>Medicamento</th>`;
-      periodos.forEach(p=> html += `<th style="padding:10px">${p.icon} ${p.label}<br>${p.hora}</th>`);
-      html += `<th>Para que serve?</th></tr>`;
-      prescriptionMeds.forEach(item=>{
-        html += `<tr><td style="font-weight:bold; padding:8px">${formatDoseIcons(item.formaDose)} ${item.medicamento.nome}${item.sos?' 🔔':''}</td>`;
-        periodos.forEach(p=> {
-          const dose = item.dosesPorPeriodo[p.id] || item.formaDose;
-          html += `<td style="text-align:center; border:1px solid #ddd; font-size:1.2rem">${formatDoseIcons(dose)}</td>`;
-        });
-        html += `<td>${item.sintoma}</td></tr>`;
-      });
-      html += `</table>`;
-      html += `<p style="margin-top:30px"><strong>💊 Farmacêutico:</strong> ${far.nome} ${far.crf}  📞 HC IV: 3207-3971</p>`;
-      html += `</div>`;
-      return html;
-    }
-
-    document.getElementById('previewBtn').addEventListener('click',()=>{
-      const area = document.getElementById('printableArea');
-      area.innerHTML = gerarHTMLImpressao();
-      area.style.display='block';
-    });
-    document.getElementById('printBtn').addEventListener('click', async ()=>{
-      const area = document.getElementById('printableArea');
-      area.innerHTML = gerarHTMLImpressao();
-      area.style.display='block';
-      const canvas = await html2canvas(area, { scale: 2, backgroundColor: '#fff' });
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-      const w = pdf.internal.pageSize.getWidth();
-      const h = (canvas.height * w) / canvas.width;
-      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, w, h);
-      pdf.save(`Receita_${pacientesDB[document.getElementById('selectPaciente').value]?.nome || 'paciente'}.pdf`);
-      area.style.display='none';
-    });
-
-    // ---------- CRUDs ----------
-    function refreshMedTable(){ 
-      const t=document.querySelector('#medTableList tbody'); t.innerHTML='';
-      medicamentosDB.forEach((m,i)=> t.innerHTML+=`<tr><td>${m.nome}</td><td>${m.apresentacao}</td><td><i class="bi bi-trash text-danger" onclick="deleteMed(${i})"></i></td></tr>`);
-    }
-    window.deleteMed = (i)=>{ medicamentosDB.splice(i,1); saveAll(); refreshMedTable(); populateSelects(); };
-    document.getElementById('addMedDB').addEventListener('click',()=>{
-      const n=document.getElementById('medNome').value.trim(), a=document.getElementById('medApresentacao').value.trim();
-      if(!n)return; medicamentosDB.push({nome:n, apresentacao:a}); saveAll(); refreshMedTable(); populateSelects();
-      document.getElementById('medNome').value=''; document.getElementById('medApresentacao').value='';
-    });
-    function refreshPacTable(){ 
-      const t=document.getElementById('pacTableBody'); t.innerHTML='';
-      pacientesDB.forEach(p=> t.innerHTML+=`<tr><td>${p.nome}</td><td>${p.prontuario}</td></tr>`);
-    }
-    document.getElementById('addPacDB').addEventListener('click',()=>{
-      const n=document.getElementById('pacNome').value.trim(), p=document.getElementById('pacProntuario').value.trim();
-      if(!n)return; pacientesDB.push({nome:n, prontuario:p}); saveAll(); refreshPacTable(); populateSelects();
-      document.getElementById('pacNome').value=''; document.getElementById('pacProntuario').value='';
-    });
-    function refreshFarTable(){ 
-      const t=document.getElementById('farTableBody'); t.innerHTML='';
-      farmaceuticosDB.forEach(f=> t.innerHTML+=`<tr><td>${f.nome}</td><td>${f.crf}</td></tr>`);
-    }
-    document.getElementById('addFarDB').addEventListener('click',()=>{
-      const n=document.getElementById('farNome').value.trim(), c=document.getElementById('farCRF').value.trim();
-      if(!n)return; farmaceuticosDB.push({nome:n, crf:c}); saveAll(); refreshFarTable(); populateSelects();
-      document.getElementById('farNome').value=''; document.getElementById('farCRF').value='';
-    });
-    function refreshMedicoTable(){ 
-      const t=document.getElementById('medicoTableBody'); t.innerHTML='';
-      medicosDB.forEach(m=> t.innerHTML+=`<tr><td>${m.nome}</td></tr>`);
-    }
-    document.getElementById('addMedicoDB').addEventListener('click',()=>{
-      const n=document.getElementById('medicoNome').value.trim();
-      if(!n)return; medicosDB.push({nome:n}); saveAll(); refreshMedicoTable(); populateSelects();
-      document.getElementById('medicoNome').value='';
-    });
-
-    // Inicialização
-    function init(){
-      loadData(); saveAll();
-      populateSelects();
-      renderPeriodos();
-      refreshMedTable(); refreshPacTable(); refreshFarTable(); refreshMedicoTable();
-      rebuildTable();
-    }
-    init();
-    window.rebuildTable = rebuildTable;
-  })();
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    // ---------- DESENHOS SVG (VETORES DE ALTA QUALIDADE) ----------
+    const xmlns = 'xmlns="http://www.w3.org/2000/svg"';
+    const svgIcons = {
+      comp: `<svg ${xmlns} viewBox="0 0 24 24" class="med-icon" width="28" height="28"><circle cx="12" cy="12" r="10" fill="#f8f9fa" stroke="#0b3954" stroke-width="2"/><line x1="3" y1="12" x2="21" y2="12" stroke="#0b3954" stroke-width="2"/></svg>`,
+      meio_comp: `<svg ${xmlns} viewBox="0 0 24 24" class="med-icon" width="28" height="28"><path d="M12 2 A 10 10 0 0 0 12 22 Z" fill="#f8f9fa" stroke="#0b3954" stroke-width="2"/><line x1="12" y1="2" x2="12" y2="22" stroke="#0b3954" stroke-width="2"/></svg>`,
+      caps: `<svg ${xmlns} viewBox="0 0 24 24" class="med-icon" width="28" height="28"><path d="M12 5 h-4 a7 7 0 0 0 0 14 h4 z" fill="#1e5f6e" stroke="#0b3954" stroke-width="2"/><path d="M12 5 h4 a7 7 0 0 1 0 14 h-4 z" fill="#f8f9fa" stroke="#0b3954" stroke-width="2"/></svg>`,
+      gotas: `<svg ${xmlns} viewBox="0 0 24 24" class="med-icon" width="28" height="28"><path d="M12 2.69 l5.66 5.66 a8 8 0 1 1 -11.31 0 z" fill="#4ea8de" stroke="#0b3954" stroke-width="2"/></svg>`,
+      xarope: `<svg ${xmlns} viewBox="0 0 24 24" class="med-icon" width="28" height="28"><path d="M8 11 a4 4 0 1 0 0 8 a4 4 0 0 0 0 -8 z" fill="#f8f9fa" stroke="#0b3954" stroke-width="2"/><path d="M11.5 13.5 L20 5" stroke="#0b3954" stroke-width="2" stroke-linecap="round"/><path d="M6 15 a3 3 0 0 0 4 0 z" fill="#f94144"/></svg>`,
+      frasco: `<svg ${xmlns} viewBox="0 0 24 24" class="med-icon" width="28" height="28"><path d="M8 6 h8 v2 h-8 z" fill="#f8f9fa" stroke="#0b3954" stroke-width="2"/><path d="M6 8 h12 v13 a1 1 0 0 1 -1 1 h-10 a1 1 0 0 1 -1 -1 z" fill="#f8f9fa" stroke="#0b3954" stroke-width="2"/><rect x="9" y="14" width="6" height="5" fill="#f9
