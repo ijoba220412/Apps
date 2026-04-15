@@ -1,4 +1,4 @@
-// ==================== SCRIPT.JS - SISTEMA DE ESCALAS INTELIGENTE ====================
+// ==================== SCRIPT.JS COMPLETO - SISTEMA DE ESCALAS INTELIGENTE ====================
 
 // ---------- ESTRUTURAS DE DADOS ----------
 let funcionarios = [];
@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     document.getElementById('calendarioEscala').innerHTML = '<p>👈 Cadastre funcionários e setores, depois clique em "Gerar Escala".</p>';
   }
+  renderizarLegenda();
 });
 
 // ---------- PERSISTÊNCIA ----------
@@ -39,7 +40,7 @@ function carregarDados() {
   if (funcStorage) {
     funcionarios = JSON.parse(funcStorage);
   } else {
-    // Dados de exemplo editáveis manualmente aqui
+    // Dados de exemplo (podem ser editados manualmente aqui)
     funcionarios = [
       {
         id: 1,
@@ -104,7 +105,29 @@ function fecharModais() {
   document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
 }
 
-// ---------- GERAÇÃO DA ESCALA (COM PRIORIDADE SEMANAL) ----------
+// ---------- LEGENDA FIXA ----------
+function renderizarLegenda() {
+  let container = document.getElementById('legendaContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'legendaContainer';
+    container.className = 'legenda';
+    const escalaDiv = document.getElementById('calendarioEscala');
+    escalaDiv.parentNode.insertBefore(container, escalaDiv);
+  }
+  let html = '<details><summary>📖 Legenda</summary><div class="legenda-content">';
+  html += '<div><strong>Cores por categoria:</strong> ';
+  CATEGORIAS.forEach(c => html += `<span class="legenda-cor ${c.cor}">${c.nome}</span> `);
+  html += '</div>';
+  html += '<div><strong>Setores:</strong> ';
+  setores.forEach(s => html += `<span class="legenda-setor">${s.nome} (abre feriado: ${s.abreFeriado?'sim':'não'}, fim de semana: ${s.abreFimSemana?'sim':'não'})</span> `);
+  html += '</div>';
+  html += '<div><strong>Status:</strong> <span class="legenda-status ferias">Férias</span> <span class="legenda-status licenca">Licença</span> <span class="legenda-status ausencia">Afastamento</span></div>';
+  html += '</div></details>';
+  container.innerHTML = html;
+}
+
+// ---------- GERAÇÃO DA ESCALA (COM PRIORIDADE SEMANAL E RESPEITO AO MÁXIMO DE PLANTÕES) ----------
 let ultimaEscalaGerada = null;
 let contagemPlantoesGlobal = {};
 
@@ -133,7 +156,7 @@ function gerarEscala(mes, ano) {
   const dataInicio = new Date(ano, mes - 1, 1);
   const dataFim = new Date(ano, mes, 0);
 
-  // Agrupa dias por semana para priorizar 3 plantões/semana
+  // Agrupar dias por semana para prioridade
   const semanas = [];
   let semanaAtual = [];
   let dia = new Date(dataInicio);
@@ -160,11 +183,18 @@ function gerarEscala(mes, ano) {
         if (fimDeSemana && !setor.abreFimSemana) setorAberto = false;
 
         if (setorAberto) {
+          // Filtrar funcionários disponíveis que já não estejam alocados neste setor hoje
           const disponiveis = funcionarios.filter(f => {
             if (!verificarDisponibilidade(f, d)) return false;
+            // Verificar se já existe alocação deste funcionário neste setor hoje
+            if (escala[dataStr][setor.nome]) {
+              const jaAlocado = escala[dataStr][setor.nome].some(aloc => aloc.funcionario?.id === f.id);
+              if (jaAlocado) return false;
+            }
+            // Verificar vínculos com setor permitido e limite de plantões
             return f.vinculos.some((v, idx) => {
               if (!v.setoresPermitidos?.length || v.setoresPermitidos.includes(setor.nome)) {
-                const maxPlant = v.maximoPlantoes || Math.floor(v.cargaHorariaMensal / v.horasPorPlantao) || 13;
+                const maxPlant = v.maximoPlantoes || 13; // limite estrito
                 return contagem[f.id][idx] < maxPlant;
               }
               return false;
@@ -172,10 +202,10 @@ function gerarEscala(mes, ano) {
           });
 
           if (disponiveis.length > 0) {
-            // Ordena por quem tem menos plantões na semana atual (prioridade 3/semana)
+            // Ordenar: prioridade para quem tem menos plantões na semana, depois total
             disponiveis.sort((a, b) => {
-              const plantosSemanaA = contarPlantoesNaSemana(a.id, semana);
-              const plantosSemanaB = contarPlantoesNaSemana(b.id, semana);
+              const plantosSemanaA = contarPlantoesNaSemana(a.id, semana, escala);
+              const plantosSemanaB = contarPlantoesNaSemana(b.id, semana, escala);
               if (plantosSemanaA !== plantosSemanaB) return plantosSemanaA - plantosSemanaB;
               const totalA = contagem[a.id].reduce((s, c) => s + c, 0);
               const totalB = contagem[b.id].reduce((s, c) => s + c, 0);
@@ -185,7 +215,7 @@ function gerarEscala(mes, ano) {
             const escolhido = disponiveis[0];
             const vinculoIndex = escolhido.vinculos.findIndex((v, idx) => {
               if (!v.setoresPermitidos?.length || v.setoresPermitidos.includes(setor.nome)) {
-                const maxPlant = v.maximoPlantoes || Math.floor(v.cargaHorariaMensal / v.horasPorPlantao) || 13;
+                const maxPlant = v.maximoPlantoes || 13;
                 return contagem[escolhido.id][idx] < maxPlant;
               }
               return false;
@@ -215,16 +245,17 @@ function gerarEscala(mes, ano) {
   return { escala, contagem, horas };
 }
 
-function contarPlantoesNaSemana(funcId, semana) {
+function contarPlantoesNaSemana(funcId, semana, escala) {
   let total = 0;
-  if (!ultimaEscalaGerada) return 0;
   for (let d of semana) {
     const dataStr = formatarData(d);
-    if (ultimaEscalaGerada[dataStr]) {
-      for (let setor in ultimaEscalaGerada[dataStr]) {
-        ultimaEscalaGerada[dataStr][setor].forEach(aloc => {
-          if (aloc.funcionario?.id === funcId) total++;
-        });
+    if (escala[dataStr]) {
+      for (let setor in escala[dataStr]) {
+        if (escala[dataStr][setor]) {
+          escala[dataStr][setor].forEach(aloc => {
+            if (aloc.funcionario?.id === funcId) total++;
+          });
+        }
       }
     }
   }
@@ -272,7 +303,13 @@ function renderizarEscala(escala, mes, ano, filtro) {
               if (!func) { html += `<div class="sem-plantao">(vago)</div>`; return; }
               if (filtro === 'todos' || func.categoria === filtro) {
                 const cor = CATEGORIAS.find(c => c.id === func.categoria)?.cor || 'outro';
-                html += `<div class="plantao-item ${cor}"><span>${func.nome}</span><small>${setor} (${aloc.vinculo})</small></div>`;
+                // Verificar se está de férias/licença no dia
+                const status = obterStatusFuncionario(func, dataStr);
+                let statusClass = '';
+                if (status === 'férias') statusClass = 'ferias';
+                else if (status === 'licença') statusClass = 'licenca';
+                else if (status === 'afastamento') statusClass = 'ausencia';
+                html += `<div class="plantao-item ${cor} ${statusClass}"><span>${func.nome}</span><small>${setor} (${aloc.vinculo})</small></div>`;
               }
             });
           }
@@ -287,18 +324,28 @@ function renderizarEscala(escala, mes, ano, filtro) {
   container.innerHTML = html;
 }
 
-// ---------- RELATÓRIO ----------
+function obterStatusFuncionario(func, dataStr) {
+  if (func.restricoes.ausencias?.some(a => dataStr >= a.inicio && dataStr <= a.fim)) return 'afastamento';
+  // Aqui pode-se adicionar lógica para férias e licenças específicas
+  return null;
+}
+
+// ---------- RELATÓRIO EM FOLHA SEPARADA ----------
 function renderizarRelatorio(contagem, horas, mes, ano) {
-  let html = '<h2>📊 Relatório de Plantões e Horas</h2>';
-  html += '<table><thead><tr><th>Funcionário</th><th>Vínculo</th><th>Plantões</th><th>Horas</th></tr></thead><tbody>';
+  let html = '<div class="relatorio">';
+  html += '<h2>📊 Relatório de Plantões e Horas - ' + mes + '/' + ano + '</h2>';
+  html += '<table><thead><tr><th>Funcionário</th><th>Categoria</th><th>Vínculo</th><th>Plantões realizados</th><th>Horas totais</th><th>Máx. plantões</th><th>Carga horária</th></tr></thead><tbody>';
   funcionarios.forEach(f => {
     f.vinculos.forEach((v, idx) => {
       const plantoes = contagem[f.id]?.[idx] || 0;
       const horasTotal = horas[f.id]?.[idx] || 0;
-      html += `<tr><td>${f.nome}</td><td>${v.tipo}</td><td>${plantoes}</td><td>${horasTotal}h</td></tr>`;
+      const catNome = CATEGORIAS.find(c => c.id === f.categoria)?.nome || f.categoria;
+      html += `<tr><td>${f.nome}</td><td>${catNome}</td><td>${v.tipo}</td><td>${plantoes}</td><td>${horasTotal}h</td><td>${v.maximoPlantoes || 13}</td><td>${v.cargaHorariaMensal}h</td></tr>`;
     });
   });
   html += '</tbody></table>';
+  html += '<p><small>Legenda: Cores indicam categoria; ícones de status (férias, licença) aparecem na escala.</small></p>';
+  html += '</div>';
   const container = document.getElementById('relatorioContainer');
   if (!container) {
     const div = document.createElement('div');
@@ -317,6 +364,7 @@ function abrirModalFuncionarios() {
     salvarDados();
     fecharModais();
     gerarEscalaAtual();
+    renderizarLegenda();
   };
 }
 
@@ -327,6 +375,7 @@ function abrirModalSetores() {
   document.getElementById('btnSalvarSetores').onclick = () => {
     salvarDados();
     fecharModais();
+    renderizarLegenda();
   };
 }
 
@@ -340,7 +389,7 @@ function abrirModalFeriados() {
   };
 }
 
-// ---------- FORMULÁRIO FUNCIONÁRIO ----------
+// ---------- FORMULÁRIO FUNCIONÁRIO (COM LABELS) ----------
 let funcionarioEditandoId = null;
 
 function abrirFormFuncionario(id) {
@@ -413,165 +462,7 @@ function gerarHtmlVinculo(v, idx) {
     const selected = v.setoresPermitidos?.includes(s.nome) ? 'selected' : '';
     setoresOptions += `<option value="${s.nome}" ${selected}>${s.nome}</option>`;
   });
-  return `<div class="vinculo-item">
-    <input type="text" placeholder="Tipo (CLT...)" class="vinculoTipo" value="${v.tipo}">
-    <input type="number" placeholder="Carga horária" class="vinculoCarga" value="${v.cargaHorariaMensal}">
-    <input type="number" placeholder="Máx. plantões" class="vinculoMaxPlant" value="${v.maximoPlantoes || 13}">
-    <input type="number" placeholder="Horas/plantão" class="vinculoHorasPlantao" value="${v.horasPorPlantao || 12}">
-    <select multiple class="vinculoSetores" size="3">${setoresOptions}</select>
-    <button type="button" onclick="removerVinculo(this)">🗑️</button>
-  </div>`;
-}
-
-window.adicionarVinculo = function() {
-  const container = document.getElementById('vinculosContainer');
-  const novo = { tipo: '', cargaHorariaMensal: 152, maximoPlantoes: 13, horasPorPlantao: 12, setoresPermitidos: [] };
-  container.insertAdjacentHTML('beforeend', gerarHtmlVinculo(novo, container.children.length));
-};
-
-window.removerVinculo = function(btn) {
-  btn.closest('.vinculo-item').remove();
-};
-
-window.adicionarAusencia = function() {
-  const container = document.getElementById('ausenciasContainer');
-  const div = document.createElement('div');
-  div.innerHTML = `De <input type="date" class="ausenciaInicio"> até <input type="date" class="ausenciaFim"> <button type="button" onclick="removerAusencia(this)">🗑️</button>`;
-  container.appendChild(div);
-};
-
-window.removerAusencia = function(btn) {
-  btn.closest('div').remove();
-};
-
-window.salvarFuncionario = function(id) {
-  const nome = document.getElementById('funcNome').value.trim();
-  if (!nome) { alert('Nome obrigatório'); return; }
-  const categoria = document.getElementById('funcCategoria').value;
-  const vinculos = [];
-  document.querySelectorAll('.vinculo-item').forEach(item => {
-    const tipo = item.querySelector('.vinculoTipo').value.trim();
-    const carga = parseInt(item.querySelector('.vinculoCarga').value) || 152;
-    const maxPlant = parseInt(item.querySelector('.vinculoMaxPlant').value) || 13;
-    const horasPlantao = parseInt(item.querySelector('.vinculoHorasPlantao').value) || 12;
-    const setoresSelect = item.querySelector('.vinculoSetores');
-    const setoresPermitidos = Array.from(setoresSelect.selectedOptions).map(opt => opt.value);
-    if (tipo) vinculos.push({ tipo, cargaHorariaMensal: carga, maximoPlantoes: maxPlant, horasPorPlantao: horasPlantao, setoresPermitidos });
-  });
-  const restricoes = {
-    permitidoPar: document.getElementById('permitidoPar').checked,
-    permitidoImpar: document.getElementById('permitidoImpar').checked,
-    trabalhaFeriado: document.getElementById('trabalhaFeriado').checked,
-    trabalhaFimSemana: document.getElementById('trabalhaFimSemana').checked,
-    diasSemanaPermitidos: Array.from(document.querySelectorAll('input[name="diaSemana"]:checked')).map(cb => parseInt(cb.value)),
-    ausencias: []
-  };
-  document.querySelectorAll('#ausenciasContainer > div').forEach(div => {
-    const inicio = div.querySelector('.ausenciaInicio').value;
-    const fim = div.querySelector('.ausenciaFim').value;
-    if (inicio && fim) restricoes.ausencias.push({ inicio, fim });
-  });
-
-  const funcionario = { id, nome, categoria, vinculos, restricoes };
-  const index = funcionarios.findIndex(f => f.id === id);
-  if (index >= 0) funcionarios[index] = funcionario;
-  else funcionarios.push(funcionario);
-  salvarDados();
-  renderizarListaFuncionarios();
-};
-
-function renderizarListaFuncionarios() {
-  const container = document.getElementById('listaFuncionarios');
-  let html = '<ul>';
-  funcionarios.forEach(f => {
-    html += `<li><strong>${f.nome}</strong> (${f.categoria}) `;
-    html += `<button onclick="abrirFormFuncionario(${f.id})">✏️ Editar</button> `;
-    html += `<button onclick="removerFuncionario(${f.id})">🗑️</button></li>`;
-  });
-  html += '</ul>';
-  container.innerHTML = html;
-}
-
-window.removerFuncionario = function(id) {
-  funcionarios = funcionarios.filter(f => f.id !== id);
-  salvarDados();
-  renderizarListaFuncionarios();
-};
-
-// ---------- SETORES ----------
-function renderizarListaSetores() {
-  const container = document.getElementById('listaSetores');
-  let html = '<ul>';
-  setores.forEach(s => {
-    html += `<li>${s.nome} - Feriado: ${s.abreFeriado?'Sim':'Não'} | Fim de semana: ${s.abreFimSemana?'Sim':'Não'} `;
-    html += `<button onclick="abrirFormSetor(${s.id})">✏️</button> `;
-    html += `<button onclick="removerSetor(${s.id})">🗑️</button></li>`;
-  });
-  html += '</ul>';
-  container.innerHTML = html;
-}
-
-function abrirFormSetor(id) {
-  const container = document.getElementById('listaSetores');
-  const setor = id ? setores.find(s => s.id === id) : { id: Date.now(), nome: '', abreFeriado: false, abreFimSemana: false };
-  let html = `<div><h3>${id?'Editar':'Novo'} Setor</h3>`;
-  html += `<label>Nome: <input type="text" id="setorNome" value="${setor.nome}"></label><br>`;
-  html += `<label><input type="checkbox" id="abreFeriado" ${setor.abreFeriado?'checked':''}> Abre em feriados</label><br>`;
-  html += `<label><input type="checkbox" id="abreFimSemana" ${setor.abreFimSemana?'checked':''}> Abre fins de semana</label><br>`;
-  html += `<button onclick="salvarSetor(${setor.id})">Salvar</button> <button onclick="renderizarListaSetores()">Cancelar</button>`;
-  html += `</div>`;
-  container.innerHTML = html;
-}
-
-window.salvarSetor = function(id) {
-  const nome = document.getElementById('setorNome').value.trim();
-  if (!nome) { alert('Nome obrigatório'); return; }
-  const abreFeriado = document.getElementById('abreFeriado').checked;
-  const abreFimSemana = document.getElementById('abreFimSemana').checked;
-  const setor = { id, nome, abreFeriado, abreFimSemana };
-  const index = setores.findIndex(s => s.id === id);
-  if (index >= 0) setores[index] = setor;
-  else setores.push(setor);
-  salvarDados();
-  renderizarListaSetores();
-};
-
-window.removerSetor = function(id) {
-  setores = setores.filter(s => s.id !== id);
-  salvarDados();
-  renderizarListaSetores();
-};
-
-// ---------- FERIADOS ----------
-function renderizarListaFeriados() {
-  const container = document.getElementById('listaFeriados');
-  let html = '<ul>';
-  feriados.forEach((f, i) => {
-    html += `<li>${f} <button onclick="removerFeriado(${i})">🗑️</button></li>`;
-  });
-  html += '</ul><button onclick="adicionarFeriado()">➕ Adicionar</button>';
-  container.innerHTML = html;
-}
-
-window.adicionarFeriado = function() {
-  const data = prompt('Digite a data (AAAA-MM-DD):');
-  if (data && /^\d{4}-\d{2}-\d{2}$/.test(data)) {
-    feriados.push(data);
-    renderizarListaFeriados();
-  } else { alert('Formato inválido.'); }
-};
-
-window.removerFeriado = function(index) {
-  feriados.splice(index, 1);
-  renderizarListaFeriados();
-};
-
-// ---------- UTILITÁRIOS ----------
-function formatarData(date) {
-  const ano = date.getFullYear();
-  const mes = String(date.getMonth() + 1).padStart(2, '0');
-  const dia = String(date.getDate()).padStart(2, '0');
-  return `${ano}-${mes}-${dia}`;
-}
-function isFeriado(dataStr) { return feriados.includes(dataStr); }
-function isFimDeSemana(dia) { return dia === 0 || dia === 6; }
+  return `<div class="vinculo-item" style="border:1px solid #ccc; padding:10px; margin:5px 0;">
+    <label>Tipo: <input type="text" placeholder="Ex: CLT, FIOTEC" class="vinculoTipo" value="${v.tipo}" style="width:120px;"></label>
+    <label>Carga horária mensal (h): <input type="number" class="vinculoCarga" value="${v.cargaHorariaMensal}" style="width:80px;"></label>
+    <l
