@@ -3,26 +3,71 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gerador de Escalas - Farmácia</title>
+  <title>Escala Inteligente - Farmácia</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1>🏥 Escala Farmácia - Abril 2026</h1>
-    
-    <div class="controls">
-      <button id="btnGerar">Gerar Escala</button>
-      <select id="filtroCategoria">
-        <option value="todos">Todos</option>
-        <option value="farmaceutico">Farmacêuticos</option>
-        <option value="tecnico">Técnicos</option>
-      </select>
-      <button id="btnImprimir">Imprimir</button>
+    <h1>🏥 Escala Farmácia Inteligente</h1>
+
+    <!-- Barra de Controle -->
+    <div class="config-bar">
+      <div class="control-group">
+        <label>Mês/Ano:</label>
+        <input type="month" id="mesAno" value="2026-04">
+      </div>
+      <button id="btnGerar" class="primary">✨ Gerar Escala</button>
+      <button id="btnConfigFuncionarios">👥 Funcionários</button>
+      <button id="btnConfigSetores">🏥 Setores</button>
+      <button id="btnConfigFeriados">📅 Feriados</button>
+      <div class="control-group">
+        <label>Exibir:</label>
+        <select id="filtroCategoria">
+          <option value="todos">Todos</option>
+          <option value="farmaceutico">Farmacêuticos</option>
+          <option value="tecnico">Técnicos</option>
+        </select>
+      </div>
+      <button id="btnImprimir">🖨️ Imprimir</button>
     </div>
 
-    <div id="calendarioEscala">
-      <!-- A escala será gerada aqui -->
-      <p>Clique em "Gerar Escala" para iniciar.</p>
+    <!-- Calendário da Escala -->
+    <div id="calendarioEscala" class="escala-container">
+      <p>👈 Configure os dados e clique em "Gerar Escala".</p>
+    </div>
+  </div>
+
+  <!-- ========== MODAIS ========== -->
+  <!-- Modal Funcionários -->
+  <div id="modalFuncionarios" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Cadastro de Funcionários</h2>
+      <div id="listaFuncionarios"></div>
+      <button id="btnAddFuncionario">➕ Adicionar Funcionário</button>
+      <button id="btnSalvarFuncionarios" class="primary">💾 Salvar</button>
+    </div>
+  </div>
+
+  <!-- Modal Setores -->
+  <div id="modalSetores" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Setores</h2>
+      <div id="listaSetores"></div>
+      <button id="btnAddSetor">➕ Adicionar Setor</button>
+      <button id="btnSalvarSetores" class="primary">💾 Salvar</button>
+    </div>
+  </div>
+
+  <!-- Modal Feriados -->
+  <div id="modalFeriados" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Feriados</h2>
+      <div id="listaFeriados"></div>
+      <button id="btnAddFeriado">➕ Adicionar Feriado</button>
+      <button id="btnSalvarFeriados" class="primary">💾 Salvar</button>
     </div>
   </div>
 
