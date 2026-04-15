@@ -500,4 +500,3 @@ function formatarData(date) {
 }
 function isFeriado(dataStr) { return feriados.includes(dataStr); }
 function isFimDeSemana(dia) { return dia === 0 || dia === 6; }
-```
