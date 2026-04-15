@@ -1,306 +1,5 @@
-// ==================== SCRIPT.JS - SISTEMA DE ESCALAS INTELIGENTE ====================
 
-// ---------- ESTRUTURAS DE DADOS ----------
-let funcionarios = [];
-let setores = [];
-let feriados = [];
 
-const CATEGORIAS = [
-  { id: 'farmaceutico', nome: 'Farmacêutico', cor: 'farmaceutico' },
-  { id: 'tecnico', nome: 'Técnico de Farmácia', cor: 'tecnico' },
-  { id: 'outro', nome: 'Outro', cor: 'outro' }
-];
-
-const DIAS_SEMANA = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-
-// ---------- INICIALIZAÇÃO ----------
-document.addEventListener('DOMContentLoaded', () => {
-  carregarDados();
-  inicializarEventListeners();
-  if (funcionarios.length > 0) {
-    gerarEscalaAtual();
-  } else {
-    document.getElementById('calendarioEscala').innerHTML = '<p>👈 Cadastre funcionários e setores, depois clique em "Gerar Escala".</p>';
-  }
-});
-
-// ---------- PERSISTÊNCIA ----------
-function salvarDados() {
-  localStorage.setItem('escala_funcionarios', JSON.stringify(funcionarios));
-  localStorage.setItem('escala_setores', JSON.stringify(setores));
-  localStorage.setItem('escala_feriados', JSON.stringify(feriados));
-}
-
-function carregarDados() {
-  const funcStorage = localStorage.getItem('escala_funcionarios');
-  const setStorage = localStorage.getItem('escala_setores');
-  const ferStorage = localStorage.getItem('escala_feriados');
-
-  if (funcStorage) {
-    funcionarios = JSON.parse(funcStorage);
-  } else {
-    // Dados de exemplo
-    funcionarios = [
-      {
-        id: 1,
-        nome: 'Andrea M.',
-        categoria: 'farmaceutico',
-        vinculos: [{ tipo: 'CLT', cargaHorariaMensal: 152, setoresPermitidos: ['Internação (I)', 'Ambulatório (A)'] }],
-        restricoes: { ausencias: [{ inicio: '2026-04-06', fim: '2026-04-19' }], diasSemanaPermitidos: [0,1,2,3,4,5,6], permitidoPar: true, permitidoImpar: true, trabalhaFeriado: true, trabalhaFimSemana: true }
-      },
-      {
-        id: 2,
-        nome: 'Raphael',
-        categoria: 'farmaceutico',
-        vinculos: [{ tipo: 'CLT', cargaHorariaMensal: 152, setoresPermitidos: ['Ambulatório (A)', 'Manipulação (QT)'] }],
-        restricoes: { ausencias: [], diasSemanaPermitidos: [0,1,2,3,4,5,6], permitidoPar: true, permitidoImpar: true, trabalhaFeriado: true, trabalhaFimSemana: true }
-      },
-      {
-        id: 3,
-        nome: 'Bianca',
-        categoria: 'tecnico',
-        vinculos: [{ tipo: 'CLT', cargaHorariaMensal: 152, setoresPermitidos: ['Manipulação (QT)'] }],
-        restricoes: { ausencias: [{ inicio: '2026-04-10', fim: '2026-04-24' }], diasSemanaPermitidos: [0,1,2,3,4,5,6], permitidoPar: true, permitidoImpar: true, trabalhaFeriado: true, trabalhaFimSemana: true }
-      }
-    ];
-  }
-
-  if (setStorage) {
-    setores = JSON.parse(setStorage);
-  } else {
-    setores = [
-      { id: 1, nome: 'Internação (I)', abreFeriado: true, abreFimSemana: true },
-      { id: 2, nome: 'Ambulatório (A)', abreFeriado: false, abreFimSemana: false },
-      { id: 3, nome: 'Manipulação (QT)', abreFeriado: true, abreFimSemana: true },
-      { id: 4, nome: 'Assistência Domiciliar (AD)', abreFeriado: false, abreFimSemana: false },
-      { id: 5, nome: 'Estoque (E)', abreFeriado: false, abreFimSemana: false }
-    ];
-  }
-
-  if (ferStorage) {
-    feriados = JSON.parse(ferStorage);
-  } else {
-    feriados = ['2026-04-03', '2026-04-21', '2026-04-23'];
-  }
-}
-
-// ---------- EVENT LISTENERS ----------
-function inicializarEventListeners() {
-  document.getElementById('btnGerar').addEventListener('click', gerarEscalaAtual);
-  document.getElementById('filtroCategoria').addEventListener('change', gerarEscalaAtual);
-  document.getElementById('btnImprimir').addEventListener('click', () => window.print());
-
-  document.getElementById('btnConfigFuncionarios').addEventListener('click', abrirModalFuncionarios);
-  document.getElementById('btnConfigSetores').addEventListener('click', abrirModalSetores);
-  document.getElementById('btnConfigFeriados').addEventListener('click', abrirModalFeriados);
-
-  document.querySelectorAll('.close').forEach(el => el.addEventListener('click', fecharModais));
-  window.addEventListener('click', (e) => {
-    if (e.target.classList.contains('modal')) fecharModais();
-  });
-}
-
-function fecharModais() {
-  document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
-}
-
-// ---------- GERAÇÃO DA ESCALA (mantida igual) ----------
-function gerarEscalaAtual() {
-  if (funcionarios.length === 0 || setores.length === 0) {
-    alert('Cadastre pelo menos um funcionário e um setor.');
-    return;
-  }
-  const mesAno = document.getElementById('mesAno').value;
-  if (!mesAno) return;
-  const [ano, mes] = mesAno.split('-').map(Number);
-  const escala = gerarEscala(mes, ano);
-  renderizarEscala(escala, mes, ano, document.getElementById('filtroCategoria').value);
-}
-
-function gerarEscala(mes, ano) {
-  const escala = {};
-  const contagemPlantoes = {};
-  funcionarios.forEach(f => { contagemPlantoes[f.id] = f.vinculos.map(() => 0); });
-
-  const dataInicio = new Date(ano, mes - 1, 1);
-  const dataFim = new Date(ano, mes, 0);
-
-  for (let d = new Date(dataInicio); d <= dataFim; d.setDate(d.getDate() + 1)) {
-    const dataStr = formatarData(d);
-    escala[dataStr] = {};
-
-    setores.forEach(setor => {
-      const diaDaSemana = d.getDay();
-      const feriado = isFeriado(dataStr);
-      const fimDeSemana = isFimDeSemana(diaDaSemana);
-      let setorAberto = true;
-      if (feriado && !setor.abreFeriado) setorAberto = false;
-      if (fimDeSemana && !setor.abreFimSemana) setorAberto = false;
-
-      if (setorAberto) {
-        const disponiveis = funcionarios.filter(f => {
-          if (!verificarDisponibilidade(f, d)) return false;
-          return f.vinculos.some((v, idx) => {
-            if (!v.setoresPermitidos?.length || v.setoresPermitidos.includes(setor.nome)) {
-              return contagemPlantoes[f.id][idx] < calcularMaximoPlantoes(v.cargaHorariaMensal);
-            }
-            return false;
-          });
-        });
-
-        if (disponiveis.length > 0) {
-          disponiveis.sort((a, b) => {
-            const totalA = contagemPlantoes[a.id].reduce((s, c) => s + c, 0);
-            const totalB = contagemPlantoes[b.id].reduce((s, c) => s + c, 0);
-            return totalA - totalB;
-          });
-          const escolhido = disponiveis[0];
-          const vinculoIndex = escolhido.vinculos.findIndex((v, idx) => {
-            if (!v.setoresPermitidos?.length || v.setoresPermitidos.includes(setor.nome)) {
-              return contagemPlantoes[escolhido.id][idx] < calcularMaximoPlantoes(v.cargaHorariaMensal);
-            }
-            return false;
-          });
-          if (vinculoIndex !== -1) {
-            if (!escala[dataStr][setor.nome]) escala[dataStr][setor.nome] = [];
-            escala[dataStr][setor.nome].push({
-              funcionario: escolhido,
-              vinculo: escolhido.vinculos[vinculoIndex].tipo
-            });
-            contagemPlantoes[escolhido.id][vinculoIndex]++;
-          }
-        } else {
-          if (!escala[dataStr][setor.nome]) escala[dataStr][setor.nome] = [];
-          escala[dataStr][setor.nome].push({ funcionario: null, vinculo: null });
-        }
-      }
-    });
-  }
-  return escala;
-}
-
-function calcularMaximoPlantoes(carga) { return Math.floor(carga / 12); }
-function verificarDisponibilidade(f, data) {
-  const dataStr = formatarData(data);
-  const diaSemana = data.getDay();
-  const diaMes = data.getDate();
-  if (f.restricoes.ausencias?.some(a => dataStr >= a.inicio && dataStr <= a.fim)) return false;
-  if (!f.restricoes.diasSemanaPermitidos.includes(diaSemana)) return false;
-  if (!f.restricoes.permitidoPar && diaMes % 2 === 0) return false;
-  if (!f.restricoes.permitidoImpar && diaMes % 2 !== 0) return false;
-  if (isFeriado(dataStr) && !f.restricoes.trabalhaFeriado) return false;
-  if (isFimDeSemana(diaSemana) && !f.restricoes.trabalhaFimSemana) return false;
-  return true;
-}
-
-function renderizarEscala(escala, mes, ano, filtro) {
-  const container = document.getElementById('calendarioEscala');
-  const dataInicio = new Date(ano, mes - 1, 1);
-  const dataFim = new Date(ano, mes, 0);
-  let html = '<table><thead><tr><th>DOM</th><th>SEG</th><th>TER</th><th>QUA</th><th>QUI</th><th>SEX</th><th>SAB</th></tr></thead><tbody>';
-  let diaAtual = new Date(dataInicio);
-  diaAtual.setDate(diaAtual.getDate() - diaAtual.getDay());
-  while (diaAtual <= dataFim || diaAtual.getDay() !== 0) {
-    html += '<tr>';
-    for (let i = 0; i < 7; i++) {
-      const dataStr = formatarData(diaAtual);
-      const diaMes = diaAtual.getDate();
-      const mesAtual = diaAtual.getMonth() + 1;
-      const feriado = isFeriado(dataStr);
-      const fimSemana = isFimDeSemana(diaAtual.getDay());
-      let classe = 'celula-dia';
-      if (feriado) classe += ' feriado';
-      if (fimSemana) classe += ' fim-de-semana';
-      html += `<td class="${classe}">`;
-      if (mesAtual === mes) {
-        html += `<strong>${diaMes}</strong>`;
-        if (escala[dataStr]) {
-          for (let setor in escala[dataStr]) {
-            escala[dataStr][setor].forEach(aloc => {
-              const func = aloc.funcionario;
-              if (!func) { html += `<div class="sem-plantao">(vago)</div>`; return; }
-              if (filtro === 'todos' || func.categoria === filtro) {
-                const cor = CATEGORIAS.find(c => c.id === func.categoria)?.cor || 'outro';
-                html += `<div class="plantao-item ${cor}"><span>${func.nome}</span><small>${setor} (${aloc.vinculo})</small></div>`;
-              }
-            });
-          }
-        } else { html += `<div class="sem-plantao">-</div>`; }
-      } else { html += `<div class="sem-plantao"></div>`; }
-      html += '</td>';
-      diaAtual.setDate(diaAtual.getDate() + 1);
-    }
-    html += '</tr>';
-  }
-  html += '</tbody></table>';
-  container.innerHTML = html;
-}
-
-// ---------- MODAIS ----------
-function abrirModalFuncionarios() {
-  document.getElementById('modalFuncionarios').style.display = 'block';
-  renderizarListaFuncionarios();
-  document.getElementById('btnAddFuncionario').onclick = () => abrirFormFuncionario(null);
-  document.getElementById('btnSalvarFuncionarios').onclick = () => {
-    salvarDados();
-    fecharModais();
-    gerarEscalaAtual();
-  };
-}
-
-function abrirModalSetores() {
-  document.getElementById('modalSetores').style.display = 'block';
-  renderizarListaSetores();
-  document.getElementById('btnAddSetor').onclick = () => abrirFormSetor(null);
-  document.getElementById('btnSalvarSetores').onclick = () => {
-    salvarDados();
-    fecharModais();
-  };
-}
-
-function abrirModalFeriados() {
-  document.getElementById('modalFeriados').style.display = 'block';
-  renderizarListaFeriados();
-  document.getElementById('btnAddFeriado').onclick = () => adicionarFeriado();
-  document.getElementById('btnSalvarFeriados').onclick = () => {
-    salvarDados();
-    fecharModais();
-  };
-}
-
-// ---------- FORMULÁRIO DE FUNCIONÁRIO (EDITÁVEL) ----------
-let funcionarioEditandoId = null;
-
-function abrirFormFuncionario(id) {
-  funcionarioEditandoId = id;
-  const modal = document.getElementById('modalFuncionarios');
-  const container = document.getElementById('listaFuncionarios');
-  let func = id ? funcionarios.find(f => f.id === id) : null;
-  if (!func) {
-    func = {
-      id: Date.now(),
-      nome: '',
-      categoria: 'farmaceutico',
-      vinculos: [],
-      restricoes: {
-        ausencias: [],
-        diasSemanaPermitidos: [0,1,2,3,4,5,6],
-        permitidoPar: true,
-        permitidoImpar: true,
-        trabalhaFeriado: true,
-        trabalhaFimSemana: true
-      }
-    };
-  }
-
-  let html = `<div class="form-funcionario">`;
-  html += `<h3>${id ? 'Editar' : 'Novo'} Funcionário</h3>`;
-  html += `<label>Nome: <input type="text" id="funcNome" value="${func.nome}"></label><br>`;
-  html += `<label>Categoria: <select id="funcCategoria">`;
-  CATEGORIAS.forEach(cat => {
-    html += `<option value="${cat.id}" ${func.categoria === cat.id ? 'selected' : ''}>${cat.nome}</option>`;
-  });
-  html += `</select></label><br>`;
 
   // Vínculos
   html += `<fieldset><legend>Vínculos</legend><div id="vinculosContainer">`;
@@ -343,8 +42,10 @@ function gerarHtmlVinculo(v, idx) {
     setoresOptions += `<option value="${s.nome}" ${selected}>${s.nome}</option>`;
   });
   return `<div class="vinculo-item">
-    <input type="text" placeholder="Tipo (CLT, FIOTEC...)" class="vinculoTipo" value="${v.tipo}">
+    <input type="text" placeholder="Tipo (CLT...)" class="vinculoTipo" value="${v.tipo}">
     <input type="number" placeholder="Carga horária" class="vinculoCarga" value="${v.cargaHorariaMensal}">
+    <input type="number" placeholder="Máx. plantões" class="vinculoMaxPlant" value="${v.maximoPlantoes || 13}">
+    <input type="number" placeholder="Horas/plantão" class="vinculoHorasPlantao" value="${v.horasPorPlantao || 12}">
     <select multiple class="vinculoSetores" size="3">${setoresOptions}</select>
     <button type="button" onclick="removerVinculo(this)">🗑️</button>
   </div>`;
@@ -352,7 +53,7 @@ function gerarHtmlVinculo(v, idx) {
 
 window.adicionarVinculo = function() {
   const container = document.getElementById('vinculosContainer');
-  const novo = { tipo: '', cargaHorariaMensal: 152, setoresPermitidos: [] };
+  const novo = { tipo: '', cargaHorariaMensal: 152, maximoPlantoes: 13, horasPorPlantao: 12, setoresPermitidos: [] };
   container.insertAdjacentHTML('beforeend', gerarHtmlVinculo(novo, container.children.length));
 };
 
@@ -379,9 +80,11 @@ window.salvarFuncionario = function(id) {
   document.querySelectorAll('.vinculo-item').forEach(item => {
     const tipo = item.querySelector('.vinculoTipo').value.trim();
     const carga = parseInt(item.querySelector('.vinculoCarga').value) || 152;
+    const maxPlant = parseInt(item.querySelector('.vinculoMaxPlant').value) || 13;
+    const horasPlantao = parseInt(item.querySelector('.vinculoHorasPlantao').value) || 12;
     const setoresSelect = item.querySelector('.vinculoSetores');
     const setoresPermitidos = Array.from(setoresSelect.selectedOptions).map(opt => opt.value);
-    if (tipo) vinculos.push({ tipo, cargaHorariaMensal: carga, setoresPermitidos });
+    if (tipo) vinculos.push({ tipo, cargaHorariaMensal: carga, maximoPlantoes: maxPlant, horasPorPlantao: horasPlantao, setoresPermitidos });
   });
   const restricoes = {
     permitidoPar: document.getElementById('permitidoPar').checked,
@@ -423,7 +126,7 @@ window.removerFuncionario = function(id) {
   renderizarListaFuncionarios();
 };
 
-// ---------- SETORES (FORMULÁRIO SIMPLES) ----------
+// ---------- SETORES ----------
 function renderizarListaSetores() {
   const container = document.getElementById('listaSetores');
   let html = '<ul>';
