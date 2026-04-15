@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Gerador de Escalas - Farmácia</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🏥 Escala Farmácia - Abril 2026</h1>
+    
+    <!-- Painel de Controle -->
+    <div class="controls">
+      <button id="btnGerar">Gerar Escala</button>
+      <select id="filtroCategoria">
+        <option value="todos">Todos</option>
+        <option value="farmaceutico">Farmacêuticos</option>
+        <option value="tecnico">Técnicos</option>
+      </select>
+      <button id="btnImprimir">Imprimir</button>
+    </div>
+
+    <!-- Calendário da Escala -->
+    <div id="calendarioEscala"></div>
+  </div>
+
+  <!-- Modais/Forms para cadastro (aqui usaremos localStorage para exemplo) -->
+  <script src="script.js"></script>
+</body>
+</html>
