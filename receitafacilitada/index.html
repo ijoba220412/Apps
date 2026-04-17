@@ -1,838 +1,437 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-  <title>Receita Visual · HC IV</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-    :root {
-      --primary-color: #0d47a1;
-      --secondary-color: #1976d2;
-      --accent-color: #e3f2fd;
-      --bg-color: #f0f4f8;
-      --text-main: #2b3a4a;
-    }
-
-    body { 
-      background-color: var(--bg-color); 
-      font-family: 'Inter', sans-serif; 
-      color: var(--text-main);
-      padding-bottom: 40px; 
-    }
-
-    /* Navbar */
-    .navbar {
-      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    .navbar-brand { color: white !important; font-weight: 600; letter-spacing: 0.5px; }
-    
-    /* Tabs */
-    .nav-tabs { border-bottom: 2px solid #dee2e6; margin-bottom: 20px; }
-    .nav-tabs .nav-link { color: #6c757d; font-weight: 500; border: none; padding: 12px 20px; border-bottom: 3px solid transparent; transition: 0.3s; }
-    .nav-tabs .nav-link:hover { color: var(--secondary-color); border-bottom-color: #bbdefb; }
-    .nav-tabs .nav-link.active { color: var(--primary-color); border-bottom-color: var(--primary-color); background: transparent; }
-
-    /* Cards */
-    .app-card {
-      background: white;
-      border-radius: 16px;
-      border: 1px solid #e9ecef;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.03);
-      margin-bottom: 24px;
-      overflow: hidden;
-    }
-    .app-card-header {
-      background: #f8f9fa;
-      border-bottom: 1px solid #e9ecef;
-      padding: 16px 24px;
-      font-weight: 600;
-      color: var(--primary-color);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .app-card-body { padding: 24px; }
-
-    /* Inputs & Selects */
-    .form-label { font-weight: 500; color: #495057; font-size: 0.9rem; margin-bottom: 6px; }
-    .form-control, .form-select { border-radius: 10px; border: 1px solid #ced4da; padding: 10px 14px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02); transition: 0.2s; }
-    .form-control:focus, .form-select:focus { border-color: var(--secondary-color); box-shadow: 0 0 0 0.25rem rgba(25, 118, 210, 0.15); }
-
-    /* Period Toggle Buttons */
-    .period-selector { display: flex; flex-wrap: wrap; gap: 10px; }
-    .period-btn-label {
-      background: white;
-      border: 2px solid #dee2e6;
-      border-radius: 12px;
-      padding: 10px 16px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 600;
-      color: #6c757d;
-      transition: all 0.2s ease;
-      user-select: none;
-    }
-    .period-btn-label:hover { border-color: #adb5bd; background: #f8f9fa; }
-    .btn-check:checked + .period-btn-label {
-      background: var(--accent-color);
-      border-color: var(--secondary-color);
-      color: var(--primary-color);
-      box-shadow: 0 4px 8px rgba(25, 118, 210, 0.15);
-    }
-    .period-icon { font-size: 1.2rem; }
-
-    /* Table */
-    .prescription-grid { overflow-x: auto; border-radius: 12px; border: 1px solid #e9ecef; }
-    .prescription-table { min-width: 1000px; margin-bottom: 0; background: white; }
-    .prescription-table th { background: var(--primary-color); color: white; font-weight: 500; padding: 16px 12px; text-align: center; border: none; white-space: nowrap; }
-    .prescription-table td { border: 1px solid #e9ecef; padding: 14px 8px; vertical-align: middle; }
-    .prescription-table .med-name { font-weight: 600; color: var(--primary-color); background: #fdfdfe; width: 250px; }
-    .dose-cell { text-align: center; min-width: 110px; background: #fafbfc; cursor: pointer; transition: 0.2s; border-radius: 8px; }
-    .dose-cell:hover { background: #fff3cd; box-shadow: inset 0 0 0 2px #ffc107; }
-    
-    .med-icon { margin-right: 8px; vertical-align: middle; }
-    .symptom-icon { font-size: 1.4rem; margin-right: 6px; }
-
-    /* Action Buttons */
-    .btn-action { border-radius: 10px; font-weight: 500; padding: 10px 20px; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
-    
-    .print-only { display: none; }
-    
-    @media print {
-      body { background: white; padding: 0.2in; }
-      .no-print, .navbar, .nav-tabs, .app-card-header, .add-med-panel, footer, .modal { display: none !important; }
-      .print-only { display: block; }
-      .app-card { box-shadow: none; border: none; margin-bottom: 0; }
-      .app-card-body { padding: 0; }
-      .prescription-table th { background: #0b3954 !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      svg { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .dose-cell { background: transparent; border: 1px solid #ccc; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Receitas HC IV - Sistema em Nuvem</title>
+    <style>
+        /* =================================================================
+           ESTILOS BASE (Otimizado para Nuvem e Impressão A4)
+           ================================================================= */
+        :root {
+            --emerald-500: #10b981; --emerald-600: #059669; --emerald-50: #ecfdf5; --emerald-200: #a7f3d0;
+            --slate-50: #f8fafc; --slate-100: #f1f5f9; --slate-200: #e2e8f0; --slate-300: #cbd5e1; --slate-500: #64748b; --slate-600: #475569; --slate-700: #334155; --slate-800: #1e293b;
+            --blue-50: #eff6ff; --blue-600: #2563eb; --blue-800: #1e40af;
+            --orange-50: #fff7ed; --orange-200: #fed7aa; --orange-400: #fb923c; --orange-500: #f97316; --orange-600: #ea580c;
+            --yellow-50: #fefce8; --yellow-200: #fef08a; --yellow-500: #eab308; --yellow-900: #713f12;
+            --red-50: #fef2f2; --red-500: #ef4444;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; }
+        body { background-color: var(--slate-100); padding-bottom: 80px; }
+        
+        .header { background-color: var(--slate-800); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1); flex-wrap: wrap; gap: 10px; }
+        .status-badge { background-color: var(--slate-500); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-top: 5px; display: inline-block; color: white; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+        .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--slate-200); position: relative; }
+        .card-header { font-size: 18px; font-weight: bold; color: var(--slate-800); margin-bottom: 15px; border-bottom: 1px solid var(--slate-200); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;}
+        
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        @media (min-width: 768px) { .form-grid { grid-template-columns: repeat(4, 1fr); } .col-span-2 { grid-column: span 2; } .col-span-4 { grid-column: span 4; } }
+        
+        label { display: block; font-size: 12px; font-weight: bold; color: var(--slate-600); margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--slate-300); border-radius: 8px; background-color: var(--slate-50); font-size: 14px; color: var(--slate-800); }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--emerald-500); background-color: white; }
+        
+        .btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; }
+        .btn-emerald { background-color: var(--emerald-500); color: white; } 
+        .btn-blue { background-color: var(--blue-600); color: white; } 
+        .btn-orange { background-color: var(--orange-500); color: white; } 
+        .btn-red-icon { background: var(--red-50); color: var(--red-500); padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight:bold; } 
+        
+        .horario-btn { padding: 10px 14px; border-radius: 20px; border: 1px solid var(--slate-300); background: white; color: var(--slate-600); font-weight: bold; font-size: 14px; cursor: pointer; flex: 1; min-width: 70px; text-align: center; }
+        .horario-btn.ativo { background: var(--emerald-500); color: white; border-color: var(--emerald-600); }
+        .horarios-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+        
+        /* IMPRESSÃO */
+        .print-container { overflow-x: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; border: 1px solid var(--slate-300); margin-bottom: 40px; background: white; }
+        .a4-sheet { min-width: 900px; padding: 30px; background: white; }
+        .print-header { border-bottom: 4px solid var(--slate-800); padding-bottom: 15px; margin-bottom: 20px; }
+        .print-title { font-size: 24px; font-weight: 900; text-align: center; margin-bottom: 15px; letter-spacing: 1px; color: var(--slate-800); }
+        .patient-box { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; background: var(--slate-50); padding: 15px; border-radius: 8px; border: 1px solid var(--slate-200); }
+        .patient-field span { display: block; } .patient-field .label { font-size: 10px; color: var(--slate-500); text-transform: uppercase; font-weight: bold; } .patient-field .value { font-size: 16px; font-weight: bold; text-transform: uppercase; color: var(--slate-800); }
+        
+        .section-title { background: var(--emerald-600); color: white; text-align: center; padding: 10px; border-radius: 8px 8px 0 0; font-size: 16px; font-weight: 900; text-transform: uppercase; }
+        .section-title.sos { background: var(--orange-500); margin-top: 30px; }
+        
+        .print-table { width: 100%; border-collapse: collapse; border: 2px solid var(--emerald-600); text-align: center; margin-bottom: 20px; }
+        .print-table th, .print-table td { border: 1px solid var(--emerald-200); padding: 8px; vertical-align: middle; }
+        .print-table th { background: var(--emerald-50); border-bottom: 2px solid var(--emerald-600); }
+        .print-table td.med-name { border-right: 2px solid var(--emerald-600); text-align: left; width: 33%; }
+        .med-title { font-size: 16px; font-weight: 900; color: var(--slate-800); text-transform: uppercase; margin-bottom: 4px; line-height: 1.2; }
+        .med-ind { display: inline-block; background: var(--yellow-200); color: var(--yellow-900); font-weight: 900; font-size: 11px; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; }
+        
+        .print-table.sos-table { border-color: var(--orange-500); text-align: left; }
+        .sos-table th, .sos-table td { border-color: var(--orange-200); }
+        .sos-table td.med-name { border-right: 1px solid var(--orange-200); }
+        .dose-box { background: white; border: 2px solid var(--emerald-500); border-radius: 8px; padding: 6px 4px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-width: 55px;}
+        .dose-box.sos-box { border-color: var(--orange-400); flex-direction: row; gap: 10px; width: auto; padding: 6px 12px; }
+        .footer { margin-top: 30px; padding-top: 15px; border-top: 2px solid var(--slate-300); text-align: center; font-size: 12px; font-weight: bold; color: var(--slate-600); }
+        
+        @media print {
+            @page { size: landscape; margin: 10mm; }
+            body { background: white; padding: 0; }
+            .nao-imprime { display: none !important; }
+            .print-container { box-shadow: none; border: none; overflow: visible; margin: 0; }
+            .a4-sheet { padding: 0; min-width: 100%; }
+            .dose-box, .section-title, .med-ind { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .page-break { page-break-inside: avoid; }
+        }
+    </style>
 </head>
 <body>
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg sticky-top no-print mb-4">
-  <div class="container-fluid px-4">
-    <span class="navbar-brand d-flex align-items-center gap-2">
-      <i class="bi bi-journal-medical fs-4"></i>
-      Receita Visual · HC IV
-    </span>
-  </div>
-</nav>
-
-<div class="container-fluid px-3 px-md-4">
-  <!-- Tabs -->
-  <ul class="nav nav-tabs no-print" id="mainTab" role="tablist">
-    <li class="nav-item" role="presentation">
-      <button class="nav-link active" id="prescricao-tab" data-bs-toggle="tab" data-bs-target="#prescricao" type="button" role="tab">
-        <i class="bi bi-pencil-square me-1"></i> Montar Receita
-      </button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="cadastros-tab" data-bs-toggle="tab" data-bs-target="#cadastros" type="button" role="tab">
-        <i class="bi bi-database-gear me-1"></i> Cadastros Base
-      </button>
-    </li>
-  </ul>
-
-  <div class="tab-content" id="mainTabContent">
-    
-    <!-- ABA: MONTAR RECEITA -->
-    <div class="tab-pane fade show active" id="prescricao" role="tabpanel">
-      
-      <!-- Card 1: Dados Gerais -->
-      <div class="app-card no-print">
-        <div class="app-card-header">
-          <i class="bi bi-person-vcard fs-5"></i> Cabeçalho da Receita
+    <div class="header nao-imprime">
+        <div>
+            <h1 style="font-size: 18px;">➕ Receitas Facilitadas HC IV</h1>
+            <span id="status-db" class="status-badge">⏳ Conectando ao Banco de Dados...</span>
         </div>
-        <div class="app-card-body">
-          <div class="row g-3">
-            <div class="col-md-4">
-              <label class="form-label">Paciente</label>
-              <select class="form-select" id="selectPaciente"></select>
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">Médico(a)</label>
-              <select class="form-select" id="selectMedico"></select>
-            </div>
-            <div class="col-md-2">
-              <label class="form-label">Data</label>
-              <input type="date" class="form-control" id="inputData">
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">Farmacêutico(a)</label>
-              <select class="form-select" id="selectFarmaceutico"></select>
-            </div>
-          </div>
+        <div style="display: flex; gap: 10px;">
+            <button type="button" class="btn btn-blue" id="btn-salvar" onclick="salvarReceita()">💾 Salvar no Histórico</button>
+            <button type="button" class="btn btn-emerald" onclick="window.print()">🖨️ Imprimir PDF</button>
         </div>
-      </div>
-
-      <!-- Card 2: Adicionar Medicamento -->
-      <div class="app-card add-med-panel no-print border-primary border-opacity-25">
-        <div class="app-card-header bg-primary bg-opacity-10 text-primary">
-          <i class="bi bi-capsule fs-5"></i> Incluir Novo Medicamento
-        </div>
-        <div class="app-card-body">
-          <div class="row g-3">
-            <!-- Linha 1: Dados do remédio -->
-            <div class="col-md-4">
-              <label class="form-label">Medicamento</label>
-              <select class="form-select border-primary" id="selectMedicamento" style="border-width: 2px;"></select>
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">Forma / Dose Padrão</label>
-              <select class="form-select" id="selectForma">
-                <option value="1 comp">1 comprimido</option>
-                <option value="2 comp">2 comprimidos</option>
-                <option value="meio comp">Metade comprimido</option>
-                <option value="1 caps">1 cápsula</option>
-                <option value="2 caps">2 cápsulas</option>
-                <option value="10 gotas">10 gotas</option>
-                <option value="20 gotas">20 gotas</option>
-                <option value="30 gotas">30 gotas</option>
-                <option value="40 gotas">40 gotas</option>
-                <option value="5 ml">5 mL</option>
-                <option value="10 ml">10 mL</option>
-                <option value="15 ml">15 mL</option>
-                <option value="1 frasco">1 frasco</option>
-                <option value="1 amp">1 ampola</option>
-              </select>
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">Para que serve? (Sintoma)</label>
-              <select class="form-select" id="selectSintoma">
-                <option value="🤕 DOR">🤕 DOR</option>
-                <option value="🤒 FEBRE">🤒 FEBRE</option>
-                <option value="🤢 NÁUSEA">🤢 NÁUSEA</option>
-                <option value="🤮 VÔMITO">🤮 VÔMITO</option>
-                <option value="💩 PRISÃO DE VENTRE">💩 PRISÃO DE VENTRE</option>
-                <option value="💨 DIARREIA">💨 DIARREIA</option>
-                <option value="🫁 FALTA DE AR">🫁 FALTA DE AR</option>
-                <option value="😴 INSÔNIA">😴 INSÔNIA</option>
-                <option value="😟 ANSIEDADE">😟 ANSIEDADE</option>
-                <option value="🩸 SANGRAMENTO">🩸 SANGRAMENTO</option>
-                <option value="❤️ PRESSÃO ALTA">❤️ PRESSÃO ALTA</option>
-              </select>
-            </div>
-            <div class="col-md-2 d-flex align-items-end">
-              <div class="form-check mb-2">
-                <input class="form-check-input border-danger" type="checkbox" id="checkSOS" style="transform: scale(1.3); margin-right: 10px;">
-                <label class="form-check-label fw-bold text-danger">Marcar como SOS</label>
-              </div>
-            </div>
-          </div>
-
-          <!-- Linha 2: Seletor de Horários -->
-          <div class="mt-4">
-            <label class="form-label d-block text-primary fw-bold"><i class="bi bi-clock-history"></i> Marque os horários para este medicamento:</label>
-            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 bg-light p-3 rounded-3 border">
-              
-              <div class="period-selector" id="periodCheckboxesContainer">
-                <!-- Checkboxes gerados dinamicamente via JS -->
-              </div>
-              
-              <div>
-                <button class="btn btn-primary btn-action shadow-sm" id="addMedBtn">
-                  <i class="bi bi-plus-circle-fill"></i> Adicionar à Receita
-                </button>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 3: Tabela Visual e Ações -->
-      <div class="app-card">
-        <div class="app-card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-          <span><i class="bi bi-grid-3x3-gap-fill fs-5"></i> Tabela da Receita Visual</span>
-          <div class="d-flex gap-2 no-print">
-            <button class="btn btn-outline-danger btn-sm btn-action" id="clearAllBtn"><i class="bi bi-trash3"></i> Limpar Tudo</button>
-            <button class="btn btn-outline-primary btn-sm btn-action" id="previewBtn"><i class="bi bi-eye"></i> Pré-visualizar</button>
-            <button class="btn btn-success btn-sm btn-action" id="printBtn"><i class="bi bi-printer-fill"></i> Gerar PDF / Imprimir</button>
-          </div>
-        </div>
-        <div class="app-card-body p-0 p-md-3">
-          <div class="prescription-grid">
-            <table class="table prescription-table" id="dynamicPrescriptionTable">
-              <thead id="tableHeader"></thead>
-              <tbody id="tableBody"></tbody>
-            </table>
-          </div>
-          <div class="p-3 text-muted no-print" style="font-size: 0.9rem;">
-            <i class="bi bi-info-circle-fill text-primary"></i> <strong>Dica de uso:</strong> Após adicionar à tabela, você pode clicar em qualquer quadrado em branco (ou preenchido) para alterar manualmente a dose de um horário específico.
-          </div>
-        </div>
-      </div>
-
     </div>
 
-    <!-- ABA: CADASTROS -->
-    <div class="tab-pane fade" id="cadastros" role="tabpanel">
-      <div class="row g-4">
-        
-        <!-- Cadastro de Medicamentos -->
-        <div class="col-md-6">
-          <div class="app-card h-100">
-            <div class="app-card-header"><i class="bi bi-capsule"></i> Base de Medicamentos</div>
-            <div class="app-card-body p-3">
-              <form id="formAddMedDB" class="row g-2 mb-3">
-                <div class="col-sm-4"><input type="text" class="form-control" id="medNome" placeholder="Nome (ex: DIPIRONA)"></div>
-                <div class="col-sm-4"><input type="text" class="form-control" id="medApresentacao" placeholder="Apr. (ex: 500mg)"></div>
-                <div class="col-sm-3">
-                  <select class="form-select" id="medFormaPadrao">
-                    <option value="comp">Comprimido</option>
-                    <option value="caps">Cápsula</option>
-                    <option value="gotas">Gotas</option>
-                    <option value="xarope">Xarope</option>
-                    <option value="frasco">Frasco</option>
-                    <option value="ampola">Ampola</option>
-                  </select>
-                </div>
-                <div class="col-sm-1"><button type="button" class="btn btn-primary w-100 p-2" id="addMedDB"><i class="bi bi-plus-lg"></i></button></div>
-              </form>
-              <div class="table-responsive" style="max-height: 250px;">
-                <table class="table table-hover align-middle border" id="medTableList">
-                  <thead class="table-light sticky-top"><tr><th>Nome</th><th>Apresentação</th><th>Ícone</th><th class="text-center">Excluir</th></tr></thead>
-                  <tbody></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Cadastro de Pacientes -->
-        <div class="col-md-6">
-          <div class="app-card h-100">
-            <div class="app-card-header"><i class="bi bi-people"></i> Base de Pacientes</div>
-            <div class="app-card-body p-3">
-              <form class="row g-2 mb-3">
-                <div class="col-sm-6"><input type="text" class="form-control" id="pacNome" placeholder="Nome Completo"></div>
-                <div class="col-sm-4"><input type="text" class="form-control" id="pacProntuario" placeholder="Prontuário"></div>
-                <div class="col-sm-2"><button type="button" class="btn btn-primary w-100 p-2" id="addPacDB"><i class="bi bi-plus-lg"></i></button></div>
-              </form>
-              <div class="table-responsive" style="max-height: 250px;">
-                <table class="table table-hover align-middle border" id="pacTableList">
-                  <thead class="table-light sticky-top"><tr><th>Nome</th><th>Prontuário</th><th class="text-center">Excluir</th></tr></thead>
-                  <tbody></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Cadastro de Médicos -->
-        <div class="col-md-6">
-          <div class="app-card h-100 mb-0">
-            <div class="app-card-header"><i class="bi bi-heart-pulse"></i> Base de Médicos</div>
-            <div class="app-card-body p-3">
-              <form class="row g-2 mb-3">
-                <div class="col-sm-10"><input type="text" class="form-control" id="medicoNome" placeholder="Nome do(a) Médico(a) (ex: PAULA RAMOS)"></div>
-                <div class="col-sm-2"><button type="button" class="btn btn-primary w-100 p-2" id="addMedicoDB"><i class="bi bi-plus-lg"></i></button></div>
-              </form>
-              <div class="table-responsive" style="max-height: 250px;">
-                <table class="table table-hover align-middle border" id="medicoTableList">
-                  <thead class="table-light sticky-top"><tr><th>Nome do Médico</th><th class="text-center">Excluir</th></tr></thead>
-                  <tbody></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Cadastro de Farmacêuticos -->
-        <div class="col-md-6">
-          <div class="app-card h-100 mb-0">
-            <div class="app-card-header"><i class="bi bi-person-badge"></i> Base de Farmacêuticos</div>
-            <div class="app-card-body p-3">
-              <form class="row g-2 mb-3">
-                <div class="col-sm-6"><input type="text" class="form-control" id="farNome" placeholder="Nome do Farmacêutico"></div>
-                <div class="col-sm-4"><input type="text" class="form-control" id="farCRF" placeholder="CRF (ex: CRF-RJ 1234)"></div>
-                <div class="col-sm-2"><button type="button" class="btn btn-primary w-100 p-2" id="addFarDB"><i class="bi bi-plus-lg"></i></button></div>
-              </form>
-              <div class="table-responsive" style="max-height: 250px;">
-                <table class="table table-hover align-middle border" id="farTableList">
-                  <thead class="table-light sticky-top"><tr><th>Nome</th><th>CRF</th><th class="text-center">Excluir</th></tr></thead>
-                  <tbody></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-  </div>
-  
-  <!-- Área oculta usada para construir o layout de impressão -->
-  <div id="printableArea" class="print-only"></div>
-</div>
-
-<script>
-  (function(){
-    // ---------- DESENHOS SVG (VETORES DE ALTA QUALIDADE) ----------
-    const xmlns = 'http://www.w3.org/2000/svg';
-    const svgIcons = {
-      comp: `<svg xmlns="${xmlns}" viewBox="0 0 24 24" class="med-icon" width="28" height="28"><circle cx="12" cy="12" r="10" fill="#f8f9fa" stroke="#0b3954" stroke-width="2"/><line x1="3" y1="12" x2="21" y2="12" stroke="#0b3954" stroke-width="2"/></svg>`,
-      meio_comp: `<svg xmlns="${xmlns}" viewBox="0 0 24 24" class="med-icon" width="28" height="28"><path d="M12 2 A 10 10 0 0 0 12 22 Z" fill="#f8f9fa" stroke="#0b3954" stroke-width="2"/><line x1="12" y1="2" x2="12" y2="22" stroke="#0b3954" stroke-width="2"/></svg>`,
-      caps: `<svg xmlns="${xmlns}" viewBox="0 0 24 24" class="med-icon" width="28" height="28"><path d="M12 5 h-4 a7 7 0 0 0 0 14 h4 z" fill="#1e5f6e" stroke="#0b3954" stroke-width="2"/><path d="M12 5 h4 a7 7 0 0 1 0 14 h-4 z" fill="#f8f9fa" stroke="#0b3954" stroke-width="2"/></svg>`,
-      gotas: `<svg xmlns="${xmlns}" viewBox="0 0 24 24" class="med-icon" width="28" height="28"><path d="M12 2.69 l5.66 5.66 a8 8 0 1 1 -11.31 0 z" fill="#4ea8de" stroke="#0b3954" stroke-width="2"/></svg>`,
-      xarope: `<svg xmlns="${xmlns}" viewBox="0 0 24 24" class="med-icon" width="28" height="28"><path d="M8 11 a4 4 0 1 0 0 8 a4 4 0 0 0 0 -8 z" fill="#f8f9fa" stroke="#0b3954" stroke-width="2"/><path d="M11.5 13.5 L20 5" stroke="#0b3954" stroke-width="2" stroke-linecap="round"/><path d="M6 15 a3 3 0 0 0 4 0 z" fill="#f94144"/></svg>`,
-      frasco: `<svg xmlns="${xmlns}" viewBox="0 0 24 24" class="med-icon" width="28" height="28"><path d="M8 6 h8 v2 h-8 z" fill="#f8f9fa" stroke="#0b3954" stroke-width="2"/><path d="M6 8 h12 v13 a1 1 0 0 1 -1 1 h-10 a1 1 0 0 1 -1 -1 z" fill="#f8f9fa" stroke="#0b3954" stroke-width="2"/><rect x="9" y="14" width="6" height="5" fill="#f94144" stroke="#0b3954" stroke-width="1"/><rect x="9" y="3" width="6" height="3" fill="#0b3954" /></svg>`,
-      ampola: `<svg xmlns="${xmlns}" viewBox="0 0 24 24" class="med-icon" width="28" height="28"><rect x="10" y="8" width="4" height="10" fill="#f8f9fa" stroke="#0b3954" stroke-width="2"/><rect x="8" y="18" width="8" height="2" fill="#0b3954" /><rect x="11" y="4" width="2" height="4" fill="#f8f9fa" stroke="#0b3954" stroke-width="2"/><line x1="12" y1="1" x2="12" y2="4" stroke="#0b3954" stroke-width="2"/></svg>`
-    };
-
-    // ---------- DADOS INICIAIS ----------
-    const defaultMedicamentos = [
-      { nome: "DIPIRONA", apresentacao: "500mg/mL", icone: "gotas" },
-      { nome: "MORFINA", apresentacao: "10mg cp", icone: "comp" },
-      { nome: "LACTULOSE", apresentacao: "667mg/mL xpe", icone: "xarope" },
-      { nome: "BROMOPRIDA", apresentacao: "10mg cp", icone: "comp" },
-      { nome: "OMEPRAZOL", apresentacao: "20mg cápsula", icone: "caps" },
-      { nome: "ONDANSETRONA", apresentacao: "8mg cp", icone: "comp" },
-      { nome: "GABAPENTINA", apresentacao: "300mg cápsula", icone: "caps" }
-    ];
-    const defaultPacientes = [
-      { nome: "ELASIR ZANAZI DA FONSECA", prontuario: "5246029" },
-      { nome: "EUNICE PINHO DA CUNHA", prontuario: "5234305" }
-    ];
-    const defaultFarmaceuticos = [
-      { nome: "Paloma Martins", crf: "CRF-RJ 35646" },
-      { nome: "Daniel Alves Cabral", crf: "CRF-RJ 35526" }
-    ];
-    const defaultMedicos = [
-      { nome: "PAULA DE ALMEIDA RAMOS" },
-      { nome: "RICARDO LUCAS DE SOUZA RODRIGUES" }
-    ];
-
-    const periodos = [
-      { id: 'cafe', label: 'Café', icon: '☕', hora: '06:00' },
-      { id: 'almoco', label: 'Almoço', icon: '🍽️', hora: '12:00' },
-      { id: 'lanche', label: 'Lanche', icon: '🍎', hora: '15:00' },
-      { id: 'jantar', label: 'Jantar', icon: '🍲', hora: '19:00' },
-      { id: 'ceia', label: 'Ceia', icon: '🌙', hora: '22:00' }
-    ];
-
-    let medicamentosDB = [], pacientesDB = [], farmaceuticosDB = [], medicosDB = [];
-    let prescriptionMeds = [];
-
-    // ---------- STORAGE ----------
-    function loadData() {
-      medicamentosDB = JSON.parse(localStorage.getItem('medicamentos_rf_v4')) || defaultMedicamentos;
-      pacientesDB = JSON.parse(localStorage.getItem('pacientes_rf_v4')) || defaultPacientes;
-      farmaceuticosDB = JSON.parse(localStorage.getItem('farmaceuticos_rf_v4')) || defaultFarmaceuticos;
-      medicosDB = JSON.parse(localStorage.getItem('medicos_rf_v4')) || defaultMedicos;
-    }
-    function saveAll() {
-      localStorage.setItem('medicamentos_rf_v4', JSON.stringify(medicamentosDB));
-      localStorage.setItem('pacientes_rf_v4', JSON.stringify(pacientesDB));
-      localStorage.setItem('farmaceuticos_rf_v4', JSON.stringify(farmaceuticosDB));
-      localStorage.setItem('medicos_rf_v4', JSON.stringify(medicosDB));
-    }
-
-    // ---------- INICIALIZAÇÃO DE UI ----------
-    function populateSelects() {
-      const fillSelect = (id, data, formatText) => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.innerHTML = `<option value="" selected disabled>Selecione...</option>`;
-        data.forEach((item, i) => { el.innerHTML += `<option value="${i}">${formatText(item)}</option>`; });
-      };
-      
-      fillSelect('selectPaciente', pacientesDB, p => `${p.nome} (Prontuário: ${p.prontuario})`);
-      fillSelect('selectMedicamento', medicamentosDB, m => `${m.nome} - ${m.apresentacao}`);
-      fillSelect('selectFarmaceutico', farmaceuticosDB, f => `${f.nome} (${f.crf})`);
-      fillSelect('selectMedico', medicosDB, m => m.nome);
-    }
-
-    function renderPeriodosSelectors() {
-      const cont = document.getElementById('periodCheckboxesContainer');
-      if (!cont) return;
-      cont.innerHTML = '';
-      periodos.forEach((p) => {
-        cont.innerHTML += `
-          <div>
-            <input type="checkbox" class="btn-check period-cb" id="btn-check-${p.id}" value="${p.id}" checked>
-            <label class="period-btn-label" for="btn-check-${p.id}">
-              <span class="period-icon">${p.icon}</span> ${p.label}
-            </label>
-          </div>
-        `;
-      });
-    }
-
-    // ---------- LÓGICA DE DESENHO (SVG) ----------
-    function formatDoseIcons(doseStr) {
-      if (!doseStr) return '';
-      let str = doseStr.toLowerCase();
-      
-      const repeatIcon = (icon, n) => Array(n).fill(icon).join('<span style="display:inline-block; width:4px;"></span>');
-
-      if (str.includes('meio comp') || str.includes('½ comp') || str === 'meio') return svgIcons.meio_comp;
-      
-      const capsMatch = str.match(/(\d+)\s*caps?/);
-      if (capsMatch) return repeatIcon(svgIcons.caps, parseInt(capsMatch[1]));
-      
-      const compMatch = str.match(/(\d+)\s*comp/);
-      if (compMatch) return repeatIcon(svgIcons.comp, parseInt(compMatch[1]));
-      
-      const gotasMatch = str.match(/(\d+)\s*gotas/);
-      if (gotasMatch) return svgIcons.gotas + `<span class="fw-bold ms-1" style="font-size:0.95rem; vertical-align:middle; color:#0b3954">${gotasMatch[1]}gts</span>`;
-      
-      const mlMatch = str.match(/(\d+)\s*ml/);
-      if (mlMatch) return svgIcons.xarope + `<span class="fw-bold ms-1" style="font-size:0.95rem; vertical-align:middle; color:#0b3954">${mlMatch[1]}mL</span>`;
-      
-      if (str.includes('frasco')) return svgIcons.frasco;
-      if (str.includes('amp')) return svgIcons.ampola;
-
-      return `<span class="fw-bold text-primary">${doseStr}</span>`;
-    }
-
-    function getMedIcon(formaStr, idIconDB) {
-       let str = formaStr.toLowerCase();
-       if (str.includes('meio comp')) return svgIcons.meio_comp;
-       if (str.includes('comp')) return svgIcons.comp;
-       if (str.includes('caps')) return svgIcons.caps;
-       if (str.includes('gotas')) return svgIcons.gotas;
-       if (str.includes('ml')) return svgIcons.xarope;
-       if (str.includes('frasco')) return svgIcons.frasco;
-       if (str.includes('amp')) return svgIcons.ampola;
-       return svgIcons[idIconDB] || svgIcons.comp;
-    }
-
-    // ---------- CONSTRUÇÃO DA TABELA ----------
-    function rebuildTable() {
-      const thead = document.getElementById('tableHeader');
-      const tbody = document.getElementById('tableBody');
-      if (!thead || !tbody) return;
-      
-      let htmlHead = '<tr><th style="border-top-left-radius: 12px;">MEDICAMENTO</th>';
-      periodos.forEach(p => {
-        htmlHead += `<th><span style="font-size:1.5rem">${p.icon}</span><br>${p.label}<br><small style="font-weight:400; opacity:0.8">${p.hora}</small></th>`;
-      });
-      htmlHead += '<th>SINTOMA</th><th style="width:50px; border-top-right-radius: 12px;" class="no-print">AÇÕES</th></tr>';
-      thead.innerHTML = htmlHead;
-
-      let htmlBody = '';
-      prescriptionMeds.forEach((item, idx) => {
-        const med = item.medicamento;
-        const mainIcon = getMedIcon(item.formaDose, med.icone);
-        
-        htmlBody += `<tr>`;
-        htmlBody += `<td class="med-name">${mainIcon} ${med.nome} <br><small class="text-muted fw-normal">${med.apresentacao}</small>${item.sos ? ' <br><span class="badge bg-danger mt-1"><i class="bi bi-exclamation-triangle-fill"></i> SOS</span>' : ''}</td>`;
-        
-        periodos.forEach(p => {
-          const doseRaw = item.dosesPorPeriodo[p.id] || '';
-          const displayDose = doseRaw ? formatDoseIcons(doseRaw) : '';
-          htmlBody += `<td class="dose-cell" onclick="editDose(${idx}, '${p.id}')">${displayDose}</td>`;
-        });
-        
-        htmlBody += `<td class="text-secondary"><span class="symptom-icon">${item.sintoma.split(' ')[0]}</span> ${item.sintoma.split(' ').slice(1).join(' ')}</td>`;
-        htmlBody += `<td class="text-center no-print"><button class="btn btn-outline-danger btn-sm" onclick="removeMedRow(${idx})" title="Remover"><i class="bi bi-x-lg"></i></button></td>`;
-        htmlBody += `</tr>`;
-      });
-      
-      if(prescriptionMeds.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="${periodos.length+3}" class="text-center py-5 text-muted"><i class="bi bi-inbox fs-2 d-block mb-2 text-light"></i>Nenhum medicamento na receita. Adicione usando o painel acima.</td></tr>`;
-      } else {
-        tbody.innerHTML = htmlBody;
-      }
-    }
-
-    // Expor funções globais para onclick
-    window.editDose = function(idx, period) {
-      const currentVal = prescriptionMeds[idx].dosesPorPeriodo[period] || '';
-      const newVal = prompt("Digite a dose para este horário (ex: 1 comp, 2 caps, meio comp, 10 gotas, 5 ml) ou deixe vazio para apagar:", currentVal);
-      if (newVal !== null) {
-        prescriptionMeds[idx].dosesPorPeriodo[period] = newVal.trim();
-        rebuildTable();
-      }
-    };
-
-    window.removeMedRow = function(i) { 
-      prescriptionMeds.splice(i,1); 
-      rebuildTable(); 
-    };
-
-    // ---------- ADICIONAR MEDICAMENTO NA TABELA ----------
-    document.getElementById('addMedBtn').addEventListener('click', ()=>{
-      const medIdx = document.getElementById('selectMedicamento').value;
-      if(!medIdx) { alert('Por favor, selecione um medicamento.'); return; }
-      
-      const medicamento = medicamentosDB[medIdx];
-      const formaDose = document.getElementById('selectForma').value;
-      const sintoma = document.getElementById('selectSintoma').value;
-      const sos = document.getElementById('checkSOS').checked;
-      
-      const checkboxes = document.querySelectorAll('.period-cb');
-      let peloMenosUmMarcado = false;
-      const doses = {};
-      
-      checkboxes.forEach(cb => {
-        if (cb.checked) {
-          doses[cb.value] = formaDose;
-          peloMenosUmMarcado = true;
-        } else {
-          doses[cb.value] = '';
-        }
-      });
-
-      if (!peloMenosUmMarcado) {
-          if(!confirm("Nenhum horário selecionado. Adicionar o medicamento em branco na tabela?")) return;
-      }
-      
-      prescriptionMeds.push({ medicamento, formaDose, sintoma, sos, dosesPorPeriodo: doses });
-      rebuildTable();
-      
-      document.getElementById('selectMedicamento').value = '';
-      document.getElementById('checkSOS').checked = false;
-      checkboxes.forEach(cb => cb.checked = true);
-    });
-
-    document.getElementById('clearAllBtn').addEventListener('click',()=>{
-        if(prescriptionMeds.length === 0) return;
-        if(confirm("Deseja realmente apagar toda a receita atual?")){
-            prescriptionMeds=[]; rebuildTable(); 
-        }
-    });
-    
-    document.getElementById('inputData').valueAsDate = new Date();
-
-    // ---------- IMPRESSÃO / PDF ----------
-    function gerarHTMLImpressao() {
-      const pacIdx = document.getElementById('selectPaciente').value;
-      const pac = pacIdx ? pacientesDB[pacIdx] : { nome:'__________________________', prontuario:'_________' };
-      
-      const medSelIdx = document.getElementById('selectMedico').value;
-      const medSel = medSelIdx ? medicosDB[medSelIdx] : { nome:'__________________________' };
-      
-      const farIdx = document.getElementById('selectFarmaceutico').value;
-      const far = farIdx ? farmaceuticosDB[farIdx] : { nome:'__________________________', crf:'' };
-      
-      const dataInput = document.getElementById('inputData').value;
-      const data = dataInput ? new Date(dataInput).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : new Date().toLocaleDateString('pt-BR');
-      
-      let html = `<div style="font-family:'Inter', Arial, sans-serif; max-width:1200px; margin:auto; background:white; padding:10px 30px">`;
-      html += `
-        <div style="border-bottom: 3px solid #0d47a1; padding-bottom: 15px; margin-bottom: 20px;">
-            <h2 style="color: #0d47a1; margin:0; font-size: 24px;">🏥 HOSPITAL DO CÂNCER IV – HC IV</h2>
-            <p style="margin:5px 0 0 0; color: #555;">Receituário de Orientação Visual</p>
-        </div>
-        <div style="margin-bottom: 20px; font-size: 16px; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee;">
-            <div style="margin-bottom: 8px;"><strong>👤 Paciente:</strong> ${pac.nome} &nbsp;&nbsp;&nbsp;&nbsp; <strong>Prontuário:</strong> ${pac.prontuario}</div>
-            <div><strong>Data:</strong> ${data} &nbsp;&nbsp;&nbsp;&nbsp; <strong>Médico(a):</strong> Dr(a). ${medSel.nome}</div>
-        </div>
-      `;
-      
-      html += `<table style="width:100%; border-collapse:collapse; border:1px solid #ccc">`;
-      html += `<tr><th style="background:#0d47a1; color:white; padding:12px; text-align:left;">Medicamento</th>`;
-      periodos.forEach(p=> html += `<th style="background:#0d47a1; color:white; padding:12px; text-align:center;">${p.icon} ${p.label}<br><span style="font-size:0.8em; font-weight:normal">${p.hora}</span></th>`);
-      html += `<th style="background:#0d47a1; color:white; padding:12px; text-align:left;">Para que serve?</th></tr>`;
-      
-      prescriptionMeds.forEach((item, index)=>{
-        const mainIcon = getMedIcon(item.formaDose, item.medicamento.icone);
-        const bgRow = index % 2 === 0 ? '#ffffff' : '#f8f9fa';
-        
-        html += `<tr style="background-color: ${bgRow}">
-            <td style="font-weight:bold; padding:14px; border:1px solid #ddd; color:#0d47a1;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                    ${mainIcon} 
-                    <div>
-                        ${item.medicamento.nome}
-                        <div style="font-size: 0.8em; font-weight: normal; color: #666;">${item.medicamento.apresentacao}</div>
-                        ${item.sos ? '<div style="color:red; font-size: 0.85em; margin-top:2px;">🚨 SOS / Se necessário</div>' : ''}
+    <div class="container">
+        <div class="card nao-imprime">
+            <div class="card-header">1. Dados do Paciente e Equipe</div>
+            <div class="form-grid">
+                <div>
+                    <label>Prontuário (Busca)</label>
+                    <div style="display:flex; gap:5px;">
+                        <input type="text" id="inp-pront" placeholder="Ex: 5042552" oninput="sincronizarTela()">
+                        <button class="btn btn-emerald" onclick="buscarPaciente()">Buscar</button>
                     </div>
                 </div>
-            </td>`;
-        
-        periodos.forEach(p=> {
-          const dose = item.dosesPorPeriodo[p.id] || '';
-          html += `<td style="text-align:center; border:1px solid #ddd; padding:10px">${dose ? formatDoseIcons(dose) : ''}</td>`;
-        });
-        
-        html += `<td style="padding:10px; border:1px solid #ddd; font-size:0.95em; color:#444;">${item.sintoma}</td></tr>`;
-      });
-      html += `</table>`;
-      
-      html += `
-        <div style="margin-top:40px; padding-top: 20px; border-top: 1px dashed #ccc; font-size:14px; color:#555; text-align: center;">
-            <p style="margin-bottom: 5px;"><strong>💊 Farmacêutico Responsável:</strong> ${far.nome} (${far.crf})</p>
-            <p style="margin: 0;">📞 HC IV: 3207-3971 | Documento Informativo</p>
+                <div class="col-span-3">
+                    <label>Nome do Paciente</label>
+                    <input type="text" id="inp-nome" placeholder="Ex: Maria da Silva" oninput="sincronizarTela()">
+                </div>
+                <div>
+                    <label>Data da Consulta</label>
+                    <input type="date" id="inp-data" onchange="sincronizarTela()">
+                </div>
+                <div class="col-span-2">
+                    <label>Médico(a) Solicitante</label>
+                    <select id="inp-medico" onchange="sincronizarTela()">
+                        <option value="">Carregando médicos...</option>
+                    </select>
+                </div>
+                <div class="col-span-1">
+                    <label>Farmacêutico(a)</label>
+                    <select id="inp-farm" onchange="sincronizarTela()">
+                        <option value="">Carregando farmacêuticos...</option>
+                    </select>
+                </div>
+            </div>
         </div>
-      </div>`;
-      return html;
-    }
 
-    document.getElementById('previewBtn').addEventListener('click',()=>{
-      const area = document.getElementById('printableArea');
-      area.innerHTML = gerarHTMLImpressao();
-      area.style.display='block';
-      window.scrollTo(0, document.body.scrollHeight);
-    });
+        <div class="nao-imprime">
+            <div class="card-header" style="border:none; margin-bottom: 5px;">
+                <span style="color: var(--slate-800);">2. Medicamentos Fixos</span>
+                <button type="button" class="btn btn-blue" onclick="addMed('fixo')">+ Adicionar Fixo</button>
+            </div>
+            <div id="lista-fixos"></div>
+        </div>
 
-    document.getElementById('printBtn').addEventListener('click', async ()=>{
-      const area = document.getElementById('printableArea');
-      area.innerHTML = gerarHTMLImpressao();
-      area.style.display='block';
-      
-      const originalBodyBg = document.body.style.background;
-      document.body.style.background = 'white';
-      
-      try {
-          const canvas = await html2canvas(area, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
-          const { jsPDF } = window.jspdf;
-          const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-          const w = pdf.internal.pageSize.getWidth();
-          const h = (canvas.height * w) / canvas.width;
-          pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, w, h);
-          pdf.save(`Receita_${document.getElementById('inputData').value || 'Hoje'}.pdf`);
-      } catch (err) {
-          console.error("Erro ao gerar PDF", err);
-          alert("Erro ao gerar o PDF. Use a Pré-visualização e imprima (Ctrl+P).");
-      }
-      
-      document.body.style.background = originalBodyBg;
-      area.style.display='none';
-    });
+        <div class="nao-imprime">
+            <div class="card-header" style="border:none; margin-bottom: 5px; margin-top: 20px;">
+                <span style="color: var(--orange-600);">3. Medicamentos S.O.S</span>
+                <button type="button" class="btn btn-orange" onclick="addMed('sos')">+ Adicionar S.O.S</button>
+            </div>
+            <div id="lista-sos"></div>
+        </div>
 
-    // ==========================================
-    // CRUDs (CRIAR, LER, EXCLUIR) DOS CADASTROS
-    // ==========================================
+        <div class="print-container">
+            <div class="a4-sheet">
+                <div class="print-header">
+                    <div class="print-title">HOSPITAL DO CÂNCER IV – HC IV</div>
+                    <div class="patient-box">
+                        <div class="patient-field col-span-2"><span class="label">Paciente</span><span class="value" id="out-nome">______</span></div>
+                        <div class="patient-field"><span class="label">Prontuário</span><span class="value" id="out-pront">______</span></div>
+                        <div class="patient-field"><span class="label">Data</span><span class="value" id="out-data">__/__/____</span></div>
+                        <div class="patient-field col-span-4" style="border-top: 1px solid #e2e8f0; padding-top: 10px;"><span class="label">Médico(a)</span><span class="value" id="out-medico" style="font-size:14px;">______</span></div>
+                    </div>
+                </div>
 
-    // 1. Medicamentos
-    function refreshMedTable(){ 
-      const t = document.querySelector('#medTableList tbody'); 
-      if (!t) return;
-      t.innerHTML='';
-      medicamentosDB.forEach((m,i)=> {
-          const iconeSVG = svgIcons[m.icone] || svgIcons.comp;
-          t.innerHTML+=`<tr>
-              <td class="fw-bold text-primary">${m.nome}</td>
-              <td class="text-muted">${m.apresentacao}</td>
-              <td>${iconeSVG}</td>
-              <td class="text-center"><button class="btn btn-sm btn-outline-danger" onclick="deleteMed(${i})"><i class="bi bi-trash"></i></button></td>
-          </tr>`
-      });
-    }
-    window.deleteMed = (i)=>{ 
-        if(confirm("Excluir este medicamento?")) { medicamentosDB.splice(i,1); saveAll(); refreshMedTable(); populateSelects(); }
-    };
-    document.getElementById('addMedDB').addEventListener('click',()=>{
-      const n = document.getElementById('medNome').value.trim().toUpperCase();
-      const a = document.getElementById('medApresentacao').value.trim();
-      const icone = document.getElementById('medFormaPadrao').value;
-      if(!n) { alert("Preencha o nome."); return; }
-      medicamentosDB.push({nome:n, apresentacao:a, icone}); 
-      saveAll(); refreshMedTable(); populateSelects();
-      document.getElementById('medNome').value=''; document.getElementById('medApresentacao').value='';
-    });
+                <div class="section-title">Como tomar os seus medicamentos (Uso Contínuo)</div>
+                <table class="print-table">
+                    <thead id="thead-fixos"></thead>
+                    <tbody id="tbody-fixos"></tbody>
+                </table>
 
-    // 2. Pacientes
-    function refreshPacTable(){
-      const t = document.querySelector('#pacTableList tbody'); 
-      if (!t) return;
-      t.innerHTML='';
-      pacientesDB.forEach((p,i)=> {
-          t.innerHTML+=`<tr>
-              <td class="fw-bold text-primary">${p.nome}</td>
-              <td class="text-muted">${p.prontuario}</td>
-              <td class="text-center"><button class="btn btn-sm btn-outline-danger" onclick="deletePac(${i})"><i class="bi bi-trash"></i></button></td>
-          </tr>`
-      });
-    }
-    window.deletePac = (i)=>{ 
-        if(confirm("Excluir este paciente?")) { pacientesDB.splice(i,1); saveAll(); refreshPacTable(); populateSelects(); }
-    };
-    document.getElementById('addPacDB').addEventListener('click',()=>{
-      const n = document.getElementById('pacNome').value.trim().toUpperCase();
-      const p = document.getElementById('pacProntuario').value.trim();
-      if(!n) { alert("Preencha o nome do paciente."); return; }
-      pacientesDB.push({nome:n, prontuario:p}); 
-      saveAll(); refreshPacTable(); populateSelects();
-      document.getElementById('pacNome').value=''; document.getElementById('pacProntuario').value='';
-    });
+                <div id="container-tabela-sos" style="display: none;" class="page-break">
+                    <div class="section-title sos">SOS - Usar apenas se sentir incômodo</div>
+                    <table class="print-table sos-table">
+                        <tbody id="tbody-sos"></tbody>
+                    </table>
+                </div>
 
-    // 3. Médicos
-    function refreshMedicoTable(){
-      const t = document.querySelector('#medicoTableList tbody'); 
-      if (!t) return;
-      t.innerHTML='';
-      medicosDB.forEach((m,i)=> {
-          t.innerHTML+=`<tr>
-              <td class="fw-bold text-primary">${m.nome}</td>
-              <td class="text-center"><button class="btn btn-sm btn-outline-danger" onclick="deleteMedico(${i})"><i class="bi bi-trash"></i></button></td>
-          </tr>`
-      });
-    }
-    window.deleteMedico = (i)=>{ 
-        if(confirm("Excluir este médico?")) { medicosDB.splice(i,1); saveAll(); refreshMedicoTable(); populateSelects(); }
-    };
-    document.getElementById('addMedicoDB').addEventListener('click',()=>{
-      const n = document.getElementById('medicoNome').value.trim().toUpperCase();
-      if(!n) { alert("Preencha o nome do médico."); return; }
-      medicosDB.push({nome:n}); 
-      saveAll(); refreshMedicoTable(); populateSelects();
-      document.getElementById('medicoNome').value='';
-    });
+                <div class="footer page-break">
+                    <p>Assistência Domiciliar - Farmácia: 3207-3971 ou Emergência: 3207-3872 / 3207-3874</p>
+                    <p style="margin-top: 10px;">Farmacêutico(a) Resp: <span id="out-farm" style="border-bottom: 1px solid #333; padding: 0 10px;">_____________________</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    // 4. Farmacêuticos
-    function refreshFarTable(){
-      const t = document.querySelector('#farTableList tbody'); 
-      if (!t) return;
-      t.innerHTML='';
-      farmaceuticosDB.forEach((f,i)=> {
-          t.innerHTML+=`<tr>
-              <td class="fw-bold text-primary">${f.nome}</td>
-              <td class="text-muted">${f.crf}</td>
-              <td class="text-center"><button class="btn btn-sm btn-outline-danger" onclick="deleteFar(${i})"><i class="bi bi-trash"></i></button></td>
-          </tr>`
-      });
-    }
-    window.deleteFar = (i)=>{ 
-        if(confirm("Excluir este farmacêutico?")) { farmaceuticosDB.splice(i,1); saveAll(); refreshFarTable(); populateSelects(); }
-    };
-    document.getElementById('addFarDB').addEventListener('click',()=>{
-      const n = document.getElementById('farNome').value.trim();
-      const c = document.getElementById('farCRF').value.trim();
-      if(!n) { alert("Preencha o nome do farmacêutico."); return; }
-      farmaceuticosDB.push({nome:n, crf:c}); 
-      saveAll(); refreshFarTable(); populateSelects();
-      document.getElementById('farNome').value=''; document.getElementById('farCRF').value='';
-    });
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, setDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-    // ==========================================
-    // START DA APLICAÇÃO
-    // ==========================================
-    function init(){
-      loadData();
-      saveAll();
-      populateSelects();
-      renderPeriodosSelectors();
-      
-      // Carregar todas as tabelas
-      refreshMedTable();
-      refreshPacTable();
-      refreshMedicoTable();
-      refreshFarTable();
-      
-      rebuildTable();
-    }
-    
-    init();
-  })();
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        // CHAVES DO SEU FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqyKxM4idfyKhRssyq-M7Yzb5lCSWS1sU",
+            authDomain: "receita-facilitada.firebaseapp.com",
+            projectId: "receita-facilitada",
+            storageBucket: "receita-facilitada.firebasestorage.app",
+            messagingSenderId: "1029880325250",
+            appId: "1:1029880325250:web:c24445dfc3a21ed1bf809b",
+            measurementId: "G-6GWMLTV5SE"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // VARIÁVEIS GLOBAIS
+        window.bancoMedicamentos = [];
+        window.appFixos = [];
+        window.appSos = [];
+        window.contadorId = 1;
+        window.HORARIOS = ["06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "22:00", "00:00"];
+
+        // INICIALIZAÇÃO
+        async function carregarBancoDeDados() {
+            try {
+                // 1. Carrega Medicamentos
+                const medsSnapshot = await getDocs(collection(db, "medicamentos_padrao"));
+                window.bancoMedicamentos = medsSnapshot.docs.map(doc => doc.data());
+                
+                // 2. Carrega Profissionais
+                const profSnapshot = await getDocs(collection(db, "profissionais"));
+                const profissionais = profSnapshot.docs.map(doc => doc.data());
+                
+                const selectMedico = document.getElementById("inp-medico");
+                const selectFarm = document.getElementById("inp-farm");
+                selectMedico.innerHTML = '<option value="">Selecione o Médico(a)...</option>';
+                selectFarm.innerHTML = '<option value="">Selecione o Farmacêutico(a)...</option>';
+                
+                profissionais.forEach(p => {
+                    if(p.cargo === "Médico(a)") selectMedico.innerHTML += `<option value="${p.nome}">${p.nome}</option>`;
+                    else selectFarm.innerHTML += `<option value="${p.nome}">${p.nome}</option>`;
+                });
+
+                document.getElementById("status-db").innerText = "🟢 Conectado à Nuvem";
+                document.getElementById("status-db").style.backgroundColor = "#10b981";
+            } catch (error) {
+                console.error("Erro ao carregar:", error);
+                document.getElementById("status-db").innerText = "🔴 Erro de Conexão";
+                document.getElementById("status-db").style.backgroundColor = "#ef4444";
+            }
+        }
+
+        // BUSCA DE PACIENTE
+        window.buscarPaciente = async function() {
+            const pront = document.getElementById("inp-pront").value.trim();
+            if(!pront) return alert("Digite o prontuário para buscar!");
+            
+            try {
+                const pacDoc = await getDoc(doc(db, "pacientes", pront));
+                if (pacDoc.exists()) {
+                    document.getElementById("inp-nome").value = pacDoc.data().nome;
+                    alert("Paciente encontrado!");
+                    // (No futuro podemos puxar a última receita dele aqui também)
+                } else {
+                    alert("Paciente não encontrado no banco de dados. Você pode preencher manualmente.");
+                }
+                window.sincronizarTela();
+            } catch (e) {
+                alert("Erro ao buscar no banco de dados.");
+            }
+        }
+
+        // SALVAR NO HISTÓRICO
+        window.salvarReceita = async function() {
+            const pront = document.getElementById("inp-pront").value;
+            const nome = document.getElementById("inp-nome").value;
+            if(!pront || !nome) return alert("Preencha o Prontuário e Nome antes de salvar!");
+
+            const btn = document.getElementById("btn-salvar");
+            btn.innerText = "⏳ Salvando...";
+            btn.style.backgroundColor = "#64748b";
+
+            try {
+                // Salva ou atualiza o paciente
+                await setDoc(doc(db, "pacientes", pront), { nome: nome, prontuario: pront });
+                
+                // Salva a receita
+                await addDoc(collection(db, "receitas"), {
+                    prontuario: pront,
+                    paciente_nome: nome,
+                    medico: document.getElementById("inp-medico").value,
+                    farmaceutico: document.getElementById("inp-farm").value,
+                    data_criacao: new Date().toISOString(),
+                    medicamentos_fixos: window.appFixos,
+                    medicamentos_sos: window.appSos
+                });
+
+                btn.innerText = "✅ Salvo com sucesso!";
+                btn.style.backgroundColor = "#10b981";
+                setTimeout(() => { btn.innerText = "💾 Salvar no Histórico"; btn.style.backgroundColor = "#2563eb"; }, 3000);
+            } catch (e) {
+                alert("Erro ao salvar receita.");
+                btn.innerText = "💾 Salvar no Histórico";
+            }
+        }
+
+        // ========================================================
+        // LOGICA DE TELA (Adaptada para usar a variável window global)
+        // ========================================================
+        window.sincronizarTela = function() {
+            document.getElementById('out-nome').innerText = document.getElementById('inp-nome').value || '______';
+            document.getElementById('out-pront').innerText = document.getElementById('inp-pront').value || '______';
+            document.getElementById('out-medico').innerText = document.getElementById('inp-medico').value || '______';
+            document.getElementById('out-farm').innerText = document.getElementById('inp-farm').value || '______';
+            
+            const rawData = document.getElementById('inp-data').value;
+            if (rawData) {
+                const p = rawData.split('-');
+                document.getElementById('out-data').innerText = `${p[2]}/${p[1]}/${p[0]}`;
+            }
+        }
+
+        window.addMed = function(tipo) {
+            const id = window.contadorId++;
+            const item = { id, nome: '', apre: 'comprimido', dose: '1', ind: '', horarios: {}, instrucoes: '' };
+            const container = document.getElementById(tipo === 'fixo' ? 'lista-fixos' : 'lista-sos');
+            
+            if (tipo === 'fixo') window.appFixos.push(item); else window.appSos.push(item);
+
+            const opts = window.bancoMedicamentos.map(m => `<option value="${m.nome}">${m.nome}</option>`).join('');
+            const horasBtn = window.HORARIOS.map(h => `<button type="button" id="btn-hora-${id}-${h.replace(':','')}" class="horario-btn" onclick="marcaHora(${id}, '${h}')">${h}</button>`).join('');
+            
+            const htmlFixo = `
+                <div class="card" id="card-${id}" style="border-left: 4px solid var(--blue-600);">
+                    <button type="button" onclick="removeMed(${id}, 'fixo')" class="btn-red-icon" style="position:absolute; top:15px; right:15px;">X</button>
+                    <div class="form-grid" style="margin-bottom:15px; padding-top: 10px;">
+                        <div class="col-span-2"><label>Remédio</label>
+                        <select onchange="escolheMed(${id}, 'fixo', this.value)" style="margin-bottom:8px;"><option value="">Selecione...</option>${opts}<option value="OUTRO">✍️ OUTRO...</option></select>
+                        <input type="text" id="manual-${id}" style="display:none; border-color:var(--blue-600);" placeholder="Digite..." oninput="atualiza(${id}, 'fixo', 'nome', this.value)"></div>
+                        <div><label>Símbolo</label><select id="apre-${id}" onchange="atualiza(${id}, 'fixo', 'apre', this.value)"><option value="comprimido">Comp.</option><option value="meio_comprimido">Metade</option><option value="gotas">Gotas</option><option value="liquido">Líquido</option></select></div>
+                        <div><label>Dose</label><input type="text" id="dose-${id}" value="1" oninput="atualiza(${id}, 'fixo', 'dose', this.value)"></div>
+                    </div>
+                    <div style="margin-bottom:15px;"><label>Para que serve?</label><input type="text" id="ind-${id}" style="background:#fef08a; font-weight:bold;" oninput="atualiza(${id}, 'fixo', 'ind', this.value)"></div>
+                    <div><label>Horários Fixos:</label><div class="horarios-wrap">${horasBtn}</div></div>
+                </div>`;
+                
+            const htmlSos = `
+                <div class="card" id="card-${id}" style="border-left: 4px solid var(--orange-500);">
+                    <button type="button" onclick="removeMed(${id}, 'sos')" class="btn-red-icon" style="position:absolute; top:15px; right:15px;">X</button>
+                    <div class="form-grid" style="margin-bottom:15px; padding-top: 10px;">
+                        <div class="col-span-2"><label>Remédio SOS</label>
+                        <select onchange="escolheMed(${id}, 'sos', this.value)" style="margin-bottom:8px;"><option value="">Selecione...</option>${opts}<option value="OUTRO">✍️ OUTRO...</option></select>
+                        <input type="text" id="manual-${id}" style="display:none;" oninput="atualiza(${id}, 'sos', 'nome', this.value)"></div>
+                        <div><label>Símbolo</label><select id="apre-${id}" onchange="atualiza(${id}, 'sos', 'apre', this.value)"><option value="comprimido">Comp.</option><option value="meio_comprimido">Metade</option><option value="gotas">Gotas</option><option value="liquido">Líquido</option></select></div>
+                        <div><label>Dose</label><input type="text" id="dose-${id}" value="1" oninput="atualiza(${id}, 'sos', 'dose', this.value)"></div>
+                    </div>
+                    <div style="margin-bottom:15px;"><label>Para que serve?</label><input type="text" id="ind-${id}" style="background:#fef08a; font-weight:bold;" oninput="atualiza(${id}, 'sos', 'ind', this.value)"></div>
+                    <div><label>Instruções (Como tomar):</label><textarea rows="2" style="background:#fff7ed;" oninput="atualiza(${id}, 'sos', 'instrucoes', this.value)"></textarea></div>
+                </div>`;
+
+            const div = document.createElement('div');
+            div.innerHTML = tipo === 'fixo' ? htmlFixo : htmlSos;
+            container.appendChild(div);
+            window.renderizarReceita();
+        }
+
+        window.removeMed = function(id, tipo) {
+            document.getElementById('card-' + id).parentElement.remove();
+            if (tipo === 'fixo') window.appFixos = window.appFixos.filter(i => i.id !== id);
+            else window.appSos = window.appSos.filter(i => i.id !== id);
+            window.renderizarReceita();
+        }
+
+        window.escolheMed = function(id, tipo, val) {
+            const item = (tipo === 'fixo' ? window.appFixos : window.appSos).find(i => i.id === id);
+            const inp = document.getElementById('manual-' + id);
+            if(val === 'OUTRO') { item.nome = ''; inp.style.display = 'block'; }
+            else {
+                item.nome = val; inp.style.display = 'none';
+                const dbInfo = window.bancoMedicamentos.find(m => m.nome === val);
+                if(dbInfo) {
+                    item.apre = dbInfo.apresentacao || 'comprimido'; item.dose = dbInfo.dosePadrao || '1'; item.ind = dbInfo.indicacao || '';
+                    document.getElementById('apre-'+id).value = item.apre;
+                    document.getElementById('dose-'+id).value = item.dose;
+                    document.getElementById('ind-'+id).value = item.ind;
+                }
+            }
+            window.renderizarReceita();
+        }
+
+        window.atualiza = function(id, tipo, campo, valor) {
+            const item = (tipo === 'fixo' ? window.appFixos : window.appSos).find(i => i.id === id);
+            if(item) item[campo] = valor;
+            window.renderizarReceita();
+        }
+
+        window.marcaHora = function(id, hora) {
+            const item = window.appFixos.find(i => i.id === id);
+            if(item) {
+                item.horarios[hora] = !item.horarios[hora];
+                const btn = document.getElementById(`btn-hora-${id}-${hora.replace(':','')}`);
+                if(item.horarios[hora]) btn.classList.add('ativo'); else btn.classList.remove('ativo');
+                window.renderizarReceita();
+            }
+        }
+
+        // ================= IMPRESSÃO =================
+        function getSVG(t) {
+            if (t === 'comprimido') return '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M10 5l9 9a4.95 4.95 0 1 1-7 7l-9-9a4.95 4.95 0 0 1 7-7Z" /><path d="m7.5 9.5 7 7" /></svg>';
+            if (t === 'meio_comprimido') return '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><path d="M10 5l4.5 4.5" /><path d="m7.5 9.5 7 7" stroke-dasharray="2 2" /><path d="M5 12a4.95 4.95 0 0 0 7 7l4.5-4.5" /></svg>';
+            if (t === 'gotas') return '<svg width="24" height="24" viewBox="0 0 24 24" fill="#06b6d4"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" /></svg>';
+            return '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M4 4h16v4a8 8 0 0 1-16 0V4z" /><path d="M12 12v9" /><path d="M8 21h8" /></svg>';
+        }
+
+        window.renderizarReceita = function() {
+            let th = '<tr><th style="text-align:left; width:33%; padding-left:15px;">Medicamento</th>';
+            window.HORARIOS.forEach(h => {
+                let cor = parseInt(h) >= 6 && parseInt(h) < 18 ? (parseInt(h) <= 12 ? '#f97316' : '#eab308') : '#4f46e5';
+                th += `<th><span style="color:${cor};">${h}</span></th>`;
+            });
+            document.getElementById('thead-fixos').innerHTML = th + '</tr>';
+
+            const tbF = document.getElementById('tbody-fixos');
+            if(!window.appFixos.length) tbF.innerHTML = '<tr><td colspan="10" style="padding:20px; color:#94a3b8;">Nenhum medicamento</td></tr>';
+            else {
+                let htmlF = '';
+                window.appFixos.forEach((item, i) => {
+                    htmlF += `<tr style="${i%2===0?'background:white;':'background:#f8fafc;'}"><td class="med-name"><div class="med-title">${item.nome||'-'}</div>${item.ind?`<div class="med-ind">${item.ind}</div>`:''}</td>`;
+                    window.HORARIOS.forEach(h => {
+                        if(item.horarios[h]) htmlF += `<td><div class="dose-box">${getSVG(item.apre)}<span style="font-size:10px;font-weight:bold;">${item.dose}</span></div></td>`;
+                        else htmlF += `<td>-</td>`;
+                    });
+                    htmlF += `</tr>`;
+                });
+                tbF.innerHTML = htmlF;
+            }
+
+            const cSos = document.getElementById('container-tabela-sos');
+            const tbS = document.getElementById('tbody-sos');
+            if(!window.appSos.length) cSos.style.display = 'none';
+            else {
+                cSos.style.display = 'block';
+                let htmlS = '';
+                window.appSos.forEach((item, i) => {
+                    htmlS += `<tr style="${i%2===0?'background:white;':'background:#fff7ed;'}"><td class="med-name"><div class="med-title">${item.nome||'-'}</div><div class="dose-box sos-box">${getSVG(item.apre)}<span style="font-size:12px;font-weight:bold;">${item.dose}</span></div></td><td style="padding:15px; text-align:left;">${item.ind?`<div class="med-ind" style="background:#fed7aa;">Para: ${item.ind}</div><br>`:''}<span style="font-weight:bold; font-size:16px;">${item.instrucoes||'-'}</span></td></tr>`;
+                });
+                tbS.innerHTML = htmlS;
+            }
+        }
+
+        // Executar on load
+        document.getElementById('inp-data').valueAsDate = new Date();
+        window.sincronizarTela();
+        window.renderizarReceita();
+        carregarBancoDeDados();
+    </script>
 </body>
 </html>
