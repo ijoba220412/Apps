@@ -2,444 +2,436 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apps</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Receitas HC IV - Sistema em Nuvem</title>
     <style>
+        /* =================================================================
+           ESTILOS BASE (Otimizado para Nuvem e Impressão A4)
+           ================================================================= */
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-            --light-bg: #f8f9fa;
-            --dark-bg: #343a40;
-            --text-color: #333;
-            --light-text: #f8f9fa;
-            --border-radius: 8px;
-            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
+            --emerald-500: #10b981; --emerald-600: #059669; --emerald-50: #ecfdf5; --emerald-200: #a7f3d0;
+            --slate-50: #f8fafc; --slate-100: #f1f5f9; --slate-200: #e2e8f0; --slate-300: #cbd5e1; --slate-500: #64748b; --slate-600: #475569; --slate-700: #334155; --slate-800: #1e293b;
+            --blue-50: #eff6ff; --blue-600: #2563eb; --blue-800: #1e40af;
+            --orange-50: #fff7ed; --orange-200: #fed7aa; --orange-400: #fb923c; --orange-500: #f97316; --orange-600: #ea580c;
+            --yellow-50: #fefce8; --yellow-200: #fef08a; --yellow-500: #eab308; --yellow-900: #713f12;
+            --red-50: #fef2f2; --red-500: #ef4444;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--light-bg);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header */
-        header {
-            background-color: var(--primary-color);
-            color: var(--light-text);
-            padding: 20px 0;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .logo span {
-            color: var(--secondary-color);
-        }
-
-        nav ul {
-            display: flex;
-            list-style: none;
-        }
-
-        nav ul li {
-            margin-left: 20px;
-        }
-
-        nav ul li a {
-            color: var(--light-text);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        nav ul li a:hover {
-            color: var(--secondary-color);
-        }
-
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: var(--light-text);
-            padding: 60px 0;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 3em;
-            margin-bottom: 20px;
-        }
-
-        .hero p {
-            font-size: 1.2em;
-            max-width: 800px;
-            margin: 0 auto 30px;
-        }
-
-        .cta-button {
-            display: inline-block;
-            background-color: var(--accent-color);
-            color: white;
-            padding: 12px 30px;
-            border-radius: var(--border-radius);
-            text-decoration: none;
-            font-weight: bold;
-            transition: var(--transition);
-        }
-
-        .cta-button:hover {
-            background-color: #c0392b;
-            transform: translateY(-3px);
-        }
-
-        /* Apps Section */
-        .section-title {
-            text-align: center;
-            margin: 60px 0 40px;
-            font-size: 2.2em;
-            color: var(--primary-color);
-        }
-
-        .app-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-            margin-bottom: 60px;
-        }
-
-        .app-card {
-            background-color: white;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--box-shadow);
-            transition: var(--transition);
-        }
-
-        .app-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 16px rgba(0, 0, 0, 0.2);
-        }
-
-        .app-image {
-            height: 180px;
-            background-color: var(--secondary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 3em;
-        }
-
-        .app-content {
-            padding: 20px;
-        }
-
-        .app-content h3 {
-            margin-bottom: 15px;
-            color: var(--primary-color);
-        }
-
-        .app-link {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 8px 20px;
-            background-color: var(--primary-color);
-            color: white;
-            text-decoration: none;
-            border-radius: var(--border-radius);
-            transition: var(--transition);
-        }
-
-        .app-link:hover {
-            background-color: var(--secondary-color);
-        }
-
-        /* Features Section */
-        .features {
-            background-color: var(--light-bg);
-            padding: 60px 0;
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-        }
-
-        .feature-item {
-            text-align: center;
-            padding: 30px;
-            background-color: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-        }
-
-        .feature-icon {
-            font-size: 2.5em;
-            color: var(--secondary-color);
-            margin-bottom: 20px;
-        }
-
-        /* Coming Soon Section */
-        .coming-soon {
-            padding: 60px 0;
-            text-align: center;
-            background-color: white;
-        }
-
-        /* Footer */
-        footer {
-            background-color: var(--dark-bg);
-            color: var(--light-text);
-            padding: 40px 0;
-            text-align: center;
-        }
-
-        .social-links {
-            margin: 20px 0;
-        }
-
-        .social-links a {
-            color: var(--light-text);
-            margin: 0 10px;
-            font-size: 1.5em;
-            transition: var(--transition);
-        }
-
-        .social-links a:hover {
-            color: var(--secondary-color);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            nav ul {
-                margin-top: 20px;
-                justify-content: center;
-            }
-
-            nav ul li {
-                margin: 0 10px;
-            }
-
-            .hero h1 {
-                font-size: 2em;
-            }
-
-            .app-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .feature-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Menu mobile */
-        .menu-toggle {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-        }
-
-        .bar {
-            width: 25px;
-            height: 3px;
-            background-color: white;
-            margin: 3px 0;
-            transition: var(--transition);
-        }
-
-        @media (max-width: 768px) {
-            .menu-toggle {
-                display: flex;
-            }
-
-            nav {
-                display: none;
-                width: 100%;
-                text-align: center;
-            }
-
-            nav.active {
-                display: block;
-            }
-
-            nav ul {
-                flex-direction: column;
-            }
-
-            nav ul li {
-                margin: 10px 0;
-            }
-
-            .header-content {
-                flex-wrap: wrap;
-                justify-content: space-between;
-            }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; }
+        body { background-color: var(--slate-100); padding-bottom: 80px; }
+        
+        .header { background-color: var(--slate-800); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1); flex-wrap: wrap; gap: 10px; }
+        .status-badge { background-color: var(--slate-500); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-top: 5px; display: inline-block; color: white; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+        .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--slate-200); position: relative; }
+        .card-header { font-size: 18px; font-weight: bold; color: var(--slate-800); margin-bottom: 15px; border-bottom: 1px solid var(--slate-200); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;}
+        
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        @media (min-width: 768px) { .form-grid { grid-template-columns: repeat(4, 1fr); } .col-span-2 { grid-column: span 2; } .col-span-4 { grid-column: span 4; } }
+        
+        label { display: block; font-size: 12px; font-weight: bold; color: var(--slate-600); margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--slate-300); border-radius: 8px; background-color: var(--slate-50); font-size: 14px; color: var(--slate-800); }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--emerald-500); background-color: white; }
+        
+        .btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; }
+        .btn-emerald { background-color: var(--emerald-500); color: white; } 
+        .btn-blue { background-color: var(--blue-600); color: white; } 
+        .btn-orange { background-color: var(--orange-500); color: white; } 
+        .btn-red-icon { background: var(--red-50); color: var(--red-500); padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight:bold; } 
+        
+        .horario-btn { padding: 10px 14px; border-radius: 20px; border: 1px solid var(--slate-300); background: white; color: var(--slate-600); font-weight: bold; font-size: 14px; cursor: pointer; flex: 1; min-width: 70px; text-align: center; }
+        .horario-btn.ativo { background: var(--emerald-500); color: white; border-color: var(--emerald-600); }
+        .horarios-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+        
+        /* IMPRESSÃO */
+        .print-container { overflow-x: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; border: 1px solid var(--slate-300); margin-bottom: 40px; background: white; }
+        .a4-sheet { min-width: 900px; padding: 30px; background: white; }
+        .print-header { border-bottom: 4px solid var(--slate-800); padding-bottom: 15px; margin-bottom: 20px; }
+        .print-title { font-size: 24px; font-weight: 900; text-align: center; margin-bottom: 15px; letter-spacing: 1px; color: var(--slate-800); }
+        .patient-box { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; background: var(--slate-50); padding: 15px; border-radius: 8px; border: 1px solid var(--slate-200); }
+        .patient-field span { display: block; } .patient-field .label { font-size: 10px; color: var(--slate-500); text-transform: uppercase; font-weight: bold; } .patient-field .value { font-size: 16px; font-weight: bold; text-transform: uppercase; color: var(--slate-800); }
+        
+        .section-title { background: var(--emerald-600); color: white; text-align: center; padding: 10px; border-radius: 8px 8px 0 0; font-size: 16px; font-weight: 900; text-transform: uppercase; }
+        .section-title.sos { background: var(--orange-500); margin-top: 30px; }
+        
+        .print-table { width: 100%; border-collapse: collapse; border: 2px solid var(--emerald-600); text-align: center; margin-bottom: 20px; }
+        .print-table th, .print-table td { border: 1px solid var(--emerald-200); padding: 8px; vertical-align: middle; }
+        .print-table th { background: var(--emerald-50); border-bottom: 2px solid var(--emerald-600); }
+        .print-table td.med-name { border-right: 2px solid var(--emerald-600); text-align: left; width: 33%; }
+        .med-title { font-size: 16px; font-weight: 900; color: var(--slate-800); text-transform: uppercase; margin-bottom: 4px; line-height: 1.2; }
+        .med-ind { display: inline-block; background: var(--yellow-200); color: var(--yellow-900); font-weight: 900; font-size: 11px; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; }
+        
+        .print-table.sos-table { border-color: var(--orange-500); text-align: left; }
+        .sos-table th, .sos-table td { border-color: var(--orange-200); }
+        .sos-table td.med-name { border-right: 1px solid var(--orange-200); }
+        .dose-box { background: white; border: 2px solid var(--emerald-500); border-radius: 8px; padding: 6px 4px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-width: 55px;}
+        .dose-box.sos-box { border-color: var(--orange-400); flex-direction: row; gap: 10px; width: auto; padding: 6px 12px; }
+        .footer { margin-top: 30px; padding-top: 15px; border-top: 2px solid var(--slate-300); text-align: center; font-size: 12px; font-weight: bold; color: var(--slate-600); }
+        
+        @media print {
+            @page { size: landscape; margin: 10mm; }
+            body { background: white; padding: 0; }
+            .nao-imprime { display: none !important; }
+            .print-container { box-shadow: none; border: none; overflow: visible; margin: 0; }
+            .a4-sheet { padding: 0; min-width: 100%; }
+            .dose-box, .section-title, .med-ind { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .page-break { page-break-inside: avoid; }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">Apps</div>
-                <div class="menu-toggle" id="mobile-menu">
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                    <span class="bar"></span>
+
+    <div class="header nao-imprime">
+        <div>
+            <h1 style="font-size: 18px;">➕ Receitas Facilitadas HC IV</h1>
+            <span id="status-db" class="status-badge">⏳ Conectando ao Banco de Dados...</span>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button type="button" class="btn btn-blue" id="btn-salvar" onclick="salvarReceita()">💾 Salvar no Histórico</button>
+            <button type="button" class="btn btn-emerald" onclick="window.print()">🖨️ Imprimir PDF</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card nao-imprime">
+            <div class="card-header">1. Dados do Paciente e Equipe</div>
+            <div class="form-grid">
+                <div>
+                    <label>Prontuário (Busca)</label>
+                    <div style="display:flex; gap:5px;">
+                        <input type="text" id="inp-pront" placeholder="Ex: 5042552" oninput="sincronizarTela()">
+                        <button class="btn btn-emerald" onclick="buscarPaciente()">Buscar</button>
+                    </div>
                 </div>
-                <nav id="navbar">
-                    <ul>
-                        <li><a href="#apps">Aplicativos</a></li>
-                        <li><a href="#features">Funcionalidades</a></li>
-                        <li><a href="#coming-soon">Em breve</a></li>
-                        <li><a href="#contact">Contato</a></li>
-                    </ul>
-                </nav>
+                <div class="col-span-3">
+                    <label>Nome do Paciente</label>
+                    <input type="text" id="inp-nome" placeholder="Ex: Maria da Silva" oninput="sincronizarTela()">
+                </div>
+                <div>
+                    <label>Data da Consulta</label>
+                    <input type="date" id="inp-data" onchange="sincronizarTela()">
+                </div>
+                <div class="col-span-2">
+                    <label>Médico(a) Solicitante</label>
+                    <select id="inp-medico" onchange="sincronizarTela()">
+                        <option value="">Carregando médicos...</option>
+                    </select>
+                </div>
+                <div class="col-span-1">
+                    <label>Farmacêutico(a)</label>
+                    <select id="inp-farm" onchange="sincronizarTela()">
+                        <option value="">Carregando farmacêuticos...</option>
+                    </select>
+                </div>
             </div>
         </div>
-    </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <h1>Soluções Digitais para Profissionais</h1>
-            <p>
-                Nossa coleção de aplicativos é projetada para otimizar seu fluxo de trabalho e aumentar sua produtividade. 
-                Ferramentas intuitivas e eficientes para profissionais que valorizam seu tempo.
-            </p>
-            <a href="#apps" class="cta-button">Explorar Aplicativos</a>
+        <div class="nao-imprime">
+            <div class="card-header" style="border:none; margin-bottom: 5px;">
+                <span style="color: var(--slate-800);">2. Medicamentos Fixos</span>
+                <button type="button" class="btn btn-blue" onclick="addMed('fixo')">+ Adicionar Fixo</button>
+            </div>
+            <div id="lista-fixos"></div>
         </div>
-    </section>
 
-    <!-- Apps Section -->
-    <section id="apps" class="apps">
-        <div class="container">
-            <h2 class="section-title">Nossos Aplicativos</h2>
-            <div class="app-grid">
-                <div class="app-card">
-                    <div class="app-image">
-                        <i class="fas fa-balance-scale"></i>
-                    </div>
-                    <div class="app-content">
-                        <h3>Lawyers</h3>
-                        <p>
-                            Automatize a produção de documentos jurídicos com nosso aplicativo para advogados. Crie petições, contratos e pareceres com facilidade e eficiência.
-                        </p>
-                        <a href="./legal-docs-generator/gerardoc.html" class="app-link">Acessar</a>
+        <div class="nao-imprime">
+            <div class="card-header" style="border:none; margin-bottom: 5px; margin-top: 20px;">
+                <span style="color: var(--orange-600);">3. Medicamentos S.O.S</span>
+                <button type="button" class="btn btn-orange" onclick="addMed('sos')">+ Adicionar S.O.S</button>
+            </div>
+            <div id="lista-sos"></div>
+        </div>
+
+        <div class="print-container">
+            <div class="a4-sheet">
+                <div class="print-header">
+                    <div class="print-title">HOSPITAL DO CÂNCER IV – HC IV</div>
+                    <div class="patient-box">
+                        <div class="patient-field col-span-2"><span class="label">Paciente</span><span class="value" id="out-nome">______</span></div>
+                        <div class="patient-field"><span class="label">Prontuário</span><span class="value" id="out-pront">______</span></div>
+                        <div class="patient-field"><span class="label">Data</span><span class="value" id="out-data">__/__/____</span></div>
+                        <div class="patient-field col-span-4" style="border-top: 1px solid #e2e8f0; padding-top: 10px;"><span class="label">Médico(a)</span><span class="value" id="out-medico" style="font-size:14px;">______</span></div>
                     </div>
                 </div>
+
+                <div class="section-title">Como tomar os seus medicamentos (Uso Contínuo)</div>
+                <table class="print-table">
+                    <thead id="thead-fixos"></thead>
+                    <tbody id="tbody-fixos"></tbody>
+                </table>
+
+                <div id="container-tabela-sos" style="display: none;" class="page-break">
+                    <div class="section-title sos">SOS - Usar apenas se sentir incômodo</div>
+                    <table class="print-table sos-table">
+                        <tbody id="tbody-sos"></tbody>
+                    </table>
+                </div>
+
+                <div class="footer page-break">
+                    <p>Assistência Domiciliar - Farmácia: 3207-3971 ou Emergência: 3207-3872 / 3207-3874</p>
+                    <p style="margin-top: 10px;">Farmacêutico(a) Resp: <span id="out-farm" style="border-bottom: 1px solid #333; padding: 0 10px;">_____________________</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, setDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // CHAVES DO SEU FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqyKxM4idfyKhRssyq-M7Yzb5lCSWS1sU",
+            authDomain: "receita-facilitada.firebaseapp.com",
+            projectId: "receita-facilitada",
+            storageBucket: "receita-facilitada.firebasestorage.app",
+            messagingSenderId: "1029880325250",
+            appId: "1:1029880325250:web:c24445dfc3a21ed1bf809b",
+            measurementId: "G-6GWMLTV5SE"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // VARIÁVEIS GLOBAIS
+        window.bancoMedicamentos = [];
+        window.appFixos = [];
+        window.appSos = [];
+        window.contadorId = 1;
+        window.HORARIOS = ["06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "22:00", "00:00"];
+
+        // INICIALIZAÇÃO
+        async function carregarBancoDeDados() {
+            try {
+                // 1. Carrega Medicamentos
+                const medsSnapshot = await getDocs(collection(db, "medicamentos_padrao"));
+                window.bancoMedicamentos = medsSnapshot.docs.map(doc => doc.data());
                 
-                <!-- Espaço para futuros aplicativos -->
-                <!-- Para adicionar novos apps, copie o bloco app-card acima e substitua o ícone, título, descrição e link -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section id="features" class="features">
-        <div class="container">
-            <h2 class="section-title">Por que usar nossos aplicativos?</h2>
-            <div class="feature-grid">
-                <div class="feature-item">
-                    <div class="feature-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <h3>Economize Tempo</h3>
-                    <p>Automatize tarefas repetitivas e foque no que realmente importa para seu trabalho.</p>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">
-                        <i class="fas fa-check-double"></i>
-                    </div>
-                    <h3>Maior Precisão</h3>
-                    <p>Reduza erros humanos com nossos sistemas de verificação inteligente.</p>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">
-                        <i class="fas fa-user-tie"></i>
-                    </div>
-                    <h3>Aparência Profissional</h3>
-                    <p>Documentos com formatação padronizada e design profissional para impressionar seus clientes.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Coming Soon Section -->
-    <section id="coming-soon" class="coming-soon">
-        <div class="container">
-            <h2 class="section-title">Em Breve</h2>
-            <p>Estamos trabalhando em novos aplicativos para facilitar ainda mais sua vida profissional.</p>
-            <p>Fique atento às novidades!</p>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer id="contact">
-        <div class="container">
-            <h3>Apps</h3>
-            <p>Soluções digitais para profissionais</p>
-            <div class="social-links">
-                <a href="#"><i class="fab fa-linkedin"></i></a>
-                <a href="#"><i class="fab fa-github"></i></a>
-                <a href="#"><i class="fab fa-whatsapp"></i></a>
-                <a href="#"><i class="fas fa-envelope"></i></a>
-            </div>
-            <p>&copy; 2025 Apps. Todos os direitos reservados.</p>
-        </div>
-    </footer>
-
-    <script>
-        // Script para o menu mobile
-        const mobileMenu = document.getElementById('mobile-menu');
-        const nav = document.getElementById('navbar');
-
-        mobileMenu.addEventListener('click', function() {
-            nav.classList.toggle('active');
-            mobileMenu.classList.toggle('active');
-        });
-
-        // Script para rolagem suave
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
+                // 2. Carrega Profissionais
+                const profSnapshot = await getDocs(collection(db, "profissionais"));
+                const profissionais = profSnapshot.docs.map(doc => doc.data());
+                
+                const selectMedico = document.getElementById("inp-medico");
+                const selectFarm = document.getElementById("inp-farm");
+                selectMedico.innerHTML = '<option value="">Selecione o Médico(a)...</option>';
+                selectFarm.innerHTML = '<option value="">Selecione o Farmacêutico(a)...</option>';
+                
+                profissionais.forEach(p => {
+                    if(p.cargo === "Médico(a)") selectMedico.innerHTML += `<option value="${p.nome}">${p.nome}</option>`;
+                    else selectFarm.innerHTML += `<option value="${p.nome}">${p.nome}</option>`;
                 });
+
+                document.getElementById("status-db").innerText = "🟢 Conectado à Nuvem";
+                document.getElementById("status-db").style.backgroundColor = "#10b981";
+            } catch (error) {
+                console.error("Erro ao carregar:", error);
+                document.getElementById("status-db").innerText = "🔴 Erro de Conexão";
+                document.getElementById("status-db").style.backgroundColor = "#ef4444";
+            }
+        }
+
+        // BUSCA DE PACIENTE
+        window.buscarPaciente = async function() {
+            const pront = document.getElementById("inp-pront").value.trim();
+            if(!pront) return alert("Digite o prontuário para buscar!");
+            
+            try {
+                const pacDoc = await getDoc(doc(db, "pacientes", pront));
+                if (pacDoc.exists()) {
+                    document.getElementById("inp-nome").value = pacDoc.data().nome;
+                    alert("Paciente encontrado!");
+                    // (No futuro podemos puxar a última receita dele aqui também)
+                } else {
+                    alert("Paciente não encontrado no banco de dados. Você pode preencher manualmente.");
+                }
+                window.sincronizarTela();
+            } catch (e) {
+                alert("Erro ao buscar no banco de dados.");
+            }
+        }
+
+        // SALVAR NO HISTÓRICO
+        window.salvarReceita = async function() {
+            const pront = document.getElementById("inp-pront").value;
+            const nome = document.getElementById("inp-nome").value;
+            if(!pront || !nome) return alert("Preencha o Prontuário e Nome antes de salvar!");
+
+            const btn = document.getElementById("btn-salvar");
+            btn.innerText = "⏳ Salvando...";
+            btn.style.backgroundColor = "#64748b";
+
+            try {
+                // Salva ou atualiza o paciente
+                await setDoc(doc(db, "pacientes", pront), { nome: nome, prontuario: pront });
+                
+                // Salva a receita
+                await addDoc(collection(db, "receitas"), {
+                    prontuario: pront,
+                    paciente_nome: nome,
+                    medico: document.getElementById("inp-medico").value,
+                    farmaceutico: document.getElementById("inp-farm").value,
+                    data_criacao: new Date().toISOString(),
+                    medicamentos_fixos: window.appFixos,
+                    medicamentos_sos: window.appSos
+                });
+
+                btn.innerText = "✅ Salvo com sucesso!";
+                btn.style.backgroundColor = "#10b981";
+                setTimeout(() => { btn.innerText = "💾 Salvar no Histórico"; btn.style.backgroundColor = "#2563eb"; }, 3000);
+            } catch (e) {
+                alert("Erro ao salvar receita.");
+                btn.innerText = "💾 Salvar no Histórico";
+            }
+        }
+
+        // ========================================================
+        // LOGICA DE TELA (Adaptada para usar a variável window global)
+        // ========================================================
+        window.sincronizarTela = function() {
+            document.getElementById('out-nome').innerText = document.getElementById('inp-nome').value || '______';
+            document.getElementById('out-pront').innerText = document.getElementById('inp-pront').value || '______';
+            document.getElementById('out-medico').innerText = document.getElementById('inp-medico').value || '______';
+            document.getElementById('out-farm').innerText = document.getElementById('inp-farm').value || '______';
+            
+            const rawData = document.getElementById('inp-data').value;
+            if (rawData) {
+                const p = rawData.split('-');
+                document.getElementById('out-data').innerText = `${p[2]}/${p[1]}/${p[0]}`;
+            }
+        }
+
+        window.addMed = function(tipo) {
+            const id = window.contadorId++;
+            const item = { id, nome: '', apre: 'comprimido', dose: '1', ind: '', horarios: {}, instrucoes: '' };
+            const container = document.getElementById(tipo === 'fixo' ? 'lista-fixos' : 'lista-sos');
+            
+            if (tipo === 'fixo') window.appFixos.push(item); else window.appSos.push(item);
+
+            const opts = window.bancoMedicamentos.map(m => `<option value="${m.nome}">${m.nome}</option>`).join('');
+            const horasBtn = window.HORARIOS.map(h => `<button type="button" id="btn-hora-${id}-${h.replace(':','')}" class="horario-btn" onclick="marcaHora(${id}, '${h}')">${h}</button>`).join('');
+            
+            const htmlFixo = `
+                <div class="card" id="card-${id}" style="border-left: 4px solid var(--blue-600);">
+                    <button type="button" onclick="removeMed(${id}, 'fixo')" class="btn-red-icon" style="position:absolute; top:15px; right:15px;">X</button>
+                    <div class="form-grid" style="margin-bottom:15px; padding-top: 10px;">
+                        <div class="col-span-2"><label>Remédio</label>
+                        <select onchange="escolheMed(${id}, 'fixo', this.value)" style="margin-bottom:8px;"><option value="">Selecione...</option>${opts}<option value="OUTRO">✍️ OUTRO...</option></select>
+                        <input type="text" id="manual-${id}" style="display:none; border-color:var(--blue-600);" placeholder="Digite..." oninput="atualiza(${id}, 'fixo', 'nome', this.value)"></div>
+                        <div><label>Símbolo</label><select id="apre-${id}" onchange="atualiza(${id}, 'fixo', 'apre', this.value)"><option value="comprimido">Comp.</option><option value="meio_comprimido">Metade</option><option value="gotas">Gotas</option><option value="liquido">Líquido</option></select></div>
+                        <div><label>Dose</label><input type="text" id="dose-${id}" value="1" oninput="atualiza(${id}, 'fixo', 'dose', this.value)"></div>
+                    </div>
+                    <div style="margin-bottom:15px;"><label>Para que serve?</label><input type="text" id="ind-${id}" style="background:#fef08a; font-weight:bold;" oninput="atualiza(${id}, 'fixo', 'ind', this.value)"></div>
+                    <div><label>Horários Fixos:</label><div class="horarios-wrap">${horasBtn}</div></div>
+                </div>`;
+                
+            const htmlSos = `
+                <div class="card" id="card-${id}" style="border-left: 4px solid var(--orange-500);">
+                    <button type="button" onclick="removeMed(${id}, 'sos')" class="btn-red-icon" style="position:absolute; top:15px; right:15px;">X</button>
+                    <div class="form-grid" style="margin-bottom:15px; padding-top: 10px;">
+                        <div class="col-span-2"><label>Remédio SOS</label>
+                        <select onchange="escolheMed(${id}, 'sos', this.value)" style="margin-bottom:8px;"><option value="">Selecione...</option>${opts}<option value="OUTRO">✍️ OUTRO...</option></select>
+                        <input type="text" id="manual-${id}" style="display:none;" oninput="atualiza(${id}, 'sos', 'nome', this.value)"></div>
+                        <div><label>Símbolo</label><select id="apre-${id}" onchange="atualiza(${id}, 'sos', 'apre', this.value)"><option value="comprimido">Comp.</option><option value="meio_comprimido">Metade</option><option value="gotas">Gotas</option><option value="liquido">Líquido</option></select></div>
+                        <div><label>Dose</label><input type="text" id="dose-${id}" value="1" oninput="atualiza(${id}, 'sos', 'dose', this.value)"></div>
+                    </div>
+                    <div style="margin-bottom:15px;"><label>Para que serve?</label><input type="text" id="ind-${id}" style="background:#fef08a; font-weight:bold;" oninput="atualiza(${id}, 'sos', 'ind', this.value)"></div>
+                    <div><label>Instruções (Como tomar):</label><textarea rows="2" style="background:#fff7ed;" oninput="atualiza(${id}, 'sos', 'instrucoes', this.value)"></textarea></div>
+                </div>`;
+
+            const div = document.createElement('div');
+            div.innerHTML = tipo === 'fixo' ? htmlFixo : htmlSos;
+            container.appendChild(div);
+            window.renderizarReceita();
+        }
+
+        window.removeMed = function(id, tipo) {
+            document.getElementById('card-' + id).parentElement.remove();
+            if (tipo === 'fixo') window.appFixos = window.appFixos.filter(i => i.id !== id);
+            else window.appSos = window.appSos.filter(i => i.id !== id);
+            window.renderizarReceita();
+        }
+
+        window.escolheMed = function(id, tipo, val) {
+            const item = (tipo === 'fixo' ? window.appFixos : window.appSos).find(i => i.id === id);
+            const inp = document.getElementById('manual-' + id);
+            if(val === 'OUTRO') { item.nome = ''; inp.style.display = 'block'; }
+            else {
+                item.nome = val; inp.style.display = 'none';
+                const dbInfo = window.bancoMedicamentos.find(m => m.nome === val);
+                if(dbInfo) {
+                    item.apre = dbInfo.apresentacao || 'comprimido'; item.dose = dbInfo.dosePadrao || '1'; item.ind = dbInfo.indicacao || '';
+                    document.getElementById('apre-'+id).value = item.apre;
+                    document.getElementById('dose-'+id).value = item.dose;
+                    document.getElementById('ind-'+id).value = item.ind;
+                }
+            }
+            window.renderizarReceita();
+        }
+
+        window.atualiza = function(id, tipo, campo, valor) {
+            const item = (tipo === 'fixo' ? window.appFixos : window.appSos).find(i => i.id === id);
+            if(item) item[campo] = valor;
+            window.renderizarReceita();
+        }
+
+        window.marcaHora = function(id, hora) {
+            const item = window.appFixos.find(i => i.id === id);
+            if(item) {
+                item.horarios[hora] = !item.horarios[hora];
+                const btn = document.getElementById(`btn-hora-${id}-${hora.replace(':','')}`);
+                if(item.horarios[hora]) btn.classList.add('ativo'); else btn.classList.remove('ativo');
+                window.renderizarReceita();
+            }
+        }
+
+        // ================= IMPRESSÃO =================
+        function getSVG(t) {
+            if (t === 'comprimido') return '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M10 5l9 9a4.95 4.95 0 1 1-7 7l-9-9a4.95 4.95 0 0 1 7-7Z" /><path d="m7.5 9.5 7 7" /></svg>';
+            if (t === 'meio_comprimido') return '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><path d="M10 5l4.5 4.5" /><path d="m7.5 9.5 7 7" stroke-dasharray="2 2" /><path d="M5 12a4.95 4.95 0 0 0 7 7l4.5-4.5" /></svg>';
+            if (t === 'gotas') return '<svg width="24" height="24" viewBox="0 0 24 24" fill="#06b6d4"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" /></svg>';
+            return '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M4 4h16v4a8 8 0 0 1-16 0V4z" /><path d="M12 12v9" /><path d="M8 21h8" /></svg>';
+        }
+
+        window.renderizarReceita = function() {
+            let th = '<tr><th style="text-align:left; width:33%; padding-left:15px;">Medicamento</th>';
+            window.HORARIOS.forEach(h => {
+                let cor = parseInt(h) >= 6 && parseInt(h) < 18 ? (parseInt(h) <= 12 ? '#f97316' : '#eab308') : '#4f46e5';
+                th += `<th><span style="color:${cor};">${h}</span></th>`;
             });
-        });
+            document.getElementById('thead-fixos').innerHTML = th + '</tr>';
+
+            const tbF = document.getElementById('tbody-fixos');
+            if(!window.appFixos.length) tbF.innerHTML = '<tr><td colspan="10" style="padding:20px; color:#94a3b8;">Nenhum medicamento</td></tr>';
+            else {
+                let htmlF = '';
+                window.appFixos.forEach((item, i) => {
+                    htmlF += `<tr style="${i%2===0?'background:white;':'background:#f8fafc;'}"><td class="med-name"><div class="med-title">${item.nome||'-'}</div>${item.ind?`<div class="med-ind">${item.ind}</div>`:''}</td>`;
+                    window.HORARIOS.forEach(h => {
+                        if(item.horarios[h]) htmlF += `<td><div class="dose-box">${getSVG(item.apre)}<span style="font-size:10px;font-weight:bold;">${item.dose}</span></div></td>`;
+                        else htmlF += `<td>-</td>`;
+                    });
+                    htmlF += `</tr>`;
+                });
+                tbF.innerHTML = htmlF;
+            }
+
+            const cSos = document.getElementById('container-tabela-sos');
+            const tbS = document.getElementById('tbody-sos');
+            if(!window.appSos.length) cSos.style.display = 'none';
+            else {
+                cSos.style.display = 'block';
+                let htmlS = '';
+                window.appSos.forEach((item, i) => {
+                    htmlS += `<tr style="${i%2===0?'background:white;':'background:#fff7ed;'}"><td class="med-name"><div class="med-title">${item.nome||'-'}</div><div class="dose-box sos-box">${getSVG(item.apre)}<span style="font-size:12px;font-weight:bold;">${item.dose}</span></div></td><td style="padding:15px; text-align:left;">${item.ind?`<div class="med-ind" style="background:#fed7aa;">Para: ${item.ind}</div><br>`:''}<span style="font-weight:bold; font-size:16px;">${item.instrucoes||'-'}</span></td></tr>`;
+                });
+                tbS.innerHTML = htmlS;
+            }
+        }
+
+        // Executar on load
+        document.getElementById('inp-data').valueAsDate = new Date();
+        window.sincronizarTela();
+        window.renderizarReceita();
+        carregarBancoDeDados();
     </script>
-    
 </body>
 </html>
