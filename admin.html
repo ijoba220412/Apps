@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Administração - HC IV</title>
+    <style>
+        :root {
+            --blue-600: #2563eb; --blue-800: #1e40af;
+            --slate-50: #f8fafc; --slate-100: #f1f5f9; --slate-200: #e2e8f0; --slate-700: #334155; --slate-800: #1e293b;
+            --red-500: #ef4444; --emerald-500: #10b981;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        body { background-color: var(--slate-100); }
+        
+        .header { background-color: var(--slate-800); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+        
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 10px 20px; border: none; background: var(--slate-200); color: var(--slate-700); cursor: pointer; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 16px; }
+        .tab-btn.active { background: var(--blue-600); color: white; }
+        
+        .panel { background: white; padding: 20px; border-radius: 0 8px 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: none; }
+        .panel.active { display: block; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--slate-200); }
+        th { background-color: var(--slate-50); color: var(--slate-700); }
+        
+        .btn { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; }
+        .btn-blue { background: var(--blue-600); } .btn-blue:hover { background: var(--blue-800); }
+        .btn-red { background: var(--red-500); }
+        .btn-green { background: var(--emerald-500); }
+        
+        /* Estilos do Modal (Janela de Edição) */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal { background: white; padding: 25px; border-radius: 12px; width: 100%; max-width: 500px; }
+        .modal h2 { margin-bottom: 15px; color: var(--slate-800); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 12px; font-weight: bold; color: var(--slate-700); margin-bottom: 5px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--slate-300); border-radius: 6px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>⚙️ Gestão do Sistema HC IV</h1>
+        <a href="index.html" style="color: white; text-decoration: none; font-weight: bold; background: var(--blue-600); padding: 8px 15px; border-radius: 6px;">⬅ Voltar para Receitas</a>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('meds')">💊 Medicamentos</button>
+            <button class="tab-btn" onclick="showTab('profs')">👨‍⚕️ Profissionais</button>
+            <button class="tab-btn" onclick="showTab('pacs')">🏥 Pacientes</button>
+        </div>
+
+        <div id="panel-meds" class="panel active">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>Lista de Medicamentos Padrão</h2>
+                <button class="btn btn-green" onclick="abrirModalMed()">+ Novo Medicamento</button>
+            </div>
+            <table>
+                <thead><tr><th>Nome</th><th>Apresentação</th><th>Dose Padrão</th><th>Indicação</th><th>Ações</th></tr></thead>
+                <tbody id="tabela-meds"><tr><td colspan="5">A carregar...</td></tr></tbody>
+            </table>
+        </div>
+
+        <div id="panel-profs" class="panel">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>Médicos e Farmacêuticos</h2>
+                <button class="btn btn-green" onclick="abrirModalProf()">+ Novo Profissional</button>
+            </div>
+            <table>
+                <thead><tr><th>Nome / Registo</th><th>Cargo</th><th>Ações</th></tr></thead>
+                <tbody id="tabela-profs"><tr><td colspan="3">A carregar...</td></tr></tbody>
+            </table>
+        </div>
+
+        <div id="panel-pacs" class="panel">
+            <h2>Pacientes Registados</h2>
+            <table>
+                <thead><tr><th>Prontuário</th><th>Nome do Paciente</th><th>Ações</th></tr></thead>
+                <tbody id="tabela-pacs"><tr><td colspan="3">A carregar...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="modal-med" class="modal-overlay">
+        <div class="modal">
+            <h2 id="modal-med-titulo">Editar Medicamento</h2>
+            <input type="hidden" id="med-id-original">
+            <div class="form-group"><label>Nome do Medicamento</label><input type="text" id="med-nome"></div>
+            <div class="form-group"><label>Apresentação / Símbolo</label>
+                <select id="med-apre">
+                    <option value="comprimido">Comprimido</option>
+                    <option value="meio_comprimido">Metade (1/2)</option>
+                    <option value="gotas">Gotas</option>
+                    <option value="liquido">Líquido (ml)</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Dose Padrão (Ex: 1, 40)</label><input type="text" id="med-dose"></div>
+            <div class="form-group"><label>Indicação (Ex: PARA DOR)</label><input type="text" id="med-ind"></div>
+            <div class="modal-actions">
+                <button class="btn" style="background:var(--slate-300); color:black;" onclick="fecharModal('modal-med')">Cancelar</button>
+                <button class="btn btn-blue" onclick="guardarMed()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-prof" class="modal-overlay">
+        <div class="modal">
+            <h2 id="modal-prof-titulo">Editar Profissional</h2>
+            <input type="hidden" id="prof-id-original">
+            <div class="form-group"><label>Nome Completo (com CRM/CRF)</label><input type="text" id="prof-nome"></div>
+            <div class="form-group"><label>Cargo</label>
+                <select id="prof-cargo">
+                    <option value="Médico(a)">Médico(a)</option>
+                    <option value="Farmacêutico(a)">Farmacêutico(a)</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn" style="background:var(--slate-300); color:black;" onclick="fecharModal('modal-prof')">Cancelar</button>
+                <button class="btn btn-blue" onclick="guardarProf()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqyKxM4idfyKhRssyq-M7Yzb5lCSWS1sU",
+            authDomain: "receita-facilitada.firebaseapp.com",
+            projectId: "receita-facilitada",
+            storageBucket: "receita-facilitada.firebasestorage.app",
+            messagingSenderId: "1029880325250",
+            appId: "1:1029880325250:web:c24445dfc3a21ed1bf809b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // VARIÁVEIS GLOBAIS PARA DADOS
+        let meds = []; let profs = []; let pacs = [];
+
+        // CONTROLO DE TABS
+        window.showTab = function(tabName) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('panel-' + tabName).classList.add('active');
+            event.target.classList.add('active');
+            if(tabName === 'meds') carregarMeds();
+            if(tabName === 'profs') carregarProfs();
+            if(tabName === 'pacs') carregarPacs();
+        }
+
+        // ==========================================
+        // MEDICAMENTOS (CRUD)
+        // ==========================================
+        async function carregarMeds() {
+            const querySnapshot = await getDocs(collection(db, "medicamentos_padrao"));
+            meds = []; querySnapshot.forEach((doc) => { meds.push({ id: doc.id, ...doc.data() }); });
+            
+            const tbody = document.getElementById("tabela-meds");
+            tbody.innerHTML = "";
+            meds.forEach(m => {
+                tbody.innerHTML += `<tr>
+                    <td><strong>${m.nome}</strong></td><td>${m.apresentacao}</td><td>${m.dosePadrao}</td><td>${m.indicacao}</td>
+                    <td>
+                        <button class="btn btn-blue" onclick="abrirModalMed('${m.id}')">Editar</button>
+                        <button class="btn btn-red" onclick="apagarDoc('medicamentos_padrao', '${m.id}', carregarMeds)">Excluir</button>
+                    </td>
+                </tr>`;
+            });
+        }
+
+        window.abrirModalMed = function(id = null) {
+            if(id) {
+                const m = meds.find(x => x.id === id);
+                document.getElementById("modal-med-titulo").innerText = "Editar Medicamento";
+                document.getElementById("med-id-original").value = m.id;
+                document.getElementById("med-nome").value = m.nome;
+                document.getElementById("med-apre").value = m.apresentacao;
+                document.getElementById("med-dose").value = m.dosePadrao;
+                document.getElementById("med-ind").value = m.indicacao;
+            } else {
+                document.getElementById("modal-med-titulo").innerText = "Novo Medicamento";
+                document.getElementById("med-id-original").value = "";
+                document.getElementById("med-nome").value = "";
+                document.getElementById("med-dose").value = "1";
+                document.getElementById("med-ind").value = "";
+            }
+            document.getElementById("modal-med").style.display = "flex";
+        }
+
+        window.guardarMed = async function() {
+            const idOriginal = document.getElementById("med-id-original").value;
+            const nome = document.getElementById("med-nome").value.trim().toUpperCase();
+            if(!nome) return alert("O nome é obrigatório!");
+
+            // O ID no Firebase será o nome sem barras
+            const novoId = nome.replace("/", "-");
+            const dados = {
+                nome: nome,
+                apresentacao: document.getElementById("med-apre").value,
+                dosePadrao: document.getElementById("med-dose").value,
+                indicacao: document.getElementById("med-ind").value.toUpperCase()
+            };
+
+            try {
+                // Se mudou o nome, apaga o antigo para não duplicar
+                if(idOriginal && idOriginal !== novoId) { await deleteDoc(doc(db, "medicamentos_padrao", idOriginal)); }
+                await setDoc(doc(db, "medicamentos_padrao", novoId), dados);
+                fecharModal('modal-med');
+                carregarMeds();
+            } catch (e) { alert("Erro ao guardar: " + e); }
+        }
+
+        // ==========================================
+        // PROFISSIONAIS (CRUD)
+        // ==========================================
+        async function carregarProfs() {
+            const querySnapshot = await getDocs(collection(db, "profissionais"));
+            profs = []; querySnapshot.forEach((doc) => { profs.push({ id: doc.id, ...doc.data() }); });
+            
+            const tbody = document.getElementById("tabela-profs");
+            tbody.innerHTML = "";
+            profs.forEach(p => {
+                tbody.innerHTML += `<tr>
+                    <td><strong>${p.nome}</strong></td><td>${p.cargo}</td>
+                    <td>
+                        <button class="btn btn-blue" onclick="abrirModalProf('${p.id}')">Editar</button>
+                        <button class="btn btn-red" onclick="apagarDoc('profissionais', '${p.id}', carregarProfs)">Excluir</button>
+                    </td>
+                </tr>`;
+            });
+        }
+
+        window.abrirModalProf = function(id = null) {
+            if(id) {
+                const p = profs.find(x => x.id === id);
+                document.getElementById("modal-prof-titulo").innerText = "Editar Profissional";
+                document.getElementById("prof-id-original").value = p.id;
+                document.getElementById("prof-nome").value = p.nome;
+                document.getElementById("prof-cargo").value = p.cargo;
+            } else {
+                document.getElementById("modal-prof-titulo").innerText = "Novo Profissional";
+                document.getElementById("prof-id-original").value = "";
+                document.getElementById("prof-nome").value = "";
+            }
+            document.getElementById("modal-prof").style.display = "flex";
+        }
+
+        window.guardarProf = async function() {
+            const idOriginal = document.getElementById("prof-id-original").value;
+            const nome = document.getElementById("prof-nome").value.trim();
+            if(!nome) return alert("O nome é obrigatório!");
+
+            const novoId = nome.replace("/", "-").replace(".", "").replace(" ", "_").substring(0,40);
+            const dados = { nome: nome, cargo: document.getElementById("prof-cargo").value };
+
+            try {
+                if(idOriginal && idOriginal !== novoId) { await deleteDoc(doc(db, "profissionais", idOriginal)); }
+                await setDoc(doc(db, "profissionais", novoId), dados);
+                fecharModal('modal-prof');
+                carregarProfs();
+            } catch (e) { alert("Erro ao guardar."); }
+        }
+
+        // ==========================================
+        // PACIENTES (CRUD BÁSICO)
+        // ==========================================
+        async function carregarPacs() {
+            const querySnapshot = await getDocs(collection(db, "pacientes"));
+            const tbody = document.getElementById("tabela-pacs");
+            tbody.innerHTML = "";
+            querySnapshot.forEach((doc) => {
+                const pac = doc.data();
+                tbody.innerHTML += `<tr>
+                    <td>${pac.prontuario}</td><td><strong>${pac.nome}</strong></td>
+                    <td><button class="btn btn-red" onclick="apagarDoc('pacientes', '${doc.id}', window.showTab.bind(null, 'pacs'))">Excluir</button></td>
+                </tr>`;
+            });
+        }
+
+        // ==========================================
+        // FUNÇÕES GERAIS
+        // ==========================================
+        window.fecharModal = function(idModal) { document.getElementById(idModal).style.display = "none"; }
+        
+        window.apagarDoc = async function(colecao, id, callback) {
+            if(confirm("Tem a certeza que deseja excluir este registo? Esta ação não pode ser desfeita.")) {
+                try {
+                    await deleteDoc(doc(db, colecao, id));
+                    callback();
+                } catch(e) { alert("Erro ao excluir."); }
+            }
+        }
+
+        // Inicia a primeira tab
+        carregarMeds();
+    </script>
+</body>
+</html>
